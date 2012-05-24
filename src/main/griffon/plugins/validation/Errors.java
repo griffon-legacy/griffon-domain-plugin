@@ -62,4 +62,12 @@ public interface Errors {
     void rejectField(String field, Object rejectedValue, String code, Object[] args, String defaultMessage);
 
     void rejectField(String field, Object rejectedValue, String code, String defaultMessage);
+
+    void clearGlobalErrors();
+
+    void clearFieldErrors();
+
+    void clearFieldErrors(String field);
+
+    void clearAllErrors();
 }

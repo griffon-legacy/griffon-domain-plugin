@@ -133,14 +133,14 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
 
         @Override
-        protected GriffonDomain insert(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments) {
+        protected GriffonDomain insert(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments, Map<String, Object> params) {
             GriffonDomainProperty identity = identityOf(target);
             identity.setValue(target, identitySequence.incrementAndGet());
             return datasetOf(domainClass).save(target);
         }
 
         @Override
-        protected GriffonDomain save(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments) {
+        protected GriffonDomain save(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments, Map<String, Object> params) {
             return datasetOf(domainClass).save(target);
         }
     }

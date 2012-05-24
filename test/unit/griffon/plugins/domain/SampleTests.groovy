@@ -6,12 +6,13 @@ import griffon.test.mock.MockGriffonApplication
 import org.codehaus.griffon.runtime.domain.AbstractCommandObject
 import griffon.plugins.domain.atoms.StringValue
 import griffon.plugins.domain.atoms.IntegerValue
+import griffon.plugins.validation.exceptions.ValidationException
 
 class SampleTests extends GriffonUnitTestCase {
     private GriffonApplication app
 
     void setUp() {
-        ExpandoMetaClassCreationHandle.enable()
+        // ExpandoMetaClassCreationHandle.enable()
         app = new MockGriffonApplication()
         app.builderClass = SampleBuilderConfig
         app.initialize()
@@ -42,6 +43,12 @@ class SampleTests extends GriffonUnitTestCase {
 
         assert Sample.mapping() == 'memory'
         // assert Sample.datasource() == 'default'
+
+        assert !Sample.make().save()
+        assert Sample.make().save(validate: false)
+        shouldFail(ValidationException) {
+            assert !Sample.make().save(failOnError: true)
+        }
 
         println one.griffonClass
         println '--------------'

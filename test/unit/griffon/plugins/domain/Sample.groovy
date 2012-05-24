@@ -11,7 +11,7 @@ class Sample {
     final IntegerValue num = new IntegerValue()
 
     static constraints = {
-        num(range: 0..10)
+        num(range: 30..40)
         name(nullable: false, blank: false, unique: true)
         lastName(nullable: false, blank: false)
     }
