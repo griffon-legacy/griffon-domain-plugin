@@ -138,7 +138,6 @@ public class GriffonDomainConfigurationUtil {
         final String name = descriptor.getName();
         return
                 !GriffonDomainClass.STANDARD_PROPERTIES.contains(name) &&
-                !GriffonDomainProperty.NON_CONFIGURATIONAL_PROPERTIES.contains(name) &&
-                griffon.plugins.domain.Value.class.isAssignableFrom(descriptor.getPropertyType());
+                !GriffonDomainProperty.NON_CONFIGURATIONAL_PROPERTIES.contains(name);
     }
 }

@@ -15,8 +15,6 @@
  */
 package griffon.plugins.domain;
 
-import griffon.plugins.validation.Validateable;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
@@ -38,6 +36,7 @@ public interface GriffonDomainProperty {
     String PROPERTY_CHANGE_LISTENERS = "propertyChangeListeners";
     Set<String> NON_CONFIGURATIONAL_PROPERTIES = new TreeSet<String>(
             Arrays.asList(TRANSIENTS, CONSTRAINTS, BELONGS_TO, HAS_MANY, HAS_ONE, ERRORS, PROPERTY_CHANGE_LISTENERS));
+
     /**
      * Returns the name of the property
      *
@@ -55,6 +54,4 @@ public interface GriffonDomainProperty {
     Object getValue(Object owner);
 
     void setValue(Object owner, Object value);
-
-    boolean isAtom();
 }

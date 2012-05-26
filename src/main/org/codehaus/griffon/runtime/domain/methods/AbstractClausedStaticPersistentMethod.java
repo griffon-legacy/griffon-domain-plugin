@@ -15,8 +15,9 @@
  */
 package org.codehaus.griffon.runtime.domain.methods;
 
-import griffon.plugins.domain.*;
-import griffon.plugins.domain.atoms.AbstractAtomicValue;
+import griffon.plugins.domain.GriffonDomainClass;
+import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.domain.orm.Criterion;
 import griffon.plugins.domain.orm.Restrictions;
 import griffon.util.GriffonClassUtils;
@@ -250,9 +251,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
                 if (args[i] == null) continue;
                 // convert GStrings to strings
 
-                if(prop.isAtom() && !AtomicValue.class.isAssignableFrom(args[i].getClass())) {
-                    args[i] = AbstractAtomicValue.wrap(args[i], prop.getType());
-                } else if (prop.getType() == String.class && (args[i] instanceof CharSequence)) {
+                if (prop.getType() == String.class && (args[i] instanceof CharSequence)) {
                     args[i] = args[i].toString();
                 } else if (!prop.getType().isAssignableFrom(args[i].getClass()) && !(GriffonClassUtils.isMatchBetweenPrimitiveAndWrapperTypes(prop.getType(), args[i].getClass()))) {
                     try {

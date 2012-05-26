@@ -72,6 +72,9 @@ public class BlankConstraint extends AbstractVetoingConstraint {
 
     @Override
     protected boolean processValidateWithVetoing(Object target, Object propertyValue, Errors errors) {
+        if(propertyValue instanceof StringValue) {
+            propertyValue = ((StringValue) propertyValue).stringValue();
+        }
         if (propertyValue instanceof String && StringUtils.isBlank((String) propertyValue)) {
             if (!blank) {
                 Object[] args = new Object[]{constraintPropertyName, constraintOwningClass};

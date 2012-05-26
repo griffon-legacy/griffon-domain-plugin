@@ -82,7 +82,11 @@ public class MaxConstraint extends AbstractConstraint {
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
-        if (maxValue.compareTo(propertyValue) < 0) {
+        if (propertyValue instanceof NumericAtomicValue) {
+            propertyValue = ((NumericAtomicValue) propertyValue).getValue();
+        }
+
+        if (null == propertyValue || maxValue.compareTo(propertyValue) < 0){
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, maxValue};
             rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_MAX_MESSAGE_CODE,
                     ConstrainedProperty.MAX_CONSTRAINT + ConstrainedProperty.EXCEEDED_SUFFIX, args);

@@ -16,12 +16,13 @@
 package griffon.plugins.domain;
 
 import griffon.core.GriffonArtifact;
+import griffon.plugins.validation.Validateable;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 
 /**
  * @author Andres Almiray
  */
-public interface GriffonDomain extends GriffonArtifact, ComplexValue {
+public interface GriffonDomain extends GriffonArtifact, Validateable {
     void onLoad();
 
     void onSave();

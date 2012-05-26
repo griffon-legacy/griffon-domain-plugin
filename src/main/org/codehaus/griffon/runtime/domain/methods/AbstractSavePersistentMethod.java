@@ -32,8 +32,8 @@ import static griffon.util.ConfigUtils.getConfigValueAsBoolean;
  * @author Andres Almiray
  */
 public abstract class AbstractSavePersistentMethod extends AbstractPersistentInstanceMethodInvocation implements SaveMethod {
-    private static final String FAIL_ON_ERROR = "failOnError";
-    private static final String VALIDATE = "validate";
+    public static final String FAIL_ON_ERROR = "failOnError";
+    public static final String VALIDATE = "validate";
     private static final String FAIL_ON_ERROR_CONFIG_KEY = "griffon.domain.failOnError";
 
     public AbstractSavePersistentMethod(GriffonDomainHandler griffonDomainHandler) {
@@ -61,6 +61,8 @@ public abstract class AbstractSavePersistentMethod extends AbstractPersistentIns
         boolean validate = getConfigValueAsBoolean(params, VALIDATE, true);
         boolean failOnError = getConfigValueAsBoolean(getApplication().getConfig(), FAIL_ON_ERROR_CONFIG_KEY, false);
         if (params.containsKey(FAIL_ON_ERROR)) failOnError = getConfigValueAsBoolean(params, FAIL_ON_ERROR);
+        params.put(VALIDATE, validate);
+        params.put(FAIL_ON_ERROR, failOnError);
 
         if (validate) {
             target.getErrors().clearAllErrors();

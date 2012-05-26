@@ -16,11 +16,17 @@
 
 package org.codehaus.griffon.runtime.domain;
 
-import griffon.plugins.domain.*;
+import griffon.plugins.domain.GriffonDomain;
+import griffon.plugins.domain.GriffonDomainClass;
+import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.domain.methods.InstanceMethodInvocation;
 import griffon.plugins.domain.methods.MethodSignature;
 import griffon.plugins.domain.methods.StaticMethodInvocation;
 import griffon.plugins.domain.orm.Criterion;
+import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.plugins.validation.exceptions.ValidationException;
+import griffon.util.CollectionUtils;
 import org.codehaus.griffon.runtime.domain.methods.*;
 
 import java.util.*;
@@ -134,14 +140,52 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
 
         @Override
         protected GriffonDomain insert(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments, Map<String, Object> params) {
-            GriffonDomainProperty identity = identityOf(target);
-            identity.setValue(target, identitySequence.incrementAndGet());
-            return datasetOf(domainClass).save(target);
+            final ConcurrentHashMapDatastore.Dataset<GriffonDomain> dataset = datasetOf(domainClass);
+            if (null != checkUniqueConstraints(domainClass, target, params, dataset)) {
+                GriffonDomainProperty identity = identityOf(target);
+                identity.setValue(target, identitySequence.incrementAndGet());
+                return dataset.save(target);
+            }
+            return null;
         }
 
         @Override
         protected GriffonDomain save(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments, Map<String, Object> params) {
-            return datasetOf(domainClass).save(target);
+            final ConcurrentHashMapDatastore.Dataset<GriffonDomain> dataset = datasetOf(domainClass);
+            if (null != checkUniqueConstraints(domainClass, target, params, dataset)) {
+                return dataset.save(target);
+            }
+            return null;
+        }
+
+        private GriffonDomain checkUniqueConstraints(GriffonDomainClass domainClass, GriffonDomain target, Map<String, Object> params, ConcurrentHashMapDatastore.Dataset<GriffonDomain> dataset) {
+            boolean validate = (Boolean) params.get(VALIDATE);
+            boolean failOnError = (Boolean) params.get(FAIL_ON_ERROR);
+
+            if (validate) {
+                final Map<String, ConstrainedProperty> constrainedProperties = domainClass.getConstrainedProperties();
+                for (Map.Entry<String, ConstrainedProperty> entry : constrainedProperties.entrySet()) {
+                    String propertyName = entry.getKey();
+                    GriffonDomainProperty domainProperty = domainClass.getPropertyByName(propertyName);
+                    ConstrainedProperty constrainedProperty = entry.getValue();
+                    Object uniqueValue = constrainedProperty.getMetaConstraintValue("unique");
+                    if (null != uniqueValue && (Boolean) uniqueValue) {
+                        final Object value = domainProperty.getValue(target);
+                        final Map<String, Object> args = CollectionUtils.<String, Object>map().e(propertyName, value);
+                        GriffonDomain other = dataset.first(args);
+                        if (null != other && target != other) {
+                            if (failOnError) {
+                                throw new ValidationException("Constraint 'unique' failed validation for property '" + propertyName + "' with value " + value);
+                            } else {
+                                target.getErrors().rejectField(propertyName, value, "unique", null);
+                            }
+                        }
+                    }
+                }
+                if (target.getErrors().hasErrors()) return null;
+            }
+
+            return target;
         }
     }
 

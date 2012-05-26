@@ -82,7 +82,11 @@ public class UrlConstraint extends AbstractConstraint {
             return;
         }
 
-        if (!validator.isValid(propertyValue.toString())) {
+        if(propertyValue instanceof StringValue) {
+            propertyValue = ((StringValue) propertyValue).stringValue();
+        }
+
+        if (null == propertyValue || !validator.isValid(propertyValue.toString())) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
             rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_URL_MESSAGE_CODE,
                     ConstrainedProperty.URL_CONSTRAINT + ConstrainedProperty.INVALID_SUFFIX, args);

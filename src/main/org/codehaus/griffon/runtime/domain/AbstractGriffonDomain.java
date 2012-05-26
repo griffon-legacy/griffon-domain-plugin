@@ -39,12 +39,8 @@ public abstract class AbstractGriffonDomain extends AbstractGriffonArtifact impl
     private final Errors errors;
 
     public AbstractGriffonDomain() {
-        this.errors = new DefaultErrors(getClass().getName());
+        this.errors = new DefaultErrors(getClass());
         this.pcs = new PropertyChangeSupport(this);
-    }
-
-    public String title() {
-        return toString();
     }
 
     public boolean validate() {

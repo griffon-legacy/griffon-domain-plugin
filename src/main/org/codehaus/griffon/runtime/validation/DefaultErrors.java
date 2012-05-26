@@ -15,14 +15,18 @@
  */
 package org.codehaus.griffon.runtime.validation;
 
+import griffon.exceptions.GriffonException;
 import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.FieldObjectError;
 import griffon.plugins.validation.MessageCodesResolver;
 import griffon.plugins.validation.ObjectError;
+import griffon.util.GriffonClassUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static griffon.util.GriffonExceptionHandler.sanitize;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Collections.unmodifiableList;
 
@@ -34,9 +38,11 @@ public class DefaultErrors implements Errors {
     private final List<ObjectError> objectErrors = new CopyOnWriteArrayList<ObjectError>();
     private MessageCodesResolver messageCodesResolver = new DefaultMessageCodesResolver();
     private final String objectName;
+    private final Class objectClass;
 
-    public DefaultErrors(String objectName) {
-        this.objectName = objectName;
+    public DefaultErrors(Class objectClass) {
+        this.objectClass = objectClass;
+        this.objectName = objectClass.getName();
     }
 
     public String getObjectName() {
@@ -150,7 +156,7 @@ public class DefaultErrors implements Errors {
     }
 
     public void reject(String code, Object[] args, String defaultMessage) {
-        ObjectError objectError = new DefaultObjectError(code, args, defaultMessage);
+        ObjectError objectError = new DefaultObjectError(resolveMessageCodes(code), args, defaultMessage);
         if (!objectErrors.contains(objectError)) objectErrors.add(objectError);
     }
 
@@ -167,7 +173,8 @@ public class DefaultErrors implements Errors {
     }
 
     public void rejectField(String field, Object rejectedValue, String code, Object[] args, String defaultMessage) {
-        FieldObjectError fieldError = new DefaultFieldObjectError(field, rejectedValue, code, args, defaultMessage);
+        Class fieldType = getFieldType(field);
+        FieldObjectError fieldError = new DefaultFieldObjectError(field, rejectedValue, resolveMessageCodes(code, field, fieldType), args, defaultMessage);
         List<FieldObjectError> errors = fieldErrors.get(field);
         if (null == errors) {
             errors = new ArrayList<FieldObjectError>();
@@ -178,5 +185,20 @@ public class DefaultErrors implements Errors {
 
     public void rejectField(String field, Object rejectedValue, String code, String defaultMessage) {
         rejectField(field, rejectedValue, code, null, defaultMessage);
+    }
+
+    private Class getFieldType(String field) {
+        try {
+            return GriffonClassUtils.getPropertyDescriptor(objectClass, field).getPropertyType();
+        } catch (IllegalAccessException e) {
+            sanitize(e);
+            throw new GriffonException(e);
+        } catch (InvocationTargetException e) {
+            sanitize(e);
+            throw new GriffonException(e);
+        } catch (NoSuchMethodException e) {
+            sanitize(e);
+            throw new GriffonException(e);
+        }
     }
 }

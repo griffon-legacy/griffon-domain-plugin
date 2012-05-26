@@ -83,6 +83,9 @@ public class SizeConstraint extends AbstractConstraint {
             size = Array.getLength(propertyValue);
         } else if (propertyValue instanceof Collection<?>) {
             size = ((Collection<?>) propertyValue).size();
+        } else if (propertyValue instanceof StringValue) {
+            String s = ((StringValue) propertyValue).stringValue();
+            size = s != null ? s.length() : 0;
         } else { // String
             size = ((String) propertyValue).length();
         }

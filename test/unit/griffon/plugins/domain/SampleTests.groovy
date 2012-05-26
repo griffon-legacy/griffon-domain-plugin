@@ -12,7 +12,7 @@ class SampleTests extends GriffonUnitTestCase {
     private GriffonApplication app
 
     void setUp() {
-        // ExpandoMetaClassCreationHandle.enable()
+        ExpandoMetaClassCreationHandle.enable()
         app = new MockGriffonApplication()
         app.builderClass = SampleBuilderConfig
         app.initialize()
@@ -20,35 +20,29 @@ class SampleTests extends GriffonUnitTestCase {
 
     void testDynamicMethodInjection() {
         Sample one = Sample.make(name: 'Andres', lastName: 'Almiray', num: 30).save()
-        assert Sample.findBy('Name', ['Andres']).lastName.value == 'Almiray'
-        assert Sample.findBy('NameAndLastName', ['Andres', 'Almiray']).lastName.value == 'Almiray'
+        assert Sample.findBy('Name', ['Andres']).lastName == 'Almiray'
+        assert Sample.findBy('NameAndLastName', ['Andres', 'Almiray']).lastName == 'Almiray'
         assert !Sample.findBy('NameAndLastName', 'Dierk', 'Koenig')
         Sample.make(name: 'Dierk', lastName: 'Koenig', num: 40).save()
-        assert Sample.findBy('NameAndLastName', 'Dierk', 'Koenig').lastName.value == 'Koenig'
-        assert Sample.list().name.value == ['Andres', 'Dierk']
+        assert Sample.findBy('NameAndLastName', 'Dierk', 'Koenig').lastName == 'Koenig'
+        assert Sample.list().name == ['Andres', 'Dierk']
         assert Sample.count() == 2
-        assert Sample.list(max: 1, offset: 0).name.value == ['Andres']
-        assert Sample.list(max: 1, offset: 1).name.value == ['Dierk']
-        assert Sample.list(sort: 'num', order: 'asc').num.value == [30, 40]
-        assert Sample.list(sort: 'num', order: 'desc').num.value == [40, 30]
+        assert Sample.list(max: 1, offset: 0).name == ['Andres']
+        assert Sample.list(max: 1, offset: 1).name == ['Dierk']
+        assert Sample.list(sort: 'num', order: 'asc').num == [30, 40]
+        assert Sample.list(sort: 'num', order: 'desc').num == [40, 30]
         Sample.fetch(2).delete()
         assert Sample.count() == 1
-        assert Sample.list().name.value == ['Andres']
+        assert Sample.list().name == ['Andres']
 
-        assert Sample.findByName('Andres').lastName.value == 'Almiray'
+        assert Sample.findByName('Andres').lastName == 'Almiray'
         Sample.make(name: 'Dierk', lastName: 'Koenig', num: 40).save()
         Sample.make(name: 'Guillaume', lastName: 'Laforge', num: 30).save()
         assert Sample.countByNum(30) == 2
-        assert Sample.findAllByNum(30).name.value == ['Andres', 'Guillaume']
+        assert Sample.findAllByNum(30).name == ['Andres', 'Guillaume']
 
         assert Sample.mapping() == 'memory'
         // assert Sample.datasource() == 'default'
-
-        assert !Sample.make().save()
-        assert Sample.make().save(validate: false)
-        shouldFail(ValidationException) {
-            assert !Sample.make().save(failOnError: true)
-        }
 
         println one.griffonClass
         println '--------------'
@@ -58,6 +52,20 @@ class SampleTests extends GriffonUnitTestCase {
         println '--------------'
         one.griffonClass.constrainedProperties.each {println it}
         println '--------------'
+
+        assert !Sample.make().save()
+        assert Sample.make().save(validate: false)
+        shouldFail(ValidationException) {
+            assert !Sample.make().save(failOnError: true)
+        }
+
+        assert Sample.findByName('Dierk')
+        Sample dierk2 = Sample.make(name: 'Dierk', lastName: 'Koenig', num: 35)
+        assert !dierk2.save()
+        dierk2.errors.allErrors.each { println it }
+        shouldFail(ValidationException) {
+            assert !Sample.make(name: 'Dierk', lastName: 'Koenig', num: 35).save(failOnError: true)
+        }
 
         def command = new LoginCommand()
 

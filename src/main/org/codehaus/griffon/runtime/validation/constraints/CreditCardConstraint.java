@@ -36,6 +36,10 @@ public class CreditCardConstraint extends AbstractConstraint {
 
         CreditCardValidator validator = new CreditCardValidator();
 
+        if(propertyValue instanceof StringValue) {
+            propertyValue = ((StringValue) propertyValue).stringValue();
+        }
+
         if (!validator.isValid(propertyValue.toString())) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
             rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_CREDIT_CARD_MESSAGE_CODE,

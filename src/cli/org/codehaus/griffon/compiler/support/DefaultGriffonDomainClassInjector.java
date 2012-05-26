@@ -16,7 +16,6 @@
 package org.codehaus.griffon.compiler.support;
 
 import griffon.plugins.domain.GriffonDomainProperty;
-import griffon.plugins.domain.atoms.LongValue;
 import org.codehaus.griffon.ast.GriffonASTUtils;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
@@ -32,7 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.codehaus.griffon.ast.AbstractASTTransformation.makeClassSafe;
-import static org.codehaus.griffon.ast.GriffonASTUtils.*;
+import static org.codehaus.griffon.ast.GriffonASTUtils.implementsOrInheritsZeroArgMethod;
+import static org.codehaus.griffon.ast.GriffonASTUtils.injectProperty;
 
 /**
  * Default implementation of domain class injector interface that adds the 'id'
@@ -42,7 +42,7 @@ import static org.codehaus.griffon.ast.GriffonASTUtils.*;
  */
 public abstract class DefaultGriffonDomainClassInjector extends GriffonDomainClassInjector {
     private List<ClassNode> classesWithInjectedToString = new ArrayList<ClassNode>();
-    private static final ClassNode PROPERTY_TYPE = makeClassSafe(LongValue.class);
+    private static final ClassNode PROPERTY_TYPE = makeClassSafe(Long.class);
 
     protected void performInjection(ClassNode classNode) {
         injectIdProperty(classNode);
@@ -66,10 +66,10 @@ public abstract class DefaultGriffonDomainClassInjector extends GriffonDomainCla
     }
 
     protected void injectVersionProperty(ClassNode classNode) {
-        injectProperty(classNode, GriffonDomainProperty.VERSION, PROPERTY_TYPE.getTypeClass(), ctor(PROPERTY_TYPE, NO_ARGS));
+        injectProperty(classNode, GriffonDomainProperty.VERSION, PROPERTY_TYPE.getTypeClass(), null);
     }
 
     protected void injectIdProperty(ClassNode classNode) {
-        injectProperty(classNode, GriffonDomainProperty.IDENTITY, PROPERTY_TYPE.getTypeClass(), ctor(PROPERTY_TYPE, NO_ARGS));
+        injectProperty(classNode, GriffonDomainProperty.IDENTITY, PROPERTY_TYPE.getTypeClass(), null);
     }
 }

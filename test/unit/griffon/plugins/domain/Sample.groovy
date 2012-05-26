@@ -6,9 +6,9 @@ import griffon.transform.Domain
 
 @Domain
 class Sample {
-    final StringValue name = new StringValue()
-    final StringValue lastName = new StringValue()
-    final IntegerValue num = new IntegerValue()
+    String name
+    String lastName
+    Integer num
 
     static constraints = {
         num(range: 30..40)

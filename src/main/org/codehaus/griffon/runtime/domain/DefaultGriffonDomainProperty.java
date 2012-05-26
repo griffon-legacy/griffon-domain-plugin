@@ -16,7 +16,6 @@
 
 package org.codehaus.griffon.runtime.domain;
 
-import griffon.plugins.domain.AtomicValue;
 import griffon.plugins.domain.GriffonDomainProperty;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
@@ -41,21 +40,10 @@ public class DefaultGriffonDomainProperty implements GriffonDomainProperty {
     }
 
     public Object getValue(Object owner) {
-        Object value = InvokerHelper.getProperty(owner, getName());
-        return isAtom() ? ((AtomicValue) value).getValue() : value;
+        return InvokerHelper.getProperty(owner, getName());
     }
 
     public void setValue(Object owner, Object value) {
-        if (isAtom()) {
-            AtomicValue atom = (AtomicValue) InvokerHelper.getProperty(owner, propertyDescriptor.getName());
-            // TODO: handle type conversion
-            atom.setValue(value);
-        } else {
-            InvokerHelper.setProperty(owner, propertyDescriptor.getName(), value);
-        }
-    }
-
-    public boolean isAtom() {
-        return AtomicValue.class.isAssignableFrom(getType());
+        InvokerHelper.setProperty(owner, propertyDescriptor.getName(), value);
     }
 }

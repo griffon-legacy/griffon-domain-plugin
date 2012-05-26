@@ -17,6 +17,7 @@ package org.codehaus.griffon.runtime.validation.constraints;
 import griffon.plugins.domain.atoms.BigDecimalValue;
 import griffon.plugins.domain.atoms.DoubleValue;
 import griffon.plugins.domain.atoms.FloatValue;
+import griffon.plugins.domain.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.util.GriffonClassUtils;
@@ -113,6 +114,10 @@ public class ScaleConstraint extends AbstractConstraint {
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
         BigDecimal bigDecimal;
+
+        if (propertyValue instanceof NumericAtomicValue) {
+            propertyValue = ((NumericAtomicValue) propertyValue).getValue();
+        }
 
         if (propertyValue instanceof Float) {
             bigDecimal = new BigDecimal(propertyValue.toString());

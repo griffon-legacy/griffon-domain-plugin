@@ -44,7 +44,7 @@ public class AbstractCommandObject extends AbstractObservable implements Command
     private final Map<String, GriffonDomainProperty> domainProperties = new LinkedHashMap<String, GriffonDomainProperty>();
 
     public AbstractCommandObject() {
-        this.errors = new DefaultErrors(getClass().getName());
+        this.errors = new DefaultErrors(getClass());
         this.pcs = new PropertyChangeSupport(this);
         ConstraintsEvaluator constraintsEvaluator = new DefaultConstraintsEvaluator();
         constrainedProperties.putAll(constraintsEvaluator.evaluate(getClass()));

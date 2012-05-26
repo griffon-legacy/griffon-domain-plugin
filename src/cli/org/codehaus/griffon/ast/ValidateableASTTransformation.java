@@ -130,12 +130,12 @@ public class ValidateableASTTransformation extends AbstractASTTransformation {
         injectInterface(declaringClass, VALIDATEABLE_TYPE);
 
         // add field:
-        // protected final Errors this$errors = new org.codehaus.griffon.runtime.validation.DefaultErrors(getClass().getName())
+        // protected final Errors this$errors = new org.codehaus.griffon.runtime.validation.DefaultErrors(getClass())
         FieldNode errorsField = declaringClass.addField(
                 "this$errors",
                 ACC_FINAL | ACC_PRIVATE | ACC_SYNTHETIC,
                 ERRORS_TYPE,
-                ctor(DEFAULT_ERRORS_TYPE, call(call(THIS, "getClass", NO_ARGS), "getName", NO_ARGS)));
+                ctor(DEFAULT_ERRORS_TYPE, call(THIS, "getClass", NO_ARGS)));
 
         // add method:
         // boolean validate() {

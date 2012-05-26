@@ -78,6 +78,9 @@ public class MaxSizeConstraint extends AbstractConstraint {
             length = Array.getLength(propertyValue);
         } else if (propertyValue instanceof Collection<?>) {
             length = ((Collection<?>) propertyValue).size();
+        } else if (propertyValue instanceof StringValue) {
+            String s = ((StringValue) propertyValue).stringValue();
+            length = s != null ? s.length() : 0;
         } else { // String
             length = ((String) propertyValue).length();
         }

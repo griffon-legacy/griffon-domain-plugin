@@ -82,7 +82,11 @@ public class MinConstraint extends AbstractConstraint {
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
-        if (minValue.compareTo(propertyValue) <= 0) {
+        if (propertyValue instanceof NumericAtomicValue) {
+            propertyValue = ((NumericAtomicValue) propertyValue).getValue();
+        }
+
+        if (null == propertyValue || minValue.compareTo(propertyValue) <= 0) {
             return;
         }
 

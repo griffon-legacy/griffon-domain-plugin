@@ -65,6 +65,11 @@ public class EmailConstraint extends AbstractConstraint {
 
         EmailValidator emailValidator = EmailValidator.getInstance();
         Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
+
+        if(propertyValue instanceof StringValue) {
+            propertyValue = ((StringValue) propertyValue).stringValue();
+        }
+
         String value = propertyValue.toString();
         if (StringUtils.isBlank(value)) {
             return;

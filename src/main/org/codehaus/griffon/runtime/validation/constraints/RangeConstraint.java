@@ -42,8 +42,8 @@ public class RangeConstraint extends AbstractConstraint {
      */
     public boolean supports(Class type) {
         return type != null && (Comparable.class.isAssignableFrom(type) ||
-                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type) ||
-                NumericAtomicValue.class.isAssignableFrom(type));
+                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type)/* ||
+                NumericAtomicValue.class.isAssignableFrom(type)*/);
     }
 
     /* (non-Javadoc)
@@ -78,14 +78,21 @@ public class RangeConstraint extends AbstractConstraint {
         Comparable from = range.getFrom();
         Comparable to = range.getTo();
 
-        if (from instanceof Number && propertyValue instanceof Number) {
-            // Upgrade the numbers to Long, so all integer types can be compared.
+        // Upgrade the numbers to Long, so all integer types can be compared.
+        if (from instanceof Number) {
             from = ((Number) from).longValue();
+        }
+        if (to instanceof Number) {
             to = ((Number) to).longValue();
+        }
+        if (propertyValue instanceof NumericAtomicValue) {
+            propertyValue = ((NumericAtomicValue) propertyValue).getValue();
+        }
+        if (propertyValue instanceof Number) {
             propertyValue = ((Number) propertyValue).longValue();
         }
 
-        if (from.compareTo(propertyValue) > 0) {
+        if (null == propertyValue || from.compareTo(propertyValue) > 0) {
             rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_RANGE_MESSAGE_CODE,
                     ConstrainedProperty.RANGE_CONSTRAINT + ConstrainedProperty.TOOSMALL_SUFFIX, args);
         } else if (to.compareTo(propertyValue) < 0) {
