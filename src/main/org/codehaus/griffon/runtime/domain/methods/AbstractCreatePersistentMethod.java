@@ -19,7 +19,7 @@ import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.plugins.domain.GriffonDomainProperty;
-import griffon.plugins.domain.methods.MakeMethod;
+import griffon.plugins.domain.methods.CreateMethod;
 import groovy.lang.MissingMethodException;
 
 import java.util.Map;
@@ -27,8 +27,8 @@ import java.util.Map;
 /**
  * @author Andres Almiray
  */
-public abstract class AbstractMakePersistentMethod extends AbstractPersistentStaticMethodInvocation implements MakeMethod {
-    public AbstractMakePersistentMethod(GriffonDomainHandler domainHandler) {
+public abstract class AbstractCreatePersistentMethod extends AbstractPersistentStaticMethodInvocation implements CreateMethod {
+    public AbstractCreatePersistentMethod(GriffonDomainHandler domainHandler) {
         super(domainHandler);
     }
 
@@ -37,17 +37,25 @@ public abstract class AbstractMakePersistentMethod extends AbstractPersistentSta
         if (arguments == null || arguments.length == 0) {
             return domainClass.newInstance();
         } else if (arguments[0] instanceof Map) {
-            return make(domainClass, (Map) arguments[0]);
+            return create(domainClass, (Map) arguments[0]);
         }
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
     }
 
-    protected GriffonDomain make(GriffonDomainClass domainClass, Map<String, Object> props) {
-        GriffonDomain instance = (GriffonDomain) domainClass.newInstance();
+    protected GriffonDomain create(GriffonDomainClass domainClass, Map<String, Object> props) {
+        GriffonDomain instance = createInstance(domainClass);
+        applyProperties(domainClass, instance, props);
+        return instance;
+    }
+
+    private GriffonDomain createInstance(GriffonDomainClass domainClass) {
+        return (GriffonDomain) domainClass.newInstance();
+    }
+
+    private void applyProperties(GriffonDomainClass domainClass, GriffonDomain instance, Map<String, Object> props) {
         for (GriffonDomainProperty property : domainClass.getProperties()) {
             Object value = props.get(property.getName());
             if (value != null) property.setValue(instance, value);
         }
-        return instance;
     }
 }

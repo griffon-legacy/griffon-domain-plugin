@@ -17,13 +17,16 @@ package griffon.plugins.domain.methods;
 
 import griffon.plugins.domain.GriffonDomain;
 
+import java.util.Map;
+
 /**
  * @author Andres Almiray
  */
-public interface FetchMethod extends StaticMethodInvocation {
-    String METHOD_NAME = "fetch";
+public interface CreateMethod extends StaticMethodInvocation {
+    String METHOD_NAME = "create";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Object.class)
+            new MethodSignature(true, GriffonDomain.class, METHOD_NAME),
+            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class)
     };
 }

@@ -18,25 +18,25 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
-import griffon.plugins.domain.methods.FetchMethod;
+import griffon.plugins.domain.methods.GetMethod;
 import groovy.lang.MissingMethodException;
 
 /**
  * @author Andres Almiray
  */
-public abstract class AbstractFetchPersistentMethod extends AbstractPersistentStaticMethodInvocation implements FetchMethod {
-    public AbstractFetchPersistentMethod(GriffonDomainHandler griffonDomainHandler) {
+public abstract class AbstractGetPersistentMethod extends AbstractPersistentStaticMethodInvocation implements GetMethod {
+    public AbstractGetPersistentMethod(GriffonDomainHandler griffonDomainHandler) {
         super(griffonDomainHandler);
     }
 
     protected final Object invokeInternal(GriffonDomainClass domainClass, String methodName, Object[] arguments) {
         if (arguments.length == 1) {
-            return fetch(domainClass, arguments[0]);
+            return get(domainClass, arguments[0]);
         }
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
     }
 
-    protected GriffonDomain fetch(GriffonDomainClass domainClass, Object key) {
+    protected GriffonDomain get(GriffonDomainClass domainClass, Object key) {
         return null;
     }
 }

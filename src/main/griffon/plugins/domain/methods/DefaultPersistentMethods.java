@@ -22,12 +22,12 @@ package griffon.plugins.domain.methods;
 public enum DefaultPersistentMethods {
     COUNT(CountMethod.METHOD_SIGNATURES),
     COUNT_BY(CountByMethod.METHOD_NAME, CountByMethod.METHOD_SIGNATURES),
-    MAKE(MakeMethod.METHOD_SIGNATURES),
+    CREATE(CreateMethod.METHOD_SIGNATURES),
     SAVE(SaveMethod.METHOD_SIGNATURES),
     DELETE(DeleteMethod.METHOD_SIGNATURES),
-    FETCH(FetchMethod.METHOD_SIGNATURES),
-    EXISTS(FetchMethod.METHOD_SIGNATURES),
-    FETCH_ALL(FetchAllMethod.METHOD_NAME, FetchMethod.METHOD_SIGNATURES),
+    GET(GetMethod.METHOD_SIGNATURES),
+    EXISTS(GetMethod.METHOD_SIGNATURES),
+    GET_ALL(GetAllMethod.METHOD_NAME, GetMethod.METHOD_SIGNATURES),
     LIST(ListMethod.METHOD_SIGNATURES),
     FIND(FindMethod.METHOD_SIGNATURES),
     FIND_BY(FindByMethod.METHOD_NAME, FindByMethod.METHOD_SIGNATURES),
@@ -35,7 +35,9 @@ public enum DefaultPersistentMethods {
     FIND_ALL(FindAllMethod.METHOD_NAME, FindAllMethod.METHOD_SIGNATURES),
     FIND_ALL_BY(FindAllByMethod.METHOD_NAME, FindAllByMethod.METHOD_SIGNATURES),
     FIND_ALL_WHERE(FindAllWhereMethod.METHOD_NAME, FindAllMethod.METHOD_SIGNATURES),
-    WITH_CRITERIA(WithCriteriaMethod.METHOD_NAME, WithCriteriaMethod.METHOD_SIGNATURES);
+    WITH_CRITERIA(WithCriteriaMethod.METHOD_NAME, WithCriteriaMethod.METHOD_SIGNATURES),
+    FIND_OR_CREATE_BY(FindOrCreateByMethod.METHOD_NAME, FindOrCreateByMethod.METHOD_SIGNATURES),
+    FIND_OR_CREATE_WHERE(FindOrCreateWhereMethod.METHOD_NAME, FindOrCreateWhereMethod.METHOD_SIGNATURES);
 
     // COUNT_BY('countBy'),
     // FIND_BY('findBy'),

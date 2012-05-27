@@ -15,18 +15,15 @@
  */
 package griffon.plugins.domain.methods;
 
-import java.util.Collection;
-import java.util.List;
+import griffon.plugins.domain.GriffonDomain;
 
 /**
  * @author Andres Almiray
  */
-public interface FetchAllMethod extends StaticMethodInvocation {
-    String METHOD_NAME = "fetchAll";
+public interface GetMethod extends StaticMethodInvocation {
+    String METHOD_NAME = "get";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Collection.class, METHOD_NAME),
-            new MethodSignature(true, Collection.class, METHOD_NAME, List.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Object[].class)
+            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Object.class)
     };
 }

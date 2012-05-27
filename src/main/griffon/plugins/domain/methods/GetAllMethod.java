@@ -15,18 +15,18 @@
  */
 package griffon.plugins.domain.methods;
 
-import griffon.plugins.domain.GriffonDomain;
-
-import java.util.Map;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Andres Almiray
  */
-public interface MakeMethod extends StaticMethodInvocation {
-    String METHOD_NAME = "make";
+public interface GetAllMethod extends StaticMethodInvocation {
+    String METHOD_NAME = "getAll";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class)
+            new MethodSignature(true, Collection.class, METHOD_NAME),
+            new MethodSignature(true, Collection.class, METHOD_NAME, List.class),
+            new MethodSignature(true, Collection.class, METHOD_NAME, Object[].class)
     };
 }

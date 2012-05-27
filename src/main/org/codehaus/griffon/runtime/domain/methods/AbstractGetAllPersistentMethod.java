@@ -18,7 +18,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
-import griffon.plugins.domain.methods.FetchAllMethod;
+import griffon.plugins.domain.methods.GetAllMethod;
 import groovy.lang.MissingMethodException;
 
 import java.util.Collection;
@@ -28,36 +28,36 @@ import java.util.List;
 /**
  * @author Andres Almiray
  */
-public abstract class AbstractFetchAllPersistentMethod extends AbstractPersistentStaticMethodInvocation implements FetchAllMethod {
-    public AbstractFetchAllPersistentMethod(GriffonDomainHandler griffonDomainHandler) {
+public abstract class AbstractGetAllPersistentMethod extends AbstractPersistentStaticMethodInvocation implements GetAllMethod {
+    public AbstractGetAllPersistentMethod(GriffonDomainHandler griffonDomainHandler) {
         super(griffonDomainHandler);
     }
 
     @SuppressWarnings("unchecked")
     protected final Object invokeInternal(GriffonDomainClass domainClass, String methodName, Object[] arguments) {
         if (arguments.length == 0) {
-            return fetchAll(domainClass);
+            return getAll(domainClass);
         }
 
         final Object arg = arguments[0];
         if (arg instanceof List) {
-            return fetchAllByIdentities(domainClass, (List) arg);
+            return getAllByIdentities(domainClass, (List) arg);
         } else if (arg instanceof Object[]) {
-            return fetchAllByIdentities(domainClass, (Object[]) arg);
+            return getAllByIdentities(domainClass, (Object[]) arg);
         }
 
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
     }
 
-    protected Collection<GriffonDomain> fetchAll(GriffonDomainClass domainClass) {
+    protected Collection<GriffonDomain> getAll(GriffonDomainClass domainClass) {
         return Collections.<GriffonDomain>emptyList();
     }
 
-    protected Collection<GriffonDomain> fetchAllByIdentities(GriffonDomainClass domainClass, List<Object> identities) {
+    protected Collection<GriffonDomain> getAllByIdentities(GriffonDomainClass domainClass, List<Object> identities) {
         return Collections.<GriffonDomain>emptyList();
     }
 
-    protected Collection<GriffonDomain> fetchAllByIdentities(GriffonDomainClass domainClass, Object[] identities) {
+    protected Collection<GriffonDomain> getAllByIdentities(GriffonDomainClass domainClass, Object[] identities) {
         return Collections.<GriffonDomain>emptyList();
     }
 }

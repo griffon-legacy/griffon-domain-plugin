@@ -54,10 +54,10 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         Collection<MethodSignature> signatures = new ArrayList<MethodSignature>();
         signatures.addAll(asList(SaveMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(DeleteMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(MakeMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FetchMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(CreateMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(GetMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(ExistsMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FetchAllMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(GetAllMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(CountMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(CountByMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(ListMethod.METHOD_SIGNATURES));
@@ -68,6 +68,8 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         signatures.addAll(asList(FindAllByMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindAllWhereMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(WithCriteriaMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(FindOrCreateByMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(FindOrCreateWhereMethod.METHOD_SIGNATURES));
         return signatures.toArray(new MethodSignature[signatures.size()]);
     }
 
@@ -88,11 +90,11 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
 
     protected Map<? extends String, ? extends StaticMethodInvocation> getStaticMethods() {
         Map<String, StaticMethodInvocation> staticMethods = new LinkedHashMap<String, StaticMethodInvocation>();
-        staticMethods.put(MakeMethod.METHOD_NAME, new MakeMethod(this));
+        staticMethods.put(CreateMethod.METHOD_NAME, new CreateMethod(this));
         staticMethods.put(ListMethod.METHOD_NAME, new ListMethod(this));
-        staticMethods.put(FetchMethod.METHOD_NAME, new FetchMethod(this));
+        staticMethods.put(GetMethod.METHOD_NAME, new GetMethod(this));
         staticMethods.put(ExistsMethod.METHOD_NAME, new ExistsMethod(this));
-        staticMethods.put(FetchAllMethod.METHOD_NAME, new FetchAllMethod(this));
+        staticMethods.put(GetAllMethod.METHOD_NAME, new GetAllMethod(this));
         staticMethods.put(CountMethod.METHOD_NAME, new CountMethod(this));
         staticMethods.put(CountByMethod.METHOD_NAME, new CountByMethod(this));
         staticMethods.put(FindMethod.METHOD_NAME, new FindMethod(this));
@@ -103,6 +105,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         staticMethods.put(FindAllWhereMethod.METHOD_NAME, new FindAllWhereMethod(this));
         staticMethods.put(WithCriteriaMethod.METHOD_NAME, new WithCriteriaMethod(this));
         staticMethods.put(FindOrCreateByMethod.METHOD_NAME, new FindOrCreateByMethod(this));
+        staticMethods.put(FindOrCreateWhereMethod.METHOD_NAME, new FindOrCreateWhereMethod(this));
         return staticMethods;
     }
 
@@ -201,19 +204,19 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
     }
 
-    private class MakeMethod extends AbstractMakePersistentMethod {
-        public MakeMethod(GriffonDomainHandler domainHandler) {
+    private class CreateMethod extends AbstractCreatePersistentMethod {
+        public CreateMethod(GriffonDomainHandler domainHandler) {
             super(domainHandler);
         }
     }
 
-    private class FetchMethod extends AbstractFetchPersistentMethod {
-        public FetchMethod(GriffonDomainHandler griffonDomainHandler) {
+    private class GetMethod extends AbstractGetPersistentMethod {
+        public GetMethod(GriffonDomainHandler griffonDomainHandler) {
             super(griffonDomainHandler);
         }
 
         @Override
-        protected GriffonDomain fetch(GriffonDomainClass domainClass, Object key) {
+        protected GriffonDomain get(GriffonDomainClass domainClass, Object key) {
             return datasetOf(domainClass).fetch(key);
         }
     }
@@ -229,18 +232,18 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
     }
 
-    private class FetchAllMethod extends AbstractFetchAllPersistentMethod {
-        public FetchAllMethod(GriffonDomainHandler griffonDomainHandler) {
+    private class GetAllMethod extends AbstractGetAllPersistentMethod {
+        public GetAllMethod(GriffonDomainHandler griffonDomainHandler) {
             super(griffonDomainHandler);
         }
 
         @Override
-        protected Collection<GriffonDomain> fetchAll(GriffonDomainClass domainClass) {
+        protected Collection<GriffonDomain> getAll(GriffonDomainClass domainClass) {
             return datasetOf(domainClass).list();
         }
 
         @Override
-        protected Collection<GriffonDomain> fetchAllByIdentities(GriffonDomainClass domainClass, List<Object> identities) {
+        protected Collection<GriffonDomain> getAllByIdentities(GriffonDomainClass domainClass, List<Object> identities) {
             List<GriffonDomain> entities = new ArrayList<GriffonDomain>();
             if (identities != null && identities.size() > 0) {
                 ConcurrentHashMapDatastore.Dataset dataset = datasetOf(domainClass);
@@ -256,7 +259,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
 
         @Override
-        protected Collection<GriffonDomain> fetchAllByIdentities(GriffonDomainClass domainClass, Object[] identities) {
+        protected Collection<GriffonDomain> getAllByIdentities(GriffonDomainClass domainClass, Object[] identities) {
             List<GriffonDomain> entities = new ArrayList<GriffonDomain>();
             if (identities != null && identities.length > 0) {
                 ConcurrentHashMapDatastore.Dataset dataset = datasetOf(domainClass);
@@ -419,6 +422,27 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
                 Map<String, Object> props = criterionToMap(criterion);
                 for (GriffonDomainProperty property : domainClass.getProperties()) {
                     Object value = props.get(property.getName());
+                    if (value != null) property.setValue(domain, value);
+                }
+            }
+
+            return domain;
+        }
+    }
+
+    private class FindOrCreateWhereMethod extends AbstractFindOrCreateWherePersistentMethod {
+        private FindOrCreateWhereMethod(GriffonDomainHandler griffonDomainHandler) {
+            super(griffonDomainHandler);
+        }
+
+        @Override
+        protected GriffonDomain findOrCreateByParams(GriffonDomainClass domainClass, Map<String, Object> params) {
+            GriffonDomain domain = datasetOf(domainClass).first(params);
+
+            if (null == domain) {
+                domain = (GriffonDomain) domainClass.newInstance();
+                for (GriffonDomainProperty property : domainClass.getProperties()) {
+                    Object value = params.get(property.getName());
                     if (value != null) property.setValue(domain, value);
                 }
             }

@@ -19,11 +19,11 @@ class SampleTests extends GriffonUnitTestCase {
     }
 
     void testDynamicMethodInjection() {
-        Sample one = Sample.make(name: 'Andres', lastName: 'Almiray', num: 30).save()
+        Sample one = Sample.create(name: 'Andres', lastName: 'Almiray', num: 30).save()
         assert Sample.findBy('Name', ['Andres']).lastName == 'Almiray'
         assert Sample.findBy('NameAndLastName', ['Andres', 'Almiray']).lastName == 'Almiray'
         assert !Sample.findBy('NameAndLastName', 'Dierk', 'Koenig')
-        Sample.make(name: 'Dierk', lastName: 'Koenig', num: 40).save()
+        Sample.create(name: 'Dierk', lastName: 'Koenig', num: 40).save()
         assert Sample.findBy('NameAndLastName', 'Dierk', 'Koenig').lastName == 'Koenig'
         assert Sample.list().name == ['Andres', 'Dierk']
         assert Sample.count() == 2
@@ -31,13 +31,13 @@ class SampleTests extends GriffonUnitTestCase {
         assert Sample.list(max: 1, offset: 1).name == ['Dierk']
         assert Sample.list(sort: 'num', order: 'asc').num == [30, 40]
         assert Sample.list(sort: 'num', order: 'desc').num == [40, 30]
-        Sample.fetch(2).delete()
+        Sample.get(2).delete()
         assert Sample.count() == 1
         assert Sample.list().name == ['Andres']
 
         assert Sample.findByName('Andres').lastName == 'Almiray'
-        Sample.make(name: 'Dierk', lastName: 'Koenig', num: 40).save()
-        Sample.make(name: 'Guillaume', lastName: 'Laforge', num: 30).save()
+        Sample.create(name: 'Dierk', lastName: 'Koenig', num: 40).save()
+        Sample.create(name: 'Guillaume', lastName: 'Laforge', num: 30).save()
         assert Sample.countByNum(30) == 2
         assert Sample.findAllByNum(30).name == ['Andres', 'Guillaume']
 
@@ -53,18 +53,18 @@ class SampleTests extends GriffonUnitTestCase {
         one.griffonClass.constrainedProperties.each {println it}
         println '--------------'
 
-        assert !Sample.make().save()
-        assert Sample.make().save(validate: false)
+        assert !Sample.create().save()
+        assert Sample.create().save(validate: false)
         shouldFail(ValidationException) {
-            assert !Sample.make().save(failOnError: true)
+            assert !Sample.create().save(failOnError: true)
         }
 
         assert Sample.findByName('Dierk')
-        Sample dierk2 = Sample.make(name: 'Dierk', lastName: 'Koenig', num: 35)
+        Sample dierk2 = Sample.create(name: 'Dierk', lastName: 'Koenig', num: 35)
         assert !dierk2.save()
         dierk2.errors.allErrors.each { println it }
         shouldFail(ValidationException) {
-            assert !Sample.make(name: 'Dierk', lastName: 'Koenig', num: 35).save(failOnError: true)
+            assert !Sample.create(name: 'Dierk', lastName: 'Koenig', num: 35).save(failOnError: true)
         }
 
         def command = new LoginCommand()
