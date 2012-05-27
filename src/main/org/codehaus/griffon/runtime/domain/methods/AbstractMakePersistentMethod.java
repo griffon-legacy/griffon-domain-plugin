@@ -15,7 +15,10 @@
  */
 package org.codehaus.griffon.runtime.domain.methods;
 
-import griffon.plugins.domain.*;
+import griffon.plugins.domain.GriffonDomain;
+import griffon.plugins.domain.GriffonDomainClass;
+import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.domain.methods.MakeMethod;
 import groovy.lang.MissingMethodException;
 

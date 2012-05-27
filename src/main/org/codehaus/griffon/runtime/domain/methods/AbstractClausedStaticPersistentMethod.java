@@ -18,6 +18,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.plugins.domain.GriffonDomainProperty;
+import griffon.plugins.domain.exceptions.InvalidOperatorException;
 import griffon.plugins.domain.orm.Criterion;
 import griffon.plugins.domain.orm.Restrictions;
 import griffon.util.GriffonClassUtils;
@@ -52,6 +53,10 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
         }
     }
 
+    protected boolean isStrict() {
+        return false;
+    }
+
     protected Object invokeInternal(final GriffonDomainClass domainClass, String methodName, Object[] arguments) {
         methodName = normalizeMethodName(methodName, arguments);
         arguments = normalizeArguments(arguments);
@@ -78,7 +83,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
                 booleanProperty = booleanProperty.substring(3);
                 arg = Boolean.FALSE;
             }
-            GriffonMethodExpression booleanExpression = GriffonMethodExpression.create(domainClass, booleanProperty);
+            GriffonMethodExpression booleanExpression = GriffonMethodExpression.create(domainClass, booleanProperty, isStrict());
             booleanExpression.setArguments(new Object[]{arg});
             expressions.add(booleanExpression);
             querySequence = match.group(4);
@@ -104,7 +109,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
                 // calculating the number of arguments required for the expression
                 int argumentCursor = 0;
                 for (String queryParameter : queryParameters) {
-                    GriffonMethodExpression currentExpression = GriffonMethodExpression.create(domainClass, queryParameter);
+                    GriffonMethodExpression currentExpression = GriffonMethodExpression.create(domainClass, queryParameter, isStrict());
                     totalRequiredArguments += currentExpression.argumentsRequired;
                     // populate the arguments into the GriffonExpression from the argument list
                     Object[] currentArguments = new Object[currentExpression.argumentsRequired];
@@ -130,7 +135,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
 
         // otherwise there is only one expression
         if (!containsOperator) {
-            GriffonMethodExpression solo = GriffonMethodExpression.create(domainClass, querySequence);
+            GriffonMethodExpression solo = GriffonMethodExpression.create(domainClass, querySequence, isStrict());
 
             if (solo.argumentsRequired > arguments.length)
                 throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
@@ -293,7 +298,25 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
             }
         }
 
-        protected static GriffonMethodExpression create(GriffonDomainClass domainClass, String queryParameter) {
+        protected static GriffonMethodExpression create(GriffonDomainClass domainClass, String queryParameter, boolean strict) {
+            if (strict) {
+                if (queryParameter.endsWith(EQUAL)) {
+                    return new GriffonMethodExpression(
+                            domainClass,
+                            calcPropertyName(queryParameter, null),
+                            EQUAL,
+                            1,
+                            isNegation(queryParameter, EQUAL)) {
+                        Criterion createCriterion() {
+                            if (arguments[0] == null) return Restrictions.isNull(this.propertyName);
+                            return Restrictions.eq(this.propertyName, this.arguments[0]);
+                        }
+                    };
+                } else {
+                    throw new InvalidOperatorException("Operator " + queryParameter + " is not allowed!");
+                }
+            }
+
             if (queryParameter.endsWith(LESS_THAN_OR_EQUAL)) {
                 return new GriffonMethodExpression(
                         domainClass,

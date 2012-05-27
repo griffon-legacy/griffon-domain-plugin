@@ -102,6 +102,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         staticMethods.put(FindAllByMethod.METHOD_NAME, new FindAllByMethod(this));
         staticMethods.put(FindAllWhereMethod.METHOD_NAME, new FindAllWhereMethod(this));
         staticMethods.put(WithCriteriaMethod.METHOD_NAME, new WithCriteriaMethod(this));
+        staticMethods.put(FindOrCreateByMethod.METHOD_NAME, new FindOrCreateByMethod(this));
         return staticMethods;
     }
 
@@ -401,6 +402,28 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         @Override
         protected Object findBy(GriffonDomainClass domainClass, String methodName, Criterion criterion) {
             return datasetOf(domainClass).first(criterion);
+        }
+    }
+
+    private class FindOrCreateByMethod extends AbstractFindOrCreateByPersistentMethod {
+        public FindOrCreateByMethod(GriffonDomainHandler griffonDomainHandler) {
+            super(griffonDomainHandler);
+        }
+
+        @Override
+        protected Object findOrCreateBy(GriffonDomainClass domainClass, String methodName, Criterion criterion) {
+            GriffonDomain domain = datasetOf(domainClass).first(criterion);
+
+            if (null == domain) {
+                domain = (GriffonDomain) domainClass.newInstance();
+                Map<String, Object> props = criterionToMap(criterion);
+                for (GriffonDomainProperty property : domainClass.getProperties()) {
+                    Object value = props.get(property.getName());
+                    if (value != null) property.setValue(domain, value);
+                }
+            }
+
+            return domain;
         }
     }
 
