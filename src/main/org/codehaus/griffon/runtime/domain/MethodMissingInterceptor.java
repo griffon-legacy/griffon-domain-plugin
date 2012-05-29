@@ -111,7 +111,7 @@ public class MethodMissingInterceptor {
         return new ClosureStaticMetaMethod(methodName, clazz, new Closure<Object>(this) {
             protected Object doCall(Object[] args) {
                 try {
-                    return domainHandler.invokeStatic(clazz, dynaMethodName, args);
+                    return domainHandler.invokeStaticMethod(clazz, dynaMethodName, args);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

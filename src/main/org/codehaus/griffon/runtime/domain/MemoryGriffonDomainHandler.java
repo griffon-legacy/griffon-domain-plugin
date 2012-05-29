@@ -201,7 +201,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
 
         @Override
-        protected GriffonDomain delete(GriffonDomainClass domainClass, GriffonDomain target) {
+        protected GriffonDomain delete(GriffonDomainClass domainClass, GriffonDomain target, Map<String, Object> params) {
             return datasetOf(domainClass).remove(target);
         }
     }

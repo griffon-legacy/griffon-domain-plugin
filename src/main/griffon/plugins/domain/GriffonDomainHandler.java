@@ -27,7 +27,7 @@ public interface GriffonDomainHandler extends ApplicationHandler {
 
     MethodSignature[] getMethodSignatures();
 
-    Object invokeInstance(Object target, String methodName, Object... args);
+    Object invokeInstanceMethod(Object target, String methodName, Object... args);
 
-    Object invokeStatic(Class<GriffonDomain> clazz, String methodName, Object... args);
+    Object invokeStaticMethod(Class<GriffonDomain> clazz, String methodName, Object... args);
 }

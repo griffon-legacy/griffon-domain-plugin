@@ -94,7 +94,7 @@ public abstract class GriffonDomainClassInjector {
     }
 
     private Statement makeMethodBody(ClassNode classNode, MethodSignature methodSignature, Parameter[] parameters) {
-        String invokeMethod = methodSignature.isStatic() ? "invokeStatic" : "invokeInstance";
+        String invokeMethod = methodSignature.isStatic() ? "invokeStaticMethod" : "invokeInstanceMethod";
         Expression[] args = new Expression[parameters.length + 2];
         args[0] = methodSignature.isStatic() ? new ClassExpression(classNode) : VariableExpression.THIS_EXPRESSION;
         args[1] = new ConstantExpression(methodSignature.getMethodName());

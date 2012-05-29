@@ -56,7 +56,7 @@ public abstract class AbstractGriffonDomainHandler implements GriffonDomainHandl
         return methodSignatures;
     }
 
-    public final Object invokeInstance(Object target, String methodName, Object... args) {
+    public final Object invokeInstanceMethod(Object target, String methodName, Object... args) {
         try {
             InstanceMethodInvocation method = instanceMethods.get(methodName);
             if (method == null) {
@@ -75,7 +75,7 @@ public abstract class AbstractGriffonDomainHandler implements GriffonDomainHandl
         }
     }
 
-    public final Object invokeStatic(Class<GriffonDomain> clazz, String methodName, Object... args) {
+    public final Object invokeStaticMethod(Class<GriffonDomain> clazz, String methodName, Object... args) {
         try {
             StaticMethodInvocation method = staticMethods.get(methodName);
             if (method == null) {

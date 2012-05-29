@@ -21,6 +21,9 @@ import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.plugins.domain.methods.DeleteMethod;
 import groovy.lang.MissingMethodException;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * @author Andres Almiray
  */
@@ -30,17 +33,27 @@ public abstract class AbstractDeletePersistentMethod extends AbstractPersistentI
     }
 
     protected final Object invokeInternal(GriffonDomainClass domainClass, GriffonDomain target, String methodName, Object[] arguments) {
-        if (target == null || (arguments != null && arguments.length > 0)) {
+        if (target == null) {
             throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
         }
 
+        Map<String, Object> params = new LinkedHashMap<String, Object>();
+
+        if (arguments != null) {
+            if (arguments.length == 1 && arguments[0] instanceof Map) {
+                params = (Map) arguments[0];
+            } else if(arguments.length != 0) {
+                throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
+            }
+        }
+
         target.beforeDelete();
-        GriffonDomain entity = delete(domainClass, target);
+        GriffonDomain entity = delete(domainClass, target, params);
         target.afterDelete();
         return entity;
     }
 
-    protected GriffonDomain delete(GriffonDomainClass domainClass, GriffonDomain target) {
+    protected GriffonDomain delete(GriffonDomainClass domainClass, GriffonDomain target, Map<String, Object> params) {
         return target;
     }
 }
