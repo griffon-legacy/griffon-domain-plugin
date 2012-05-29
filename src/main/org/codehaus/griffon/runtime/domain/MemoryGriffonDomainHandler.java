@@ -70,6 +70,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         signatures.addAll(asList(WithCriteriaMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindOrCreateByMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindOrCreateWhereMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(ListOrderByMethod.METHOD_SIGNATURES));
         return signatures.toArray(new MethodSignature[signatures.size()]);
     }
 
@@ -106,6 +107,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         staticMethods.put(WithCriteriaMethod.METHOD_NAME, new WithCriteriaMethod(this));
         staticMethods.put(FindOrCreateByMethod.METHOD_NAME, new FindOrCreateByMethod(this));
         staticMethods.put(FindOrCreateWhereMethod.METHOD_NAME, new FindOrCreateWhereMethod(this));
+        staticMethods.put(ListOrderByMethod.METHOD_NAME, new ListOrderByMethod(this));
         return staticMethods;
     }
 
@@ -293,6 +295,19 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
             } else {
                 return dataset.list(options);
             }
+        }
+    }
+
+    private class ListOrderByMethod extends AbstractListOrderByPersistentMethod {
+        protected ListOrderByMethod(GriffonDomainHandler griffonDomainHandler) {
+            super(griffonDomainHandler);
+        }
+
+        @Override
+        protected Collection listOrderBy(GriffonDomainClass domainClass, String propertyName, Map<String, Object> params) {
+            List<GriffonDomain> entities = datasetOf(domainClass).list(params);
+            Collections.sort(entities, new GriffonDomain.Comparator(propertyName, (String) params.get(ListOrderByMethod.ORDER)));
+            return entities;
         }
     }
 

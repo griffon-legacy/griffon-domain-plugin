@@ -22,9 +22,9 @@ import java.util.List;
  * @author Andres Almiray
  */
 public interface FindAllByMethod extends StaticDynamicMethodInvocation {
-    public static final String OPERATOR_OR = "Or";
-    public static final String OPERATOR_AND = "And";
-    public static final String[] OPERATORS = new String[]{OPERATOR_AND, OPERATOR_OR};
+    final String OPERATOR_OR = "Or";
+    final String OPERATOR_AND = "And";
+    final String[] OPERATORS = new String[]{OPERATOR_AND, OPERATOR_OR};
 
     String METHOD_NAME = "findAllBy";
 

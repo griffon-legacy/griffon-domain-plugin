@@ -18,10 +18,7 @@ package org.codehaus.griffon.runtime.domain;
 
 import griffon.core.GriffonClass;
 import griffon.plugins.domain.GriffonDomainHandler;
-import griffon.plugins.domain.methods.CountByMethod;
-import griffon.plugins.domain.methods.FindAllByMethod;
-import griffon.plugins.domain.methods.FindByMethod;
-import griffon.plugins.domain.methods.MethodSignature;
+import griffon.plugins.domain.methods.*;
 import griffon.util.ApplicationHolder;
 import groovy.lang.Closure;
 import groovy.lang.ExpandoMetaClass;
@@ -51,7 +48,16 @@ public class MethodMissingInterceptor {
         this.clazz = clazz;
         this.domainHandler = domainHandler;
 
-        for (String methodName : asList(FindByMethod.METHOD_NAME, FindAllByMethod.METHOD_NAME, CountByMethod.METHOD_NAME)) {
+        List<String> methodNames = asList(
+                FindByMethod.METHOD_NAME,
+                FindAllByMethod.METHOD_NAME,
+                CountByMethod.METHOD_NAME,
+                ListOrderByMethod.METHOD_NAME,
+                FindOrCreateByMethod.METHOD_NAME,
+                FindOrSaveByMethod.METHOD_NAME,
+                FindOrCreateWhereMethod.METHOD_NAME,
+                FindOrSaveWhereMethod.METHOD_NAME);
+        for (String methodName : methodNames) {
             inner:
             for (MethodSignature methodSignature : domainHandler.getMethodSignatures()) {
                 if (methodName.equals(methodSignature.getMethodName())) {

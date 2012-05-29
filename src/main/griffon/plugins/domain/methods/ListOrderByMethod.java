@@ -15,20 +15,23 @@
  */
 package griffon.plugins.domain.methods;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Andres Almiray
  */
-public interface CountByMethod extends StaticDynamicMethodInvocation {
-    final String OPERATOR_OR = "Or";
-    final String OPERATOR_AND = "And";
-    final String[] OPERATORS = new String[]{OPERATOR_AND, OPERATOR_OR};
+public interface ListOrderByMethod extends StaticDynamicMethodInvocation {
+    String METHOD_NAME = "listOrderBy";
 
-    String METHOD_NAME = "countBy";
+    String MAX = "max";
+    String OFFSET = "offset";
+    String ORDER = "order";
+    String ASC = "asc";
+    String DESC = "desc";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Integer.TYPE, METHOD_NAME, String.class, Object[].class),
-            new MethodSignature(true, Integer.TYPE, METHOD_NAME, String.class, List.class)
+            new MethodSignature(true, Collection.class, METHOD_NAME, String.class),
+            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Map.class)
     };
 }

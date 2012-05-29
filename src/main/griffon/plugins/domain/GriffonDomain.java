@@ -53,6 +53,10 @@ public interface GriffonDomain extends GriffonArtifact, Validateable {
             this(propertyName, Order.ASC);
         }
 
+        public Comparator(String propertyName, String order) {
+            this(propertyName, Order.valueOf(order != null ? order.toUpperCase() : "ASC"));
+        }
+
         public Comparator(String propertyName, Order order) {
             this.propertyName = propertyName;
             this.order = order;

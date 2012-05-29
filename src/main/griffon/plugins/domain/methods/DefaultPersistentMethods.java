@@ -29,6 +29,7 @@ public enum DefaultPersistentMethods {
     EXISTS(GetMethod.METHOD_SIGNATURES),
     GET_ALL(GetAllMethod.METHOD_NAME, GetMethod.METHOD_SIGNATURES),
     LIST(ListMethod.METHOD_SIGNATURES),
+    LIST_ORDER_BY(ListOrderByMethod.METHOD_SIGNATURES),
     FIND(FindMethod.METHOD_SIGNATURES),
     FIND_BY(FindByMethod.METHOD_NAME, FindByMethod.METHOD_SIGNATURES),
     FIND_WHERE(FindWhereMethod.METHOD_NAME, FindWhereMethod.METHOD_SIGNATURES),

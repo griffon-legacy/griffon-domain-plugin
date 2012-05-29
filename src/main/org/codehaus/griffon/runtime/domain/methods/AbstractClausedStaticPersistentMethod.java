@@ -30,11 +30,11 @@ import org.codehaus.groovy.runtime.typehandling.GroovyCastException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static griffon.util.GriffonExceptionHandler.sanitize;
+import static griffon.util.GriffonNameUtils.uncapitalize;
 
 /**
  * @author Andres Almiray
@@ -497,8 +497,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
                 int i = propName.lastIndexOf(NOT);
                 propName = propName.substring(0, i);
             }
-            return propName.substring(0, 1).toLowerCase(Locale.ENGLISH)
-                    + propName.substring(1);
+            return uncapitalize(propName);
         }
     }
 }
