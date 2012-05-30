@@ -38,39 +38,35 @@ public abstract class AbstractFindAllPersistentMethod extends AbstractPersistent
 
     @SuppressWarnings("unchecked")
     protected Object invokeInternal(GriffonDomainClass domainClass, String methodName, Object[] arguments) {
-        if (arguments.length == 0) {
-            return findAll(domainClass);
-        }
-        final Object arg = arguments[0];
-        if (arg instanceof Criterion) {
-            if (arguments.length == 1) {
-                return findByCriterion(domainClass, (Criterion) arg, Collections.<String, Object>emptyMap());
-            } else if (arguments[1] instanceof Map) {
-                return findByCriterion(domainClass, (Criterion) arg, (Map) arguments[1]);
+        if (arguments.length == 1) {
+            Map<String, Object> options = Collections.emptyMap();
+            final Object arg1 = arguments[0];
+            if (arg1 instanceof Criterion) {
+                return findByCriterion(domainClass, (Criterion) arg1, options);
+            } else if (arg1 instanceof Closure) {
+                return findByCriterion(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arg1), options);
+            } else if (domainClass.getClazz().isAssignableFrom(arg1.getClass())) {
+                return findByExample(domainClass, arg1, options);
             }
-        } else if (arg instanceof Closure) {
-            return findByCriterion(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arg), Collections.<String, Object>emptyMap());
-        } else if (arg instanceof Map) {
-            if (arguments.length == 1) {
-                return findByProperties(domainClass, (Map) arg);
-            } else if (arguments[1] instanceof Closure) {
-                return findByCriterion(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arguments[1]), (Map) arg);
+        } else if (arguments.length == 2) {
+            final Object arg1 = arguments[0];
+            final Object arg2 = arguments[1];
+
+            if (arg1 instanceof Map && arg2 instanceof Closure) {
+                return findByCriterion(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arg2), (Map) arg1);
+            } else if (arg2 instanceof Map) {
+                if (arg1 instanceof Criterion) {
+                    return findByCriterion(domainClass, (Criterion) arg1, (Map) arg2);
+                } else if (domainClass.getClazz().isAssignableFrom(arg1.getClass())) {
+                    return findByExample(domainClass, arg1, (Map) arg2);
+                }
             }
-        } else if (domainClass.getClazz().isAssignableFrom(arg.getClass())) {
-            return findByExample(domainClass, arg);
         }
+
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
     }
 
-    protected Collection<GriffonDomain> findAll(GriffonDomainClass domainClass) {
-        return Collections.<GriffonDomain>emptyList();
-    }
-
-    protected Collection<GriffonDomain> findByProperties(GriffonDomainClass domainClass, Map<String, Object> properties) {
-        return Collections.<GriffonDomain>emptyList();
-    }
-
-    protected Collection<GriffonDomain> findByExample(GriffonDomainClass domainClass, Object example) {
+    protected Collection<GriffonDomain> findByExample(GriffonDomainClass domainClass, Object example, Map<String, Object> options) {
         return Collections.<GriffonDomain>emptyList();
     }
 

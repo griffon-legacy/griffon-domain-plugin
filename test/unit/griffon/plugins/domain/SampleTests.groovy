@@ -45,6 +45,9 @@ class SampleTests extends GriffonUnitTestCase {
         assert Sample.listOrderByName(order:  'desc').name == ['Guillaume', 'Dierk', 'Andres']
         assert Sample.listOrderByNum().name == ['Andres', 'Guillaume', 'Dierk']
 
+        assert Sample.findOrCreateByNameAndLastName('Andres', 'Almiray').id
+        assert !Sample.findOrCreateByNameAndLastName('Sascha', 'Klein').id
+
         assert Sample.mapping() == 'memory'
         // assert Sample.datasource() == 'default'
 

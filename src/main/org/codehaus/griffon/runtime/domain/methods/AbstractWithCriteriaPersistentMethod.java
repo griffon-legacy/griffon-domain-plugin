@@ -26,6 +26,7 @@ import groovy.lang.MissingMethodException;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Andres Almiray
@@ -38,17 +39,26 @@ public abstract class AbstractWithCriteriaPersistentMethod extends AbstractPersi
     @SuppressWarnings("unchecked")
     protected Object invokeInternal(GriffonDomainClass domainClass, String methodName, Object[] arguments) {
         if (arguments.length == 1) {
-            final Object arg = arguments[0];
-            if (arg instanceof Criterion) {
-                return withCriteria(domainClass, (Criterion) arg);
-            } else if (arg instanceof Closure) {
-                return withCriteria(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arg));
+            final Object arg1 = arguments[0];
+            if (arg1 instanceof Criterion) {
+                return withCriteria(domainClass, (Criterion) arg1, Collections.<String, Object>emptyMap());
+            } else if (arg1 instanceof Closure) {
+                return withCriteria(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arg1), Collections.<String, Object>emptyMap());
+            }
+        } else if (arguments.length == 2) {
+            final Object arg1 = arguments[0];
+            final Object arg2 = arguments[1];
+
+            if (arg1 instanceof Criterion && arg2 instanceof Map) {
+                return withCriteria(domainClass, (Criterion) arg1, (Map) arg2);
+            } else if (arg1 instanceof Map && arg2 instanceof Closure) {
+                return withCriteria(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arg2), (Map) arg1);
             }
         }
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
     }
 
-    protected Collection<GriffonDomain> withCriteria(GriffonDomainClass domainClass, Criterion criterion) {
+    protected Collection<GriffonDomain> withCriteria(GriffonDomainClass domainClass, Criterion criterion, Map<String, Object> options) {
         return Collections.<GriffonDomain>emptyList();
     }
 }

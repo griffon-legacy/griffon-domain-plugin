@@ -35,17 +35,22 @@ public abstract class AbstractFindAllWherePersistentMethod extends AbstractPersi
 
     @SuppressWarnings("unchecked")
     protected Object invokeInternal(GriffonDomainClass domainClass, String methodName, Object[] arguments) {
-        if (arguments.length != 1) {
-            throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
-        }
-        final Object arg = arguments[0];
-        if (arg instanceof Map) {
-            return findByParams(domainClass, (Map) arg);
+        if (arguments.length == 1) {
+            final Object arg1 = arguments[0];
+            if (arg1 instanceof Map) {
+                return findByParams(domainClass, (Map) arg1, Collections.<String, Object>emptyMap());
+            }
+        } else if (arguments.length == 2) {
+            final Object arg1 = arguments[0];
+            final Object arg2 = arguments[1];
+            if (arg1 instanceof Map && arg2 instanceof Map) {
+                return findByParams(domainClass, (Map) arg1, (Map) arg2);
+            }
         }
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
     }
 
-    protected Collection<GriffonDomain> findByParams(GriffonDomainClass domainClass, Map<String, Object> params) {
+    protected Collection<GriffonDomain> findByParams(GriffonDomainClass domainClass, Map params, Map<String, Object> options) {
         return Collections.<GriffonDomain>emptyList();
     }
 }

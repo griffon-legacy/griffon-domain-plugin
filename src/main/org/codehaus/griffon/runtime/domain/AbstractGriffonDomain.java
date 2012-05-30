@@ -24,9 +24,6 @@ import griffon.plugins.validation.constraints.ConstrainedProperty;
 import org.codehaus.griffon.runtime.core.AbstractGriffonArtifact;
 import org.codehaus.griffon.runtime.validation.DefaultErrors;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Map;
 
 /**
@@ -35,12 +32,10 @@ import java.util.Map;
  * @author Andres Almiray
  */
 public abstract class AbstractGriffonDomain extends AbstractGriffonArtifact implements GriffonDomain {
-    protected PropertyChangeSupport pcs;
     private final Errors errors;
 
     public AbstractGriffonDomain() {
         this.errors = new DefaultErrors(getClass());
-        this.pcs = new PropertyChangeSupport(this);
     }
 
     public boolean validate() {
@@ -53,38 +48,6 @@ public abstract class AbstractGriffonDomain extends AbstractGriffonArtifact impl
 
     public Map<String, ConstrainedProperty> constrainedProperties() {
         return ((GriffonDomainClass) getGriffonClass()).getConstrainedProperties();
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(listener);
-    }
-
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(propertyName, listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(propertyName, listener);
-    }
-
-    public PropertyChangeListener[] getPropertyChangeListeners() {
-        return pcs.getPropertyChangeListeners();
-    }
-
-    public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
-        return pcs.getPropertyChangeListeners(propertyName);
-    }
-
-    protected void firePropertyChange(PropertyChangeEvent event) {
-        pcs.firePropertyChange(event);
-    }
-
-    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        pcs.firePropertyChange(propertyName, oldValue, newValue);
     }
 
     protected String getArtifactType() {

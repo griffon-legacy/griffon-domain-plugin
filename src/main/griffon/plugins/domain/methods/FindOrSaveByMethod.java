@@ -18,18 +18,21 @@ package griffon.plugins.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Andres Almiray
  */
 public interface FindOrSaveByMethod extends StaticDynamicMethodInvocation {
-    public static final String OPERATOR_AND = "And";
-    public static final String[] OPERATORS = new String[]{OPERATOR_AND};
+    String OPERATOR_AND = "And";
+    String[] OPERATORS = new String[]{OPERATOR_AND};
 
-    String METHOD_NAME = "findOrCreateBy";
+    String METHOD_NAME = "findOrSaveBy";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
             new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, Object[].class),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, List.class)
+            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, List.class),
+            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, Object[].class, Map.class),
+            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, List.class, Map.class)
     };
 }

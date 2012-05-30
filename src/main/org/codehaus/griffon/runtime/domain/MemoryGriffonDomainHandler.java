@@ -61,16 +61,18 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         signatures.addAll(asList(CountMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(CountByMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(ListMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(ListOrderByMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindWhereMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindByMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindAllMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindAllByMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindAllWhereMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(WithCriteriaMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindOrCreateByMethod.METHOD_SIGNATURES));
         signatures.addAll(asList(FindOrCreateWhereMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(ListOrderByMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(FindOrSaveByMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(FindOrSaveWhereMethod.METHOD_SIGNATURES));
+        signatures.addAll(asList(WithCriteriaMethod.METHOD_SIGNATURES));
         return signatures.toArray(new MethodSignature[signatures.size()]);
     }
 
@@ -107,6 +109,8 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         staticMethods.put(WithCriteriaMethod.METHOD_NAME, new WithCriteriaMethod(this));
         staticMethods.put(FindOrCreateByMethod.METHOD_NAME, new FindOrCreateByMethod(this));
         staticMethods.put(FindOrCreateWhereMethod.METHOD_NAME, new FindOrCreateWhereMethod(this));
+        staticMethods.put(FindOrSaveByMethod.METHOD_NAME, new FindOrSaveByMethod(this));
+        staticMethods.put(FindOrSaveWhereMethod.METHOD_NAME, new FindOrSaveWhereMethod(this));
         staticMethods.put(ListOrderByMethod.METHOD_NAME, new ListOrderByMethod(this));
         return staticMethods;
     }
@@ -283,11 +287,6 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
 
         @Override
-        protected Collection<GriffonDomain> list(GriffonDomainClass domainClass) {
-            return list(domainClass, Collections.<String, Object>emptyMap());
-        }
-
-        @Override
         protected Collection<GriffonDomain> list(GriffonDomainClass domainClass, Map<String, Object> options) {
             ConcurrentHashMapDatastore.Dataset dataset = datasetOf(domainClass);
             if (dataset == null) {
@@ -328,8 +327,8 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
 
         @Override
-        protected Collection<GriffonDomain> findByParams(GriffonDomainClass domainClass, Map<String, Object> params) {
-            List<GriffonDomain> entities = datasetOf(domainClass).query(params);
+        protected Collection<GriffonDomain> findByParams(GriffonDomainClass domainClass, Map params, Map<String, Object> options) {
+            List<GriffonDomain> entities = datasetOf(domainClass).query(options);
             Collections.sort(entities, IDENTITY_COMPARATOR);
             return entities;
         }
@@ -373,21 +372,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
 
         @Override
-        protected Collection<GriffonDomain> findAll(GriffonDomainClass domainClass) {
-            List<GriffonDomain> entities = datasetOf(domainClass).list();
-            Collections.sort(entities, IDENTITY_COMPARATOR);
-            return entities;
-        }
-
-        @Override
-        protected Collection<GriffonDomain> findByProperties(GriffonDomainClass domainClass, Map<String, Object> properties) {
-            List<GriffonDomain> entities = datasetOf(domainClass).query(properties);
-            Collections.sort(entities, IDENTITY_COMPARATOR);
-            return entities;
-        }
-
-        @Override
-        protected Collection<GriffonDomain> findByExample(GriffonDomainClass domainClass, Object example) {
+        protected Collection<GriffonDomain> findByExample(GriffonDomainClass domainClass, Object example, Map<String, Object> options) {
             List<GriffonDomain> entities = datasetOf(domainClass).query(example);
             Collections.sort(entities, IDENTITY_COMPARATOR);
             return entities;
@@ -405,7 +390,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
 
         @Override
-        protected Collection<GriffonDomain> withCriteria(GriffonDomainClass domainClass, Criterion criterion) {
+        protected Collection<GriffonDomain> withCriteria(GriffonDomainClass domainClass, Criterion criterion, Map<String, Object> options) {
             List<GriffonDomain> entities = datasetOf(domainClass).query(criterion);
             Collections.sort(entities, IDENTITY_COMPARATOR);
             return entities;
@@ -466,13 +451,58 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         }
     }
 
+    private class FindOrSaveByMethod extends AbstractFindOrSaveByPersistentMethod {
+        public FindOrSaveByMethod(GriffonDomainHandler griffonDomainHandler) {
+            super(griffonDomainHandler);
+        }
+
+        @Override
+        protected Object findOrSaveBy(GriffonDomainClass domainClass, String methodName, Criterion criterion, Map<String, Object> options) {
+            GriffonDomain domain = datasetOf(domainClass).first(criterion);
+
+            if (null == domain) {
+                domain = (GriffonDomain) domainClass.newInstance();
+                Map<String, Object> props = criterionToMap(criterion);
+                for (GriffonDomainProperty property : domainClass.getProperties()) {
+                    Object value = props.get(property.getName());
+                    if (value != null) property.setValue(domain, value);
+                }
+                domain = (GriffonDomain) getGriffonDomainHandler().invokeInstanceMethod(domain, SaveMethod.METHOD_NAME, options);
+            }
+
+            return domain;
+        }
+    }
+
+    private class FindOrSaveWhereMethod extends AbstractFindOrSaveWherePersistentMethod {
+        public FindOrSaveWhereMethod(GriffonDomainHandler griffonDomainHandler) {
+            super(griffonDomainHandler);
+        }
+
+        @Override
+        protected GriffonDomain findOrSaveByParams(GriffonDomainClass domainClass, Map params, Map<String, Object> options) {
+            GriffonDomain domain = datasetOf(domainClass).first(options);
+
+            if (null == domain) {
+                domain = (GriffonDomain) domainClass.newInstance();
+                for (GriffonDomainProperty property : domainClass.getProperties()) {
+                    Object value = options.get(property.getName());
+                    if (value != null) property.setValue(domain, value);
+                }
+                domain = (GriffonDomain) getGriffonDomainHandler().invokeInstanceMethod(domain, SaveMethod.METHOD_NAME, options);
+            }
+
+            return domain;
+        }
+    }
+
     private class FindAllByMethod extends AbstractFindAllByPersistentMethod {
         public FindAllByMethod(GriffonDomainHandler griffonDomainHandler) {
             super(griffonDomainHandler);
         }
 
         @Override
-        protected Collection findAllBy(GriffonDomainClass domainClass, String methodName, Criterion criterion) {
+        protected Collection findAllBy(GriffonDomainClass domainClass, String methodName, Criterion criterion, Map<String, Object> options) {
             List<GriffonDomain> entities = datasetOf(domainClass).query(criterion);
             Collections.sort(entities, IDENTITY_COMPARATOR);
             return entities;

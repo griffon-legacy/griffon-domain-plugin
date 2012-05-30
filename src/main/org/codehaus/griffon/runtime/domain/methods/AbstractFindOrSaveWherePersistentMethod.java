@@ -21,6 +21,7 @@ import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.plugins.domain.methods.FindOrSaveWhereMethod;
 import groovy.lang.MissingMethodException;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -33,17 +34,22 @@ public abstract class AbstractFindOrSaveWherePersistentMethod extends AbstractPe
 
     @SuppressWarnings("unchedked")
     protected Object invokeInternal(GriffonDomainClass domainClass, String methodName, Object[] arguments) {
-        if (arguments.length != 1) {
-            throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
-        }
-        final Object arg = arguments[0];
-        if (arg instanceof Map) {
-            return findOrSaveByParams(domainClass, (Map) arg);
+        if (arguments.length == 1) {
+            final Object arg1 = arguments[0];
+            if (arg1 instanceof Map) {
+                return findOrSaveByParams(domainClass, (Map) arg1, Collections.<String, Object>emptyMap());
+            }
+        } else if (arguments.length == 2) {
+            final Object arg1 = arguments[0];
+            final Object arg2 = arguments[1];
+            if (arg1 instanceof Map && arg2 instanceof Map) {
+                return findOrSaveByParams(domainClass, (Map) arg1, Collections.<String, Object>emptyMap());
+            }
         }
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
     }
 
-    protected GriffonDomain findOrSaveByParams(GriffonDomainClass domainClass, Map<String, Object> params) {
+    protected GriffonDomain findOrSaveByParams(GriffonDomainClass domainClass, Map params, Map<String, Object> options) {
         return null;
     }
 }

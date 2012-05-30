@@ -21,10 +21,7 @@ import griffon.plugins.domain.methods.FindAllByMethod;
 import griffon.plugins.domain.orm.Criterion;
 import griffon.plugins.domain.orm.Restrictions;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -39,9 +36,15 @@ public abstract class AbstractFindAllByPersistentMethod extends AbstractClausedS
 
     @Override
     protected Object doInvokeInternalWithExpressions(GriffonDomainClass domainClass, String methodName, Object[] arguments, List<GriffonMethodExpression> expressions, String operatorInUse) {
+        Map<String, Object> options = Collections.emptyMap();
+
+        if (arguments.length == 1 && arguments[0] instanceof Map) {
+            options = (Map) arguments[0];
+        }
+
         final String operator = OPERATOR_OR.equals(operatorInUse) ? OPERATOR_OR : OPERATOR_AND;
         if (expressions.size() == 1) {
-            return findAllBy(domainClass, methodName, expressions.get(0).getCriterion());
+            return findAllBy(domainClass, methodName, expressions.get(0).getCriterion(), options);
         } else {
             List<Criterion> criteria = new ArrayList<Criterion>();
             for (GriffonMethodExpression expr : expressions) {
@@ -49,11 +52,11 @@ public abstract class AbstractFindAllByPersistentMethod extends AbstractClausedS
             }
             Criterion[] array = criteria.toArray(new Criterion[criteria.size()]);
             Criterion criterion = operator.equals(OPERATOR_OR) ? Restrictions.or(array) : Restrictions.and(array);
-            return findAllBy(domainClass, methodName, criterion);
+            return findAllBy(domainClass, methodName, criterion, options);
         }
     }
 
-    protected Collection findAllBy(GriffonDomainClass domainClass, String methodName, Criterion criterion) {
+    protected Collection findAllBy(GriffonDomainClass domainClass, String methodName, Criterion criterion, Map<String, Object> options) {
         return Collections.emptyList();
     }
 }

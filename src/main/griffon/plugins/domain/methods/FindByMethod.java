@@ -23,9 +23,9 @@ import java.util.List;
  * @author Andres Almiray
  */
 public interface FindByMethod extends StaticDynamicMethodInvocation {
-    final String OPERATOR_OR = "Or";
-    final String OPERATOR_AND = "And";
-    final String[] OPERATORS = new String[]{OPERATOR_AND, OPERATOR_OR};
+    String OPERATOR_OR = "Or";
+    String OPERATOR_AND = "And";
+    String[] OPERATORS = new String[]{OPERATOR_AND, OPERATOR_OR};
 
     String METHOD_NAME = "findBy";
 

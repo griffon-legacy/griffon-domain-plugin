@@ -19,6 +19,7 @@ import griffon.plugins.domain.orm.Criterion;
 import groovy.lang.Closure;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Andres Almiray
@@ -28,6 +29,8 @@ public interface WithCriteriaMethod extends StaticMethodInvocation {
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
             new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Closure.class)
+            new MethodSignature(true, Collection.class, METHOD_NAME, Closure.class),
+            new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class, Map.class),
+            new MethodSignature(true, Collection.class, METHOD_NAME, Map.class, Closure.class)
     };
 }

@@ -23,8 +23,8 @@ import java.util.List;
  * @author Andres Almiray
  */
 public interface FindOrCreateByMethod extends StaticDynamicMethodInvocation {
-    public static final String OPERATOR_AND = "And";
-    public static final String[] OPERATORS = new String[]{OPERATOR_AND};
+    String OPERATOR_AND = "And";
+    String[] OPERATORS = new String[]{OPERATOR_AND};
 
     String METHOD_NAME = "findOrCreateBy";
 

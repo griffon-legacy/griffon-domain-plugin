@@ -18,7 +18,6 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.plugins.domain.GriffonDomainProperty;
-import griffon.plugins.domain.exceptions.InvalidOperatorException;
 import griffon.plugins.domain.orm.Criterion;
 import griffon.plugins.domain.orm.Restrictions;
 import griffon.util.GriffonClassUtils;
@@ -300,21 +299,17 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
 
         protected static GriffonMethodExpression create(GriffonDomainClass domainClass, String queryParameter, boolean strict) {
             if (strict) {
-                if (queryParameter.endsWith(EQUAL)) {
-                    return new GriffonMethodExpression(
-                            domainClass,
-                            calcPropertyName(queryParameter, null),
-                            EQUAL,
-                            1,
-                            isNegation(queryParameter, EQUAL)) {
-                        Criterion createCriterion() {
-                            if (arguments[0] == null) return Restrictions.isNull(this.propertyName);
-                            return Restrictions.eq(this.propertyName, this.arguments[0]);
-                        }
-                    };
-                } else {
-                    throw new InvalidOperatorException("Operator " + queryParameter + " is not allowed!");
-                }
+                return new GriffonMethodExpression(
+                        domainClass,
+                        calcPropertyName(queryParameter, null),
+                        EQUAL,
+                        1,
+                        isNegation(queryParameter, EQUAL)) {
+                    Criterion createCriterion() {
+                        if (arguments[0] == null) return Restrictions.isNull(this.propertyName);
+                        return Restrictions.eq(this.propertyName, this.arguments[0]);
+                    }
+                };
             }
 
             if (queryParameter.endsWith(LESS_THAN_OR_EQUAL)) {

@@ -17,19 +17,22 @@ package griffon.plugins.domain.methods;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Andres Almiray
  */
 public interface FindAllByMethod extends StaticDynamicMethodInvocation {
-    final String OPERATOR_OR = "Or";
-    final String OPERATOR_AND = "And";
-    final String[] OPERATORS = new String[]{OPERATOR_AND, OPERATOR_OR};
+    String OPERATOR_OR = "Or";
+    String OPERATOR_AND = "And";
+    String[] OPERATORS = new String[]{OPERATOR_AND, OPERATOR_OR};
 
     String METHOD_NAME = "findAllBy";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
             new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Object[].class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, List.class)
+            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, List.class),
+            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Object[].class, Map.class),
+            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, List.class, Map.class)
     };
 }

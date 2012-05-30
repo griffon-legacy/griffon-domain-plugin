@@ -45,36 +45,10 @@ public abstract class AbstractSavePersistentMethod extends AbstractPersistentIns
             throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
         }
 
-        Map<String, Object> params = new LinkedHashMap<String, Object>();
-        if (arguments.length == 1) {
-            if (arguments[0] instanceof Map) {
-                params.putAll((Map) arguments[0]);
-            } else {
-                throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
-            }
-        } else if (arguments.length > 0) {
-            throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
-        }
+        Map<String, Object> params = validate(domainClass, methodName, target, arguments);
+        if (params == null) return null;
 
         GriffonDomain entity = null;
-
-        boolean validate = getConfigValueAsBoolean(params, VALIDATE, true);
-        boolean failOnError = getConfigValueAsBoolean(getApplication().getConfig(), FAIL_ON_ERROR_CONFIG_KEY, false);
-        if (params.containsKey(FAIL_ON_ERROR)) failOnError = getConfigValueAsBoolean(params, FAIL_ON_ERROR);
-        params.put(VALIDATE, validate);
-        params.put(FAIL_ON_ERROR, failOnError);
-
-        if (validate) {
-            target.getErrors().clearAllErrors();
-            if (!target.validate()) {
-                if (failOnError) {
-                    throw new ValidationException("An instance of " + target.getClass() + " failed validation");
-                } else {
-                    return entity;
-                }
-            }
-        }
-
         if (shouldInsert(domainClass, target, arguments)) {
             target.beforeInsert();
             entity = insert(domainClass, target, arguments, params);
@@ -88,6 +62,38 @@ public abstract class AbstractSavePersistentMethod extends AbstractPersistentIns
         }
 
         return entity;
+    }
+
+    protected Map<String, Object> validate(GriffonDomainClass domainClass, String methodName, GriffonDomain target, Object[] arguments) {
+        Map<String, Object> params = new LinkedHashMap<String, Object>();
+        if (arguments.length == 1) {
+            if (arguments[0] instanceof Map) {
+                params.putAll((Map) arguments[0]);
+            } else {
+                throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
+            }
+        } else if (arguments.length > 0) {
+            throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
+        }
+
+
+        boolean validate = getConfigValueAsBoolean(params, VALIDATE, true);
+        boolean failOnError = getConfigValueAsBoolean(getApplication().getConfig(), FAIL_ON_ERROR_CONFIG_KEY, false);
+        if (params.containsKey(FAIL_ON_ERROR)) failOnError = getConfigValueAsBoolean(params, FAIL_ON_ERROR);
+        params.put(VALIDATE, validate);
+        params.put(FAIL_ON_ERROR, failOnError);
+
+        if (validate) {
+            target.getErrors().clearAllErrors();
+            if (!target.validate()) {
+                if (failOnError) {
+                    throw new ValidationException("An instance of " + target.getClass() + " failed validation");
+                } else {
+                    return null;
+                }
+            }
+        }
+        return params;
     }
 
     protected abstract boolean shouldInsert(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments);

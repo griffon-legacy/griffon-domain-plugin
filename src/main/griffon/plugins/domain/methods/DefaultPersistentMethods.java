@@ -36,13 +36,9 @@ public enum DefaultPersistentMethods {
     FIND_ALL(FindAllMethod.METHOD_NAME, FindAllMethod.METHOD_SIGNATURES),
     FIND_ALL_BY(FindAllByMethod.METHOD_NAME, FindAllByMethod.METHOD_SIGNATURES),
     FIND_ALL_WHERE(FindAllWhereMethod.METHOD_NAME, FindAllMethod.METHOD_SIGNATURES),
-    WITH_CRITERIA(WithCriteriaMethod.METHOD_NAME, WithCriteriaMethod.METHOD_SIGNATURES),
     FIND_OR_CREATE_BY(FindOrCreateByMethod.METHOD_NAME, FindOrCreateByMethod.METHOD_SIGNATURES),
-    FIND_OR_CREATE_WHERE(FindOrCreateWhereMethod.METHOD_NAME, FindOrCreateWhereMethod.METHOD_SIGNATURES);
-
-    // COUNT_BY('countBy'),
-    // FIND_BY('findBy'),
-    // FIND_ALL_BY('findAllBy');
+    FIND_OR_CREATE_WHERE(FindOrCreateWhereMethod.METHOD_NAME, FindOrCreateWhereMethod.METHOD_SIGNATURES),
+    WITH_CRITERIA(WithCriteriaMethod.METHOD_NAME, WithCriteriaMethod.METHOD_SIGNATURES);
 
     private final String methodName;
     private final MethodSignature[] methodSignatures;

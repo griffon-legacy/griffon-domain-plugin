@@ -36,18 +36,14 @@ public abstract class AbstractListPersistentMethod extends AbstractPersistentSta
     @SuppressWarnings("unchecked")
     protected final Object invokeInternal(GriffonDomainClass domainClass, String methodName, Object[] arguments) {
         if (arguments.length == 0) {
-            return list(domainClass);
+            return list(domainClass, Collections.<String,Object>emptyMap());
         } else if (arguments[0] instanceof Map) {
             return list(domainClass, (Map) arguments[0]);
         }
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
     }
 
-    protected Collection<GriffonDomain> list(GriffonDomainClass domainClass) {
-        return Collections.<GriffonDomain>emptyList();
-    }
-
-    protected Collection<GriffonDomain> list(GriffonDomainClass domainClass, Map<String, Object> props) {
+    protected Collection<GriffonDomain> list(GriffonDomainClass domainClass, Map<String, Object> options) {
         return Collections.<GriffonDomain>emptyList();
     }
 }
