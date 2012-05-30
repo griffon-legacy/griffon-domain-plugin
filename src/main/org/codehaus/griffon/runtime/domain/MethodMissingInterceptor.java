@@ -17,6 +17,7 @@
 package org.codehaus.griffon.runtime.domain;
 
 import griffon.core.GriffonClass;
+import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.plugins.domain.methods.*;
 import griffon.util.ApplicationHolder;
@@ -41,12 +42,10 @@ import static java.util.Arrays.asList;
 public class MethodMissingInterceptor {
     private static final Logger LOG = LoggerFactory.getLogger(MethodMissingInterceptor.class);
     private final Class clazz;
-    private final GriffonDomainHandler domainHandler;
     private final List<String> supportedDynamicMethods = new ArrayList<String>();
 
-    public MethodMissingInterceptor(Class clazz, GriffonDomainHandler domainHandler) {
+    public MethodMissingInterceptor(Class clazz) {
         this.clazz = clazz;
-        this.domainHandler = domainHandler;
 
         List<String> methodNames = asList(
                 FindByMethod.METHOD_NAME,
@@ -58,19 +57,13 @@ public class MethodMissingInterceptor {
                 FindOrCreateWhereMethod.METHOD_NAME,
                 FindOrSaveWhereMethod.METHOD_NAME);
         for (String methodName : methodNames) {
-            inner:
-            for (MethodSignature methodSignature : domainHandler.getMethodSignatures()) {
-                if (methodName.equals(methodSignature.getMethodName())) {
-                    supportedDynamicMethods.add(methodName);
-                    break inner;
-                }
-            }
+            supportedDynamicMethods.add(methodName);
         }
     }
 
     public Object handleMethodMissing(String methodName, Object[] arguments) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Handling missing method " + clazz.getName() + "." + methodName);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Handling missing method " + clazz.getName() + "." + methodName);
         }
         for (String dynaMethodName : supportedDynamicMethods) {
             if (methodName.startsWith(dynaMethodName)) {
@@ -111,11 +104,15 @@ public class MethodMissingInterceptor {
         return new ClosureStaticMetaMethod(methodName, clazz, new Closure<Object>(this) {
             protected Object doCall(Object[] args) {
                 try {
-                    return domainHandler.invokeStaticMethod(clazz, dynaMethodName, args);
+                    return domainHandler().invokeStaticMethod(clazz, dynaMethodName, args);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         });
+    }
+
+    private GriffonDomainHandler domainHandler() {
+        return ((GriffonDomainClass) ApplicationHolder.getApplication().getArtifactManager().findGriffonClass(clazz)).getDomainHandler();
     }
 }

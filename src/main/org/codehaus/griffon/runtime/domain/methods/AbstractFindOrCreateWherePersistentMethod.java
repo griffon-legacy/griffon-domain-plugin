@@ -18,6 +18,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.FindOrCreateWhereMethod;
 import griffon.plugins.domain.orm.BinaryExpression;
 import griffon.plugins.domain.orm.CompositeCriterion;
@@ -48,7 +49,7 @@ public abstract class AbstractFindOrCreateWherePersistentMethod extends Abstract
     }
 
     protected GriffonDomain findOrCreateByParams(GriffonDomainClass domainClass, Map<String, Object> params) {
-        return null;
+        throw new UnsupportedDomainMethodException();
     }
 
     protected Map<String, Object> criterionToMap(Criterion criterion) {

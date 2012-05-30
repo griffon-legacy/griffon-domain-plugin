@@ -18,6 +18,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.FindWhereMethod;
 import groovy.lang.MissingMethodException;
 
@@ -44,6 +45,6 @@ public abstract class AbstractFindWherePersistentMethod extends AbstractPersiste
     }
 
     protected GriffonDomain findByParams(GriffonDomainClass domainClass, Map<String, Object> params) {
-        return null;
+        throw new UnsupportedDomainMethodException();
     }
 }

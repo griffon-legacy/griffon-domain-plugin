@@ -19,6 +19,7 @@ import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassUtils;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.WithCriteriaMethod;
 import griffon.plugins.domain.orm.Criterion;
 import groovy.lang.Closure;
@@ -59,6 +60,6 @@ public abstract class AbstractWithCriteriaPersistentMethod extends AbstractPersi
     }
 
     protected Collection<GriffonDomain> withCriteria(GriffonDomainClass domainClass, Criterion criterion, Map<String, Object> options) {
-        return Collections.<GriffonDomain>emptyList();
+        throw new UnsupportedDomainMethodException();
     }
 }

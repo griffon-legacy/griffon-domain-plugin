@@ -18,6 +18,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.ListMethod;
 import groovy.lang.MissingMethodException;
 
@@ -36,7 +37,7 @@ public abstract class AbstractListPersistentMethod extends AbstractPersistentSta
     @SuppressWarnings("unchecked")
     protected final Object invokeInternal(GriffonDomainClass domainClass, String methodName, Object[] arguments) {
         if (arguments.length == 0) {
-            return list(domainClass, Collections.<String,Object>emptyMap());
+            return list(domainClass, Collections.<String, Object>emptyMap());
         } else if (arguments[0] instanceof Map) {
             return list(domainClass, (Map) arguments[0]);
         }
@@ -44,6 +45,6 @@ public abstract class AbstractListPersistentMethod extends AbstractPersistentSta
     }
 
     protected Collection<GriffonDomain> list(GriffonDomainClass domainClass, Map<String, Object> options) {
-        return Collections.<GriffonDomain>emptyList();
+        throw new UnsupportedDomainMethodException();
     }
 }

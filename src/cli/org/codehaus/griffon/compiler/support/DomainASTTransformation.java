@@ -16,20 +16,14 @@
 package org.codehaus.griffon.compiler.support;
 
 import griffon.transform.Domain;
-import groovy.util.ConfigObject;
 import org.codehaus.griffon.ast.AbstractASTTransformation;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
-
-import static org.codehaus.griffon.compiler.GriffonCompilerContext.getFlattenedBuildSettings;
-import static org.codehaus.griffon.compiler.support.GriffonDomainASTTransformation.*;
 
 /**
  * Injects the necessary fields and behaviors into a domain class in order to make it a property domain entity.
@@ -59,40 +53,6 @@ public class DomainASTTransformation extends AbstractASTTransformation {
                     MY_TYPE_NAME + " not allowed for interfaces.");
         }
 
-        String implementation = null;
-        Expression member = node.getMember("value");
-        if (member instanceof ConstantExpression) {
-            implementation = (String) ((ConstantExpression) member).getValue();
-        }
-        if (implementation == null || implementation.trim().length() == 0) {
-            /*
-            throw new RuntimeException("Error processing " + MY_TYPE_NAME + " in " + cName +
-                    ". Implementation value '" + implementation + "' is invalid.");
-            */
-            Object defaultMapping = getFlattenedBuildSettings().get(GRIFFON_DOMAIN_DEFAULT_MAPPING);
-            if (defaultMapping != null && !(defaultMapping instanceof ConfigObject)) {
-                implementation = String.valueOf(defaultMapping);
-            } else {
-                implementation = DEFAULT_DOMAIN_HANDLER_IMPLEMENTATION;
-            }
-        }
-
-        /*
-        String datasource = null;
-        member = node.getMember("datasource");
-        if (member instanceof ConstantExpression) {
-            datasource = (String) ((ConstantExpression) member).getValue();
-        }
-        if (datasource == null || datasource.trim().length() == 0) {
-            Object defaultDatasource = getFlattenedBuildSettings().get(GRIFFON_DOMAIN_DEFAULT_DATASOURCE);
-            if (defaultDatasource != null && !(defaultDatasource instanceof ConfigObject)) {
-                datasource = String.valueOf(defaultDatasource);
-            } else {
-                datasource = "default";
-            }
-        }
-        */
-
-        GriffonDomainASTTransformation.inject(classNode, implementation/*, datasource*/);
+        GriffonDomainASTTransformation.inject(classNode);
     }
 }

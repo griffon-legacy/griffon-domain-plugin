@@ -17,20 +17,15 @@
 package org.codehaus.griffon.runtime.domain;
 
 import griffon.core.GriffonApplication;
-import griffon.plugins.domain.GriffonDomainClass;
-import griffon.plugins.domain.GriffonDomainClassProperty;
-import griffon.plugins.domain.GriffonDomainHandler;
-import griffon.plugins.domain.GriffonDomainProperty;
+import griffon.plugins.domain.*;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.transform.Domain;
 import org.codehaus.griffon.runtime.core.AbstractGriffonClass;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import static griffon.util.GriffonClassUtils.EMPTY_ARGS;
-import static griffon.util.GriffonClassUtils.invokeExactStaticMethod;
 
 /**
  * Base implementation of the {@code GriffonDomainClass} interface
@@ -40,10 +35,21 @@ import static griffon.util.GriffonClassUtils.invokeExactStaticMethod;
 public abstract class AbstractGriffonDomainClass extends AbstractGriffonClass implements GriffonDomainClass {
     protected Map<String, GriffonDomainClassProperty> domainProperties = new LinkedHashMap<String, GriffonDomainClassProperty>();
     protected Map<String, ConstrainedProperty> constrainedProperties = new LinkedHashMap<String, ConstrainedProperty>();
+    protected GriffonDomainHandler domainHandler;
 
     public AbstractGriffonDomainClass(GriffonApplication app, Class<?> clazz) {
         super(app, clazz, TYPE, TRAILING);
+        domainHandler = resolveDomainHandler(clazz);
         initialize();
+    }
+
+    private static GriffonDomainHandler resolveDomainHandler(Class<?> clazz) {
+        String implementation = null;
+        final Domain domain = clazz.getAnnotation(Domain.class);
+        if (domain != null) {
+            implementation = domain.value();
+        }
+        return GriffonDomainHandlerRegistry.domainHandlerFor(implementation);
     }
 
     protected abstract void initialize();
@@ -71,14 +77,8 @@ public abstract class AbstractGriffonDomainClass extends AbstractGriffonClass im
     }
 
     public GriffonDomainHandler getDomainHandler() {
-        return (GriffonDomainHandler) invokeExactStaticMethod(getClazz(), "domainHandler", EMPTY_ARGS);
+        return domainHandler;
     }
-
-    /*
-    public String getDatasourceName() {
-        return (String) invokeExactStaticMethod(getClazz(), "datasource", EMPTY_ARGS);
-    }
-    */
 
     public Map<String, ConstrainedProperty> getConstrainedProperties() {
         return constrainedProperties;

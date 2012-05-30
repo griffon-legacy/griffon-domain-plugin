@@ -17,9 +17,12 @@
 package org.codehaus.griffon.runtime.domain;
 
 import griffon.core.GriffonApplication;
-import griffon.plugins.domain.*;
+import griffon.plugins.domain.GriffonDomain;
+import griffon.plugins.domain.GriffonDomainClass;
+import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.GriffonDomainProperty;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.InstanceMethodInvocation;
-import griffon.plugins.domain.methods.MethodSignature;
 import griffon.plugins.domain.methods.StaticMethodInvocation;
 import griffon.util.ApplicationHolder;
 
@@ -34,26 +37,18 @@ import static griffon.util.GriffonExceptionHandler.sanitize;
 public abstract class AbstractGriffonDomainHandler implements GriffonDomainHandler {
     private final Map<String, InstanceMethodInvocation> instanceMethods = new LinkedHashMap<String, InstanceMethodInvocation>();
     private final Map<String, StaticMethodInvocation> staticMethods = new LinkedHashMap<String, StaticMethodInvocation>();
-    private final MethodSignature[] methodSignatures;
 
     public AbstractGriffonDomainHandler() {
         instanceMethods.putAll(getInstanceMethods());
         staticMethods.putAll(getStaticMethods());
-        methodSignatures = getMethodSignaturesInternal();
     }
 
-    protected abstract Map<? extends String, ? extends InstanceMethodInvocation> getInstanceMethods();
+    protected abstract Map<String, InstanceMethodInvocation> getInstanceMethods();
 
-    protected abstract Map<? extends String, ? extends StaticMethodInvocation> getStaticMethods();
-
-    protected abstract MethodSignature[] getMethodSignaturesInternal();
+    protected abstract Map<String, StaticMethodInvocation> getStaticMethods();
 
     public final GriffonApplication getApp() {
         return ApplicationHolder.getApplication();
-    }
-
-    public final MethodSignature[] getMethodSignatures() {
-        return methodSignatures;
     }
 
     public final Object invokeInstanceMethod(Object target, String methodName, Object... args) {
@@ -69,6 +64,8 @@ public abstract class AbstractGriffonDomainHandler implements GriffonDomainHandl
                 throw new IllegalArgumentException("Cannot call " + methodName + "() on non-domain class [" + target.getClass().getName() + "]");
             }
             return doInvokeInstanceMethod(method, (GriffonDomain) target, methodName, args);
+        } catch (UnsupportedDomainMethodException udme) {
+            throw (RuntimeException) sanitize(new UnsupportedOperationException("Domain method " + methodName + " is not supported by mapping '" + getMapping() + "'"));
         } catch (RuntimeException e) {
             Throwable t = sanitize(e);
             throw (RuntimeException) t;
@@ -88,6 +85,8 @@ public abstract class AbstractGriffonDomainHandler implements GriffonDomainHandl
                 throw new IllegalArgumentException("Cannot call " + methodName + "() on non-domain class [" + clazz.getName() + "]");
             }
             return doInvokeStaticMethod(method, clazz, methodName, args);
+        } catch (UnsupportedDomainMethodException udme) {
+            throw (RuntimeException) sanitize(new UnsupportedOperationException("Domain method " + methodName + " is not supported by mapping '" + getMapping() + "'"));
         } catch (RuntimeException e) {
             Throwable t = sanitize(e);
             throw (RuntimeException) t;

@@ -15,6 +15,7 @@
  */
 package griffon.plugins.domain.methods;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -23,7 +24,7 @@ import static org.codehaus.groovy.runtime.DefaultGroovyMethods.join;
 /**
  * @author Andres Almiray
  */
-public class MethodSignature {
+public class MethodSignature implements Comparable<MethodSignature> {
     private final Class returnType;
     private final String methodName;
     private final Class[] parameterTypes;
@@ -108,18 +109,28 @@ public class MethodSignature {
         MethodSignature rhs = (MethodSignature) obj;
         return new EqualsBuilder()
                 .append(methodName, rhs.methodName)
-                .append(isStatic, rhs.isStatic)
-                .append(returnType.getName(), rhs.returnType.getName())
                 .append(parameterClassnames, rhs.parameterClassnames)
+                .append(returnType.getName(), rhs.returnType.getName())
+                .append(isStatic, rhs.isStatic)
                 .isEquals();
     }
 
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(methodName)
-                .append(isStatic)
-                .append(returnType.getName())
                 .append(parameterClassnames)
+                .append(returnType.getName())
+                .append(isStatic)
                 .toHashCode();
+    }
+
+    public int compareTo(MethodSignature other) {
+        return new CompareToBuilder()
+                .append(methodName, other.methodName)
+                .append(parameterClassnames, other.parameterClassnames)
+                .append(returnType, other.returnType)
+                .append(isStatic, other.isStatic)
+                .toComparison();
+
     }
 }

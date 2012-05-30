@@ -18,11 +18,11 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.plugins.domain.GriffonDomainProperty;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.ListOrderByMethod;
 import groovy.lang.MissingMethodException;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -68,6 +68,6 @@ public abstract class AbstractListOrderByPersistentMethod extends AbstractPersis
     }
 
     protected Collection listOrderBy(GriffonDomainClass domainClass, String propertyName, Map<String, Object> params) {
-        return Collections.emptyList();
+        throw new UnsupportedDomainMethodException();
     }
 }

@@ -16,6 +16,8 @@
 package org.codehaus.griffon.compiler.support;
 
 import griffon.plugins.domain.GriffonDomainProperty;
+import griffon.plugins.domain.methods.DefaultPersistentMethods;
+import griffon.plugins.domain.methods.MethodSignature;
 import org.codehaus.griffon.ast.GriffonASTUtils;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
@@ -29,6 +31,8 @@ import org.codehaus.groovy.ast.stmt.Statement;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.codehaus.griffon.ast.AbstractASTTransformation.makeClassSafe;
 import static org.codehaus.griffon.ast.GriffonASTUtils.implementsOrInheritsZeroArgMethod;
@@ -40,7 +44,7 @@ import static org.codehaus.griffon.ast.GriffonASTUtils.injectProperty;
  *
  * @author Andres Almiray
  */
-public abstract class DefaultGriffonDomainClassInjector extends GriffonDomainClassInjector {
+public class DefaultGriffonDomainClassInjector extends GriffonDomainClassInjector {
     private List<ClassNode> classesWithInjectedToString = new ArrayList<ClassNode>();
     private static final ClassNode PROPERTY_TYPE = makeClassSafe(Long.class);
 
@@ -71,5 +75,17 @@ public abstract class DefaultGriffonDomainClassInjector extends GriffonDomainCla
 
     protected void injectIdProperty(ClassNode classNode) {
         injectProperty(classNode, GriffonDomainProperty.IDENTITY, PROPERTY_TYPE.getTypeClass(), null);
+    }
+
+    @Override
+    protected MethodSignature[] getProvidedMethods() {
+        Set<MethodSignature> methodSignatures = new TreeSet<MethodSignature>();
+        for (DefaultPersistentMethods method : DefaultPersistentMethods.values()) {
+            MethodSignature[] signatures = method.getMethodSignatures();
+            for (int i = 0, length = signatures.length; i < length; i++) {
+                methodSignatures.add(signatures[i]);
+            }
+        }
+        return methodSignatures.toArray(new MethodSignature[methodSignatures.size()]);
     }
 }

@@ -18,6 +18,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.FindOrSaveWhereMethod;
 import groovy.lang.MissingMethodException;
 
@@ -50,6 +51,6 @@ public abstract class AbstractFindOrSaveWherePersistentMethod extends AbstractPe
     }
 
     protected GriffonDomain findOrSaveByParams(GriffonDomainClass domainClass, Map params, Map<String, Object> options) {
-        return null;
+        throw new UnsupportedDomainMethodException();
     }
 }

@@ -18,11 +18,11 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.GetAllMethod;
 import groovy.lang.MissingMethodException;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,14 +50,14 @@ public abstract class AbstractGetAllPersistentMethod extends AbstractPersistentS
     }
 
     protected Collection<GriffonDomain> getAll(GriffonDomainClass domainClass) {
-        return Collections.<GriffonDomain>emptyList();
+        throw new UnsupportedDomainMethodException();
     }
 
     protected Collection<GriffonDomain> getAllByIdentities(GriffonDomainClass domainClass, List<Object> identities) {
-        return Collections.<GriffonDomain>emptyList();
+        throw new UnsupportedDomainMethodException();
     }
 
     protected Collection<GriffonDomain> getAllByIdentities(GriffonDomainClass domainClass, Object[] identities) {
-        return Collections.<GriffonDomain>emptyList();
+        throw new UnsupportedDomainMethodException();
     }
 }

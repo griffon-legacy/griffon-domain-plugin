@@ -17,6 +17,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.CountMethod;
 import groovy.lang.MissingMethodException;
 
@@ -36,6 +37,6 @@ public abstract class AbstractCountPersistentMethod extends AbstractPersistentSt
     }
 
     protected int count(GriffonDomainClass domainClass) {
-        return 0;
+        throw new UnsupportedDomainMethodException();
     }
 }

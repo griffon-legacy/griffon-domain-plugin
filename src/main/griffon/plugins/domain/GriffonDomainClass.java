@@ -64,6 +64,4 @@ public interface GriffonDomainClass extends GriffonClass {
     GriffonDomainProperty getIdentity();
 
     GriffonDomainHandler getDomainHandler();
-
-    // String getDatasourceName();
 }

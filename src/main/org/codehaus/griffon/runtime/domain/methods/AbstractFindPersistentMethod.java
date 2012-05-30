@@ -19,6 +19,7 @@ import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassUtils;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.FindMethod;
 import griffon.plugins.domain.orm.Criterion;
 import groovy.lang.Closure;
@@ -62,14 +63,14 @@ public abstract class AbstractFindPersistentMethod extends AbstractPersistentSta
     }
 
     protected GriffonDomain findByProperties(GriffonDomainClass domainClass, Map<String, Object> properties) {
-        return null;
+        throw new UnsupportedDomainMethodException();
     }
 
     protected GriffonDomain findByExample(GriffonDomainClass domainClass, Object example) {
-        return null;
+        throw new UnsupportedDomainMethodException();
     }
 
     protected GriffonDomain findByCriterion(GriffonDomainClass domainClass, Criterion criterion, Map<String, Object> options) {
-        return null;
+        throw new UnsupportedDomainMethodException();
     }
 }

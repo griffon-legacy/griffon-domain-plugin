@@ -28,12 +28,12 @@ import java.lang.annotation.Target;
  *
  * @author Andres Almiray
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @GroovyASTTransformationClass("org.codehaus.griffon.compiler.support.DomainASTTransformation")
 public @interface Domain {
     /**
-     * The value of the persistence implementation.
+     * The value of the persistence mapping implementation.
      */
     String value() default "";
 

@@ -17,6 +17,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.FindOrSaveByMethod;
 import griffon.plugins.domain.orm.BinaryExpression;
 import griffon.plugins.domain.orm.CompositeCriterion;
@@ -62,7 +63,7 @@ public abstract class AbstractFindOrSaveByPersistentMethod extends AbstractClaus
     }
 
     protected Object findOrSaveBy(GriffonDomainClass domainClass, String methodName, Criterion criterion, Map<String, Object> options) {
-        return null;
+        throw new UnsupportedDomainMethodException();
     }
 
     protected Map<String, Object> criterionToMap(Criterion criterion) {

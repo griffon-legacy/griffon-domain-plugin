@@ -1,7 +1,5 @@
 package griffon.plugins.domain
 
-import griffon.plugins.domain.atoms.IntegerValue
-import griffon.plugins.domain.atoms.StringValue
 import griffon.transform.Domain
 
 @Domain

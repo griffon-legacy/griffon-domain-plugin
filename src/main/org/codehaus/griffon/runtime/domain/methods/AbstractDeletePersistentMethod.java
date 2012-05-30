@@ -18,6 +18,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.DeleteMethod;
 import groovy.lang.MissingMethodException;
 
@@ -42,7 +43,7 @@ public abstract class AbstractDeletePersistentMethod extends AbstractPersistentI
         if (arguments != null) {
             if (arguments.length == 1 && arguments[0] instanceof Map) {
                 params = (Map) arguments[0];
-            } else if(arguments.length != 0) {
+            } else if (arguments.length != 0) {
                 throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
             }
         }
@@ -54,6 +55,6 @@ public abstract class AbstractDeletePersistentMethod extends AbstractPersistentI
     }
 
     protected GriffonDomain delete(GriffonDomainClass domainClass, GriffonDomain target, Map<String, Object> params) {
-        return target;
+        throw new UnsupportedDomainMethodException();
     }
 }

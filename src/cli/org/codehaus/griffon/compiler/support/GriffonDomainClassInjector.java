@@ -17,18 +17,17 @@ package org.codehaus.griffon.compiler.support;
 
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainHandler;
-import griffon.plugins.domain.methods.DefaultPersistentMethods;
 import griffon.plugins.domain.methods.MethodSignature;
+import griffon.util.ApplicationHolder;
 import org.codehaus.griffon.runtime.domain.MethodMissingInterceptor;
 import org.codehaus.groovy.ast.*;
-import org.codehaus.groovy.ast.expr.*;
+import org.codehaus.groovy.ast.expr.ClassExpression;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.Statement;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 
 import static org.codehaus.griffon.ast.AbstractASTTransformation.makeClassSafe;
 import static org.codehaus.griffon.ast.GriffonASTUtils.*;
@@ -42,22 +41,19 @@ import static org.codehaus.griffon.ast.GriffonASTUtils.*;
 public abstract class GriffonDomainClassInjector {
     private static final int ACC_SYNTHETIC = 4096;
     private static final String GRIFFON_DOMAIN_CLASSNAME = GriffonDomain.class.getName();
+    private static final ClassNode APPLICATION_HOLDER_TYPE = makeClassSafe(ApplicationHolder.class);
     private final ClassNode GRIFFON_DOMAIN_HANDLER_CLASS = makeClassSafe(GriffonDomainHandler.class);
     private final ClassNode METHOD_MISSING_INTERCEPTOR_CLASS = makeClassSafe(MethodMissingInterceptor.class);
     protected static final String DOMAIN_HANDLER_METHOD_NAME = "domainHandler";
-    protected static final String MAPPING = "mapping";
-    // protected static final String DATASOURCE = "datasource";
 
-    public void performInjectionOn(ClassNode classNode, String implementation/*, String datasource*/) {
-        injectDomainHandler(classNode, implementation/*, datasource*/);
+    public void performInjectionOn(ClassNode classNode) {
+        injectDomainHandler(classNode);
         injectMethodMissing(classNode);
         injectMethods(classNode);
         performInjection(classNode);
     }
 
     protected abstract MethodSignature[] getProvidedMethods();
-
-    protected abstract ClassNode getDomainHandlerClass();
 
     protected abstract void performInjection(ClassNode classNode);
 
@@ -104,40 +100,20 @@ public abstract class GriffonDomainClassInjector {
         }
 
         return returns(call(
-                getDomainHandlerMethod(classNode),
+                domainHandlerInstance(classNode),
                 invokeMethod,
                 args(args)));
     }
 
-    protected void injectDomainHandler(ClassNode classNode, String implementation/*, String datasource*/) {
+    protected void injectDomainHandler(ClassNode classNode) {
         classNode.addMethod(new MethodNode(
                 DOMAIN_HANDLER_METHOD_NAME,
                 Modifier.PUBLIC | Modifier.STATIC,
                 GRIFFON_DOMAIN_HANDLER_CLASS,
                 Parameter.EMPTY_ARRAY,
                 ClassNode.EMPTY_ARRAY,
-                returns(domainHandlerInstance())
+                returns(domainHandlerInstance(classNode))
         ));
-
-        classNode.addMethod(new MethodNode(
-                MAPPING,
-                Modifier.PUBLIC | Modifier.STATIC,
-                ClassHelper.STRING_TYPE,
-                Parameter.EMPTY_ARRAY,
-                ClassNode.EMPTY_ARRAY,
-                returns(constx(implementation))
-        ));
-
-        /*
-        classNode.addMethod(new MethodNode(
-                DATASOURCE,
-                Modifier.PUBLIC | Modifier.STATIC,
-                ClassHelper.STRING_TYPE,
-                Parameter.EMPTY_ARRAY,
-                ClassNode.EMPTY_ARRAY,
-                returns(constx(datasource))
-        ));
-        */
     }
 
     protected void injectMethodMissing(ClassNode classNode) {
@@ -146,7 +122,7 @@ public abstract class GriffonDomainClassInjector {
                 Modifier.FINAL | Modifier.STATIC | Modifier.PRIVATE | ACC_SYNTHETIC,
                 METHOD_MISSING_INTERCEPTOR_CLASS,
                 ctor(METHOD_MISSING_INTERCEPTOR_CLASS,
-                        args(classx(classNode), domainHandlerInstance())));
+                        args(classx(classNode))));
 
         classNode.addMethod(new MethodNode(
                 "$static_methodMissing",
@@ -165,26 +141,22 @@ public abstract class GriffonDomainClassInjector {
         ));
     }
 
-    protected MethodCallExpression getDomainHandlerMethod(ClassNode classNode) {
-        return new MethodCallExpression(
-                VariableExpression.THIS_EXPRESSION,
-                DOMAIN_HANDLER_METHOD_NAME,
-                NO_ARGS
-        );
+    protected Expression domainHandlerInstance(ClassNode classNode) {
+        return call(grabGriffonClass(classNode), "getDomainHandler", NO_ARGS);
     }
 
-    public static MethodSignature[] allDefaultPersistentMethodSignatures() {
-        Collection<MethodSignature> signatures = new ArrayList<MethodSignature>();
-        for (DefaultPersistentMethods method : DefaultPersistentMethods.values()) {
-            signatures = DefaultGroovyMethods.plus(
-                    signatures,
-                    Arrays.asList(method.getMethodSignatures())
-            );
-        }
-        return signatures.toArray(new MethodSignature[signatures.size()]);
+    protected Expression grabGriffonClass(ClassNode classNode) {
+        return call(
+                artifactManagerInstance(),
+                "findGriffonClass",
+                args(classx(classNode)));
     }
 
-    protected Expression domainHandlerInstance() {
-        return call(getDomainHandlerClass(), "getInstance", NO_ARGS);
+    public static Expression applicationInstance() {
+        return call(APPLICATION_HOLDER_TYPE, "getApplication", NO_ARGS);
+    }
+
+    public static Expression artifactManagerInstance() {
+        return call(applicationInstance(), "getArtifactManager", NO_ARGS);
     }
 }

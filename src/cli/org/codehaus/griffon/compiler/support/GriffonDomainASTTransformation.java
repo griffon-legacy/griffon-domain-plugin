@@ -18,10 +18,7 @@ package org.codehaus.griffon.compiler.support;
 import griffon.plugins.domain.Event;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
-import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.transform.Domain;
-import griffon.util.GriffonExceptionHandler;
-import groovy.util.ConfigObject;
 import org.codehaus.griffon.compiler.GriffonCompilerContext;
 import org.codehaus.griffon.compiler.SourceUnitCollector;
 import org.codehaus.griffon.runtime.domain.AbstractGriffonDomain;
@@ -36,16 +33,9 @@ import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
 
 import static org.codehaus.griffon.ast.GriffonASTUtils.addMethod;
-import static org.codehaus.griffon.compiler.GriffonCompilerContext.getFlattenedBuildSettings;
 
 /**
  * Handles generation of code for Griffon domain classes.
@@ -60,10 +50,6 @@ public class GriffonDomainASTTransformation extends GriffonArtifactASTTransforma
     private static final ClassNode DOMAIN_CLASS = makeClassSafe(Domain.class);
     private static final ClassNode GRIFFON_DOMAIN_CLASS = makeClassSafe(GriffonDomain.class);
     private static final ClassNode ABSTRACT_GRIFFON_DOMAIN_CLASS = makeClassSafe(AbstractGriffonDomain.class);
-    private static final Map<String, GriffonDomainClassInjector> DOMAIN_INJECTORS = new LinkedHashMap<String, GriffonDomainClassInjector>();
-    public static final String GRIFFON_DOMAIN_DEFAULT_MAPPING = "griffon.plugins.domain.default.mapping";
-    public static final String GRIFFON_DOMAIN_DEFAULT_DATASOURCE = "griffon.plugins.domain.default.datasource";
-    public static final String DEFAULT_DOMAIN_HANDLER_IMPLEMENTATION = "memory";
 
     public static boolean isDomainArtifact(ClassNode classNode, SourceUnit source) {
         if (classNode == null || source == null) return false;
@@ -74,26 +60,12 @@ public class GriffonDomainASTTransformation extends GriffonArtifactASTTransforma
         if (!isDomainArtifact(classNode, source) ||
                 !classNode.getAnnotations(DOMAIN_CLASS).isEmpty()) return;
 
-        String implementation = DEFAULT_DOMAIN_HANDLER_IMPLEMENTATION;
-        Object defaultMapping = getFlattenedBuildSettings().get(GRIFFON_DOMAIN_DEFAULT_MAPPING);
-        if (defaultMapping != null && !(defaultMapping instanceof ConfigObject)) {
-            implementation = String.valueOf(defaultMapping);
-        }
-
-        /*
-        String datasource = "default";
-        Object defaultDatasource = getFlattenedBuildSettings().get(GRIFFON_DOMAIN_DEFAULT_DATASOURCE);
-        if (defaultDatasource != null && !(defaultDatasource instanceof ConfigObject)) {
-            datasource = String.valueOf(defaultDatasource);
-        }
-        */
-
-        inject(classNode, implementation/*, datasource*/);
+        inject(classNode);
     }
 
-    public static void inject(ClassNode classNode, String implementation/*, String datasource*/) {
+    public static void inject(ClassNode classNode) {
         injectBaseBehavior(classNode);
-        injectBehavior(classNode, implementation/*, datasource*/);
+        injectBehavior(classNode);
     }
 
     public static void injectBaseBehavior(ClassNode classNode) {
@@ -128,55 +100,9 @@ public class GriffonDomainASTTransformation extends GriffonArtifactASTTransforma
         }
     }
 
-    public static void injectBehavior(ClassNode classNode, String implementation/*, String datasource*/) {
-        GriffonDomainClassInjector injector = findDomainClassInjector(implementation);
-        injector.performInjectionOn(classNode, implementation/*, datasource*/);
+    public static void injectBehavior(ClassNode classNode) {
+        GriffonDomainClassInjector injector = new DefaultGriffonDomainClassInjector();
+        injector.performInjectionOn(classNode);
     }
 
-    private static GriffonDomainClassInjector findDomainClassInjector(String implementation) {
-        cacheDomainClassInjectors();
-        return DOMAIN_INJECTORS.get(implementation);
-    }
-
-    private static void cacheDomainClassInjectors() {
-        if (!DOMAIN_INJECTORS.isEmpty()) return;
-
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Enumeration<URL> urls = null;
-
-        try {
-            urls = cl.getResources("META-INF/services/" + GriffonDomainHandler.class.getName());
-        } catch (IOException ioe) {
-            throw new RuntimeException("No implementations found for " + GriffonDomainHandler.class.getName() + "." + ioe);
-        }
-
-        while (urls.hasMoreElements()) {
-            try {
-                URL url = urls.nextElement();
-                Properties p = new Properties();
-                p.load(url.openStream());
-                for (String key : p.stringPropertyNames()) {
-                    String className = String.valueOf(p.get(key));
-                    try {
-                        Class clazz = Class.forName(className);
-                        DOMAIN_INJECTORS.put(key, (GriffonDomainClassInjector) clazz.newInstance());
-                    } catch (Exception e) {
-                        // can't instantiate injector, bail out immediately
-                        throw new IllegalArgumentException("Can't instantiate GriffonDomainClassInjector for " + key +
-                                " with class '" + className + "'. " + e);
-                    }
-                }
-            } catch (IOException ioe) {
-                System.err.println(GriffonExceptionHandler.sanitize(ioe));
-            }
-        }
-
-        DOMAIN_INJECTORS.put(DEFAULT_DOMAIN_HANDLER_IMPLEMENTATION, new MemoryGriffonDomainClassInjector());
-
-        /*
-        if (DOMAIN_INJECTORS.isEmpty()) {
-            throw new IllegalArgumentException("No GriffonDomainClassInjectors found in classpath!");
-        }
-        */
-    }
 }

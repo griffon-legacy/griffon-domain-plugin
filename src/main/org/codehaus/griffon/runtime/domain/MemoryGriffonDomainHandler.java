@@ -21,7 +21,6 @@ import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
 import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.domain.methods.InstanceMethodInvocation;
-import griffon.plugins.domain.methods.MethodSignature;
 import griffon.plugins.domain.methods.StaticMethodInvocation;
 import griffon.plugins.domain.orm.Criterion;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
@@ -33,8 +32,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.Arrays.asList;
-
 /**
  * @author Andres Almiray
  */
@@ -42,7 +39,6 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
     private static final String MAPPING = "memory";
     private static final ConcurrentHashMapDatastore DEFAULT_DATASTORE = new ConcurrentHashMapDatastore("default");
     private static final Map<String, ConcurrentHashMapDatastore> DATASTORES = new ConcurrentHashMap<String, ConcurrentHashMapDatastore>();
-    public static final MethodSignature[] METHOD_SIGNATURES;
 
     private static final MemoryGriffonDomainHandler INSTANCE = new MemoryGriffonDomainHandler();
 
@@ -50,48 +46,14 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         return INSTANCE;
     }
 
-    private static MethodSignature[] harvestMethodSignatures() {
-        Collection<MethodSignature> signatures = new ArrayList<MethodSignature>();
-        signatures.addAll(asList(SaveMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(DeleteMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(CreateMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(GetMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(ExistsMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(GetAllMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(CountMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(CountByMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(ListMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(ListOrderByMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindWhereMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindByMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindAllMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindAllByMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindAllWhereMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindOrCreateByMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindOrCreateWhereMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindOrSaveByMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(FindOrSaveWhereMethod.METHOD_SIGNATURES));
-        signatures.addAll(asList(WithCriteriaMethod.METHOD_SIGNATURES));
-        return signatures.toArray(new MethodSignature[signatures.size()]);
-    }
-
-    static {
-        METHOD_SIGNATURES = harvestMethodSignatures();
-    }
-
-    protected MethodSignature[] getMethodSignaturesInternal() {
-        return harvestMethodSignatures();
-    }
-
-    protected Map<? extends String, ? extends InstanceMethodInvocation> getInstanceMethods() {
+    protected Map<String, InstanceMethodInvocation> getInstanceMethods() {
         Map<String, InstanceMethodInvocation> instanceMethods = new LinkedHashMap<String, InstanceMethodInvocation>();
         instanceMethods.put(SaveMethod.METHOD_NAME, new SaveMethod(this));
         instanceMethods.put(DeleteMethod.METHOD_NAME, new DeleteMethod(this));
         return instanceMethods;
     }
 
-    protected Map<? extends String, ? extends StaticMethodInvocation> getStaticMethods() {
+    protected Map<String, StaticMethodInvocation> getStaticMethods() {
         Map<String, StaticMethodInvocation> staticMethods = new LinkedHashMap<String, StaticMethodInvocation>();
         staticMethods.put(CreateMethod.METHOD_NAME, new CreateMethod(this));
         staticMethods.put(ListMethod.METHOD_NAME, new ListMethod(this));

@@ -17,6 +17,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.FindAllByMethod;
 import griffon.plugins.domain.orm.Criterion;
 import griffon.plugins.domain.orm.Restrictions;
@@ -57,6 +58,6 @@ public abstract class AbstractFindAllByPersistentMethod extends AbstractClausedS
     }
 
     protected Collection findAllBy(GriffonDomainClass domainClass, String methodName, Criterion criterion, Map<String, Object> options) {
-        return Collections.emptyList();
+        throw new UnsupportedDomainMethodException();
     }
 }

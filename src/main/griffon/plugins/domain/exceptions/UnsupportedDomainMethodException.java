@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package griffon.plugins.domain.exceptions;
 
-package griffon.plugins.domain;
-
-import griffon.core.ApplicationHandler;
-import griffon.plugins.domain.methods.MethodSignature;
+import griffon.exceptions.GriffonException;
 
 /**
  * @author Andres Almiray
  */
-public interface GriffonDomainHandler extends ApplicationHandler {
-    String getMapping();
+public class UnsupportedDomainMethodException extends GriffonException {
+    public UnsupportedDomainMethodException() {
+    }
 
-    Object invokeInstanceMethod(Object target, String methodName, Object... args);
+    public UnsupportedDomainMethodException(String arg0) {
+        super(arg0);
+    }
 
-    Object invokeStaticMethod(Class<GriffonDomain> clazz, String methodName, Object... args);
+    public UnsupportedDomainMethodException(String arg0, Throwable arg1) {
+        super(arg0, arg1);
+    }
+
+    public UnsupportedDomainMethodException(Throwable arg0) {
+        super(arg0);
+    }
 }

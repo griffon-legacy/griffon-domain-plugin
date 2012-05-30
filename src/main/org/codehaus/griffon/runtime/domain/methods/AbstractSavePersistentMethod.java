@@ -18,6 +18,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.SaveMethod;
 import griffon.plugins.validation.exceptions.ValidationException;
 import groovy.lang.MissingMethodException;
@@ -99,10 +100,10 @@ public abstract class AbstractSavePersistentMethod extends AbstractPersistentIns
     protected abstract boolean shouldInsert(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments);
 
     protected GriffonDomain insert(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments, Map<String, Object> params) {
-        return target;
+        throw new UnsupportedDomainMethodException();
     }
 
     protected GriffonDomain save(GriffonDomainClass domainClass, GriffonDomain target, Object[] arguments, Map<String, Object> params) {
-        return target;
+        throw new UnsupportedDomainMethodException();
     }
 }

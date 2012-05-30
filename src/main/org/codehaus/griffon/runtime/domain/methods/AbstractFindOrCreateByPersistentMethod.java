@@ -17,6 +17,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.FindOrCreateByMethod;
 import griffon.plugins.domain.orm.BinaryExpression;
 import griffon.plugins.domain.orm.CompositeCriterion;
@@ -60,7 +61,7 @@ public abstract class AbstractFindOrCreateByPersistentMethod extends AbstractCla
     }
 
     protected Object findOrCreateBy(GriffonDomainClass domainClass, String methodName, Criterion criterion) {
-        return null;
+        throw new UnsupportedDomainMethodException();
     }
 
     protected Map<String, Object> criterionToMap(Criterion criterion) {
@@ -70,12 +71,12 @@ public abstract class AbstractFindOrCreateByPersistentMethod extends AbstractCla
     }
 
     private void harvestProperties(Criterion criterion, Map<String, Object> props) {
-        if(criterion instanceof CompositeCriterion) {
+        if (criterion instanceof CompositeCriterion) {
             CompositeCriterion cc = (CompositeCriterion) criterion;
             for (Criterion c : cc.getCriteria()) {
                 harvestProperties(c, props);
             }
-        } else if(criterion instanceof BinaryExpression) {
+        } else if (criterion instanceof BinaryExpression) {
             BinaryExpression be = (BinaryExpression) criterion;
             props.put(be.getPropertyName(), be.getValue());
         }

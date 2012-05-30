@@ -38,6 +38,8 @@ public enum DefaultPersistentMethods {
     FIND_ALL_WHERE(FindAllWhereMethod.METHOD_NAME, FindAllMethod.METHOD_SIGNATURES),
     FIND_OR_CREATE_BY(FindOrCreateByMethod.METHOD_NAME, FindOrCreateByMethod.METHOD_SIGNATURES),
     FIND_OR_CREATE_WHERE(FindOrCreateWhereMethod.METHOD_NAME, FindOrCreateWhereMethod.METHOD_SIGNATURES),
+    FIND_OR_SAVE_BY(FindOrSaveByMethod.METHOD_NAME, FindOrSaveByMethod.METHOD_SIGNATURES),
+    FIND_OR_SAVE_WHERE(FindOrSaveWhereMethod.METHOD_NAME, FindOrSaveWhereMethod.METHOD_SIGNATURES),
     WITH_CRITERIA(WithCriteriaMethod.METHOD_NAME, WithCriteriaMethod.METHOD_SIGNATURES);
 
     private final String methodName;
@@ -46,7 +48,6 @@ public enum DefaultPersistentMethods {
     DefaultPersistentMethods(MethodSignature[] methodSignatures) {
         this(null, methodSignatures);
     }
-
 
     DefaultPersistentMethods(String methodName, MethodSignature[] methodSignatures) {
         this.methodName = methodName != null ? methodName : name().toLowerCase();

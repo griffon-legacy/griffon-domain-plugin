@@ -17,6 +17,7 @@ package org.codehaus.griffon.runtime.domain.methods;
 
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainHandler;
+import griffon.plugins.domain.exceptions.UnsupportedDomainMethodException;
 import griffon.plugins.domain.methods.CountByMethod;
 import griffon.plugins.domain.orm.Criterion;
 import griffon.plugins.domain.orm.Restrictions;
@@ -52,6 +53,6 @@ public abstract class AbstractCountByPersistentMethod extends AbstractClausedSta
     }
 
     protected int countBy(GriffonDomainClass domainClass, String methodName, Criterion criterion) {
-        return 0;
+        throw new UnsupportedDomainMethodException();
     }
 }

@@ -48,9 +48,6 @@ class SampleTests extends GriffonUnitTestCase {
         assert Sample.findOrCreateByNameAndLastName('Andres', 'Almiray').id
         assert !Sample.findOrCreateByNameAndLastName('Sascha', 'Klein').id
 
-        assert Sample.mapping() == 'memory'
-        // assert Sample.datasource() == 'default'
-
         println one.griffonClass
         println '--------------'
         one.griffonClass.properties.each {println it}
