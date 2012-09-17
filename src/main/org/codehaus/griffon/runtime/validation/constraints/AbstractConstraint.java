@@ -15,7 +15,7 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.i18n.MessageSource;
+import griffon.core.i18n.MessageSource;
 import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.FieldObjectError;
 import griffon.plugins.validation.constraints.ConstrainedProperty;

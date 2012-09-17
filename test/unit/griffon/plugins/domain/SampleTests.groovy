@@ -31,9 +31,17 @@ class SampleTests extends GriffonUnitTestCase {
         assert Sample.list(max: 1, offset: 1).name == ['Dierk']
         assert Sample.list(sort: 'num', order: 'asc').num == [30, 40]
         assert Sample.list(sort: 'num', order: 'desc').num == [40, 30]
+        assert Sample.first().name == 'Andres'
+        assert Sample.last().name == 'Dierk'
+        assert Sample.first(sort: 'name').name == 'Andres'
+        assert Sample.last(sort: 'name').name == 'Dierk'
+        assert Sample.first('name').name == 'Andres'
+        assert Sample.last('name').name == 'Dierk'
         Sample.get(2).delete()
         assert Sample.count() == 1
         assert Sample.list().name == ['Andres']
+        assert Sample.first().name == 'Andres'
+        assert Sample.last().name == 'Andres'
 
         assert Sample.findByName('Andres').lastName == 'Almiray'
         Sample.create(name: 'Dierk', lastName: 'Koenig', num: 40).save()

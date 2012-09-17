@@ -16,6 +16,7 @@
 package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.util.ApplicationHolder;
 import griffon.util.GriffonUtil;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
@@ -105,6 +106,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                     throw new MissingMethodException(property, targetClass, new Object[]{attributes}, true);
                 }
                 cp = new ConstrainedProperty(targetClass, property, propertyType);
+                cp.setMessageSource(ApplicationHolder.getApplication());
                 // cp.setOrder(order++);
                 constrainedProperties.put(property, cp);
             }

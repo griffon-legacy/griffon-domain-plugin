@@ -19,21 +19,22 @@ import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.domain.methods.DefaultPersistentMethods;
 import griffon.plugins.domain.methods.MethodSignature;
 import org.codehaus.griffon.ast.GriffonASTUtils;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.Parameter;
+import org.codehaus.groovy.ast.*;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.GStringExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 
+import javax.persistence.OneToOne;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static griffon.util.GriffonNameUtils.isBlank;
 import static org.codehaus.griffon.ast.AbstractASTTransformation.makeClassSafe;
 import static org.codehaus.griffon.ast.GriffonASTUtils.implementsOrInheritsZeroArgMethod;
 import static org.codehaus.griffon.ast.GriffonASTUtils.injectProperty;
@@ -47,8 +48,11 @@ import static org.codehaus.griffon.ast.GriffonASTUtils.injectProperty;
 public class DefaultGriffonDomainClassInjector extends GriffonDomainClassInjector {
     private List<ClassNode> classesWithInjectedToString = new ArrayList<ClassNode>();
     private static final ClassNode PROPERTY_TYPE = makeClassSafe(Long.class);
+    private static final ClassNode ONE_TO_ONE_TYPE = makeClassSafe(OneToOne.class);
+    private static final String MAPPED_BY = "mappedBy";
 
     protected void performInjection(ClassNode classNode) {
+        // injectAssociations(classNode);
         injectIdProperty(classNode);
         injectVersionProperty(classNode);
         injectToStringMethod(classNode, GriffonDomainProperty.IDENTITY);
@@ -67,6 +71,39 @@ public class DefaultGriffonDomainClassInjector extends GriffonDomainClassInjecto
             classNode.addMethod(mn);
             classesWithInjectedToString.add(classNode);
         }
+    }
+
+    private void injectAssociations(ClassNode classNode) {
+        for (PropertyNode propertyNode : classNode.getProperties()) {
+            AnnotationNode oneToOneAnnotation = getAnnotation(propertyNode, ONE_TO_ONE_TYPE);
+            if (oneToOneAnnotation != null) {
+                processOnToOne(classNode, propertyNode, oneToOneAnnotation);
+            }
+        }
+    }
+
+    private void processOnToOne(ClassNode classNode, PropertyNode propertyNode, AnnotationNode oneToOneAnnotation) {
+        System.out.println(classNode.getName() + "." + propertyNode.getName() + " " + propertyNode.getType());
+        final String mappedBy = getMemberAsString(oneToOneAnnotation, MAPPED_BY);
+        if (!isBlank(mappedBy)) {
+            // owned side
+        }
+    }
+
+    private String getMemberAsString(AnnotationNode annotation, String memberName) {
+        final Expression member = annotation.getMember(memberName);
+        if (member != null && member instanceof ConstantExpression) {
+            return ((ConstantExpression) member).getText();
+        }
+        return null;
+    }
+
+    private AnnotationNode getAnnotation(PropertyNode propertyNode, ClassNode annotationType) {
+        FieldNode fieldNode = propertyNode.getField();
+        List<AnnotationNode> annotations = fieldNode.getAnnotations(annotationType);
+        if (annotations != null && annotations.size() == 1) return annotations.get(0);
+        annotations = propertyNode.getAnnotations(annotationType);
+        return annotations != null && annotations.size() == 1 ? annotations.get(0) : null;
     }
 
     protected void injectVersionProperty(ClassNode classNode) {

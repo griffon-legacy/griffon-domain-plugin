@@ -10,6 +10,7 @@ griffon.project.dependency.resolution = {
                 'commons-validator:commons-validator:1.4.0') {
             excludes 'commons-logging'
         }
+        compile('javax.persistence:persistence-api:1.0.2')
     }
 }
 

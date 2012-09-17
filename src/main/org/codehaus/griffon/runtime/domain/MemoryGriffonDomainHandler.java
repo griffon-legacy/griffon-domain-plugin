@@ -62,6 +62,8 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         staticMethods.put(GetAllMethod.METHOD_NAME, new GetAllMethod(this));
         staticMethods.put(CountMethod.METHOD_NAME, new CountMethod(this));
         staticMethods.put(CountByMethod.METHOD_NAME, new CountByMethod(this));
+        staticMethods.put(FirstMethod.METHOD_NAME, new FirstMethod(this));
+        staticMethods.put(LastMethod.METHOD_NAME, new LastMethod(this));
         staticMethods.put(FindMethod.METHOD_NAME, new FindMethod(this));
         staticMethods.put(FindWhereMethod.METHOD_NAME, new FindWhereMethod(this));
         staticMethods.put(FindByMethod.METHOD_NAME, new FindByMethod(this));
@@ -325,6 +327,35 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         @Override
         protected GriffonDomain findByCriterion(GriffonDomainClass domainClass, Criterion criterion, Map<String, Object> options) {
             return datasetOf(domainClass).first(criterion);
+        }
+    }
+
+    private class FirstMethod extends AbstractFirstPersistentMethod {
+        public FirstMethod(GriffonDomainHandler griffonDomainHandler) {
+            super(griffonDomainHandler);
+        }
+
+        @Override
+        protected Object firstByPropertyName(GriffonDomainClass domainClass, String propertyName) {
+            Map<String, Object> options = CollectionUtils.<String, Object>map()
+                    .e(ConcurrentHashMapDatastore.Dataset.KEY_SORT, propertyName);
+            List<GriffonDomain> objects = datasetOf(domainClass).list(options);
+            return objects.size() > 0 ? objects.get(0): null;
+        }
+    }
+
+    private class LastMethod extends AbstractLastPersistentMethod {
+        public LastMethod(GriffonDomainHandler griffonDomainHandler) {
+            super(griffonDomainHandler);
+        }
+
+        @Override
+        protected Object lastByPropertyName(GriffonDomainClass domainClass, String propertyName) {
+            Map<String, Object> options = CollectionUtils.<String, Object>map()
+                    .e(ConcurrentHashMapDatastore.Dataset.KEY_SORT, propertyName)
+                    .e(ConcurrentHashMapDatastore.Dataset.KEY_ORDER, "desc");
+            List<GriffonDomain> objects = datasetOf(domainClass).list(options);
+            return objects.size() > 0 ? objects.get(0): null;
         }
     }
 

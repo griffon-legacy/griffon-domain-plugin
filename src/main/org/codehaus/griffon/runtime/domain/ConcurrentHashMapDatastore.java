@@ -128,10 +128,10 @@ public class ConcurrentHashMapDatastore {
             return entities;
         }
 
-        private static final String KEY_MAX = "max";
-        private static final String KEY_SORT = "sort";
-        private static final String KEY_ORDER = "order";
-        private static final String KEY_OFFSET = "offset";
+        public static final String KEY_MAX = "max";
+        public static final String KEY_SORT = "sort";
+        public static final String KEY_ORDER = "order";
+        public static final String KEY_OFFSET = "offset";
 
         public List<T> list(Map<String, Object> options) {
             int max = determineMax(options);

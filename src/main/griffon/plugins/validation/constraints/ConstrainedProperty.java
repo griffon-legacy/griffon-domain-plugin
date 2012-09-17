@@ -15,7 +15,7 @@
  */
 package griffon.plugins.validation.constraints;
 
-import griffon.plugins.i18n.MessageSource;
+import griffon.core.i18n.MessageSource;
 import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.exceptions.ConstraintException;
 import griffon.util.Assert;
@@ -34,21 +34,21 @@ import java.util.*;
  * Provides the ability to set constraints against a properties of a class. Constraints can either be
  * set via the property setters or via the <pre>applyConstraint(String constraintName, Object constrainingValue)</pre>
  * in combination with a constraint constant. Example:
- *
+ * <p/>
  * <code>
- *      ...
- *
- *      ConstrainedProperty cp = new ConstrainedProperty(owningClass, propertyName, propertyType);
- *      if (cp.supportsConstraint(ConstrainedProperty.EMAIL_CONSTRAINT)) {
- *          cp.applyConstraint(ConstrainedProperty.EMAIL_CONSTRAINT, new Boolean(true));
- *      }
+ * ...
+ * <p/>
+ * ConstrainedProperty cp = new ConstrainedProperty(owningClass, propertyName, propertyType);
+ * if (cp.supportsConstraint(ConstrainedProperty.EMAIL_CONSTRAINT)) {
+ * cp.applyConstraint(ConstrainedProperty.EMAIL_CONSTRAINT, new Boolean(true));
+ * }
  * </code>
- *
+ * <p/>
  * Alternatively constraints can be applied directly using the java bean getters/setters if a static (as oposed to dynamic)
  * approach to constraint creation is possible:
- *
+ * <p/>
  * <code>
- *       cp.setEmail(true)
+ * cp.setEmail(true)
  * </code>
  *
  * @author Graeme Rocher (Grails)
@@ -989,7 +989,7 @@ public class ConstrainedProperty {
     /**
      * Adds a meta constraints which is a non-validating informational constraint.
      *
-     * @param name The name of the constraint
+     * @param name  The name of the constraint
      * @param value The value
      */
     public void addMetaConstraint(String name, Object value) {
@@ -998,6 +998,7 @@ public class ConstrainedProperty {
 
     /**
      * Obtains the value of the named meta constraint.
+     *
      * @param name The name of the constraint
      * @return The value
      */

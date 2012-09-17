@@ -17,10 +17,13 @@ package org.codehaus.griffon.runtime.domain;
 
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainProperty;
+import griffon.util.GriffonClassUtils;
 import org.codehaus.griffon.runtime.core.ClassPropertyFetcher;
 
+import javax.persistence.Transient;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -138,6 +141,11 @@ public class GriffonDomainConfigurationUtil {
         final String name = descriptor.getName();
         return
                 !GriffonDomainClass.STANDARD_PROPERTIES.contains(name) &&
-                !GriffonDomainProperty.NON_CONFIGURATIONAL_PROPERTIES.contains(name);
+                        !GriffonDomainProperty.NON_CONFIGURATIONAL_PROPERTIES.contains(name);
+    }
+
+    public static boolean isTransientProperty(Class owner, PropertyDescriptor descriptor) {
+        final Field propertyField = GriffonClassUtils.getField(owner, descriptor.getName());
+        return propertyField != null && propertyField.getAnnotation(Transient.class) != null;
     }
 }

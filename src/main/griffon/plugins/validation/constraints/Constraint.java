@@ -15,7 +15,7 @@
  */
 package griffon.plugins.validation.constraints;
 
-import griffon.plugins.i18n.MessageSource;
+import griffon.core.i18n.MessageSource;
 import griffon.plugins.validation.Errors;
 
 /**

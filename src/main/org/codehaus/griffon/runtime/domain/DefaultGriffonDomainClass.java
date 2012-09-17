@@ -24,6 +24,7 @@ import org.codehaus.griffon.runtime.validation.constraints.DefaultConstraintsEva
 import java.beans.PropertyDescriptor;
 
 import static org.codehaus.griffon.runtime.domain.GriffonDomainConfigurationUtil.isNotConfigurational;
+import static org.codehaus.griffon.runtime.domain.GriffonDomainConfigurationUtil.isTransientProperty;
 
 /**
  * @author Andres Almiray
@@ -53,7 +54,7 @@ public class DefaultGriffonDomainClass extends AbstractGriffonDomainClass {
             }
 
             // ignore certain properties
-            if (isNotConfigurational(descriptor)) {
+            if (isNotConfigurational(descriptor) && !isTransientProperty(getClazz(), descriptor)) {
                 GriffonDomainClassProperty property = new DefaultGriffonDomainClassProperty(this, descriptor);
                 domainProperties.put(property.getName(), property);
             }

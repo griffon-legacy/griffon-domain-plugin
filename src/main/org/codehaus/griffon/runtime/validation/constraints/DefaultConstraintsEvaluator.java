@@ -18,6 +18,7 @@ import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassProperty;
 import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.util.ApplicationHolder;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.*;
 import org.apache.commons.logging.Log;
@@ -117,6 +118,7 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
                 if (cp == null) {
                     cp = new ConstrainedProperty(p.getDomainClass().getClazz(), propertyName, p.getType());
                     // cp.setOrder(constrainedProperties.size() + 1);
+                    cp.setMessageSource(ApplicationHolder.getApplication());
                     constrainedProperties.put(propertyName, cp);
                 }
                 // Make sure all fields are required by default, unless

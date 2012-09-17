@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static griffon.util.ApplicationHolder.getApplication;
+import static griffon.util.ConfigUtils.getConfigValueAsString;
 import static griffon.util.GriffonExceptionHandler.sanitize;
 import static griffon.util.GriffonNameUtils.isBlank;
 
@@ -33,23 +35,27 @@ import static griffon.util.GriffonNameUtils.isBlank;
  */
 public final class GriffonDomainHandlerRegistry {
     private static final Map<String, GriffonDomainHandler> DOMAIN_HANDLER_CACHE = new ConcurrentHashMap<String, GriffonDomainHandler>();
-    private static final String DEFAULT_DOMAIN_HANDLER_IMPLEMENTATION = "memory";
+    private static final String DEFAULT_DOMAIN_HANDLER_MAPPING = "memory";
+    private static final String KEY_DOMAIN_DEFAULT_MAPPING = "griffon.domain.default.mapping";
 
     private GriffonDomainHandlerRegistry() {
     }
 
-    public static GriffonDomainHandler domainHandlerFor(String implementation) {
-        if (isBlank(implementation)) {
-            implementation = DEFAULT_DOMAIN_HANDLER_IMPLEMENTATION;
+    public static GriffonDomainHandler domainHandlerFor(String mapping) {
+        if (isBlank(mapping)) {
+            mapping = getConfigValueAsString(
+                    getApplication().getConfig(),
+                    KEY_DOMAIN_DEFAULT_MAPPING,
+                    DEFAULT_DOMAIN_HANDLER_MAPPING);
         }
 
         cacheDomainHandlers();
 
-        GriffonDomainHandler domainHandler = DOMAIN_HANDLER_CACHE.get(implementation);
+        GriffonDomainHandler domainHandler = DOMAIN_HANDLER_CACHE.get(mapping);
         if (null == domainHandler) {
-            throw new IllegalArgumentException("No GriffonDomainHandler available for mapping '" + implementation + "'");
+            throw new IllegalArgumentException("No GriffonDomainHandler available for mapping '" + mapping + "'");
         }
-        
+
         return domainHandler;
     }
 
@@ -88,6 +94,6 @@ public final class GriffonDomainHandlerRegistry {
             }
         }
 
-        DOMAIN_HANDLER_CACHE.put(DEFAULT_DOMAIN_HANDLER_IMPLEMENTATION, new MemoryGriffonDomainHandler());
+        DOMAIN_HANDLER_CACHE.put(DEFAULT_DOMAIN_HANDLER_MAPPING, new MemoryGriffonDomainHandler());
     }
 }
