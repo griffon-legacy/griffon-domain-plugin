@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2012 the original author or authors.
+ * Copyright 2004-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
  */
 package org.codehaus.griffon.runtime.domain;
 
+import griffon.persistence.Transient;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.util.GriffonClassUtils;
 import org.codehaus.griffon.runtime.core.ClassPropertyFetcher;
 
-import javax.persistence.Transient;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;

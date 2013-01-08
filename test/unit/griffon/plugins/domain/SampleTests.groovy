@@ -1,12 +1,9 @@
 package griffon.plugins.domain
 
-import griffon.test.*
-
-import griffon.test.mock.MockGriffonApplication
-import org.codehaus.griffon.runtime.domain.AbstractCommandObject
-import griffon.plugins.domain.atoms.StringValue
-import griffon.plugins.domain.atoms.IntegerValue
 import griffon.plugins.validation.exceptions.ValidationException
+import griffon.test.GriffonUnitTestCase
+import griffon.test.mock.MockGriffonApplication
+import griffon.transform.CommandObject
 
 class SampleTests extends GriffonUnitTestCase {
     private GriffonApplication app
@@ -50,7 +47,7 @@ class SampleTests extends GriffonUnitTestCase {
         assert Sample.findAllByNum(30).name == ['Andres', 'Guillaume']
 
         assert Sample.listOrderBy('Name').name == ['Andres', 'Dierk', 'Guillaume']
-        assert Sample.listOrderByName(order:  'desc').name == ['Guillaume', 'Dierk', 'Andres']
+        assert Sample.listOrderByName(order: 'desc').name == ['Guillaume', 'Dierk', 'Andres']
         assert Sample.listOrderByNum().name == ['Andres', 'Guillaume', 'Dierk']
 
         assert Sample.findOrCreateByNameAndLastName('Andres', 'Almiray').id
@@ -58,11 +55,11 @@ class SampleTests extends GriffonUnitTestCase {
 
         println one.griffonClass
         println '--------------'
-        one.griffonClass.properties.each {println it}
+        one.griffonClass.properties.each { println it }
         println '--------------'
-        one.griffonClass.persistentProperties.each {println it}
+        one.griffonClass.persistentProperties.each { println it }
         println '--------------'
-        one.griffonClass.constrainedProperties.each {println it}
+        one.griffonClass.constrainedProperties.each { println it }
         println '--------------'
 
         assert !Sample.create().save()
@@ -82,7 +79,13 @@ class SampleTests extends GriffonUnitTestCase {
         def command = new LoginCommand()
 
         println '--------------'
-        command.constrainedProperties().each {println it}
+        command.constrainedProperties().each { println it }
+        println '--------------'
+        command.num = 0
+        command.validate('num')
+        println command.errors.hasErrors()
+        command.errors.allErrors.each { println it }
+        command.errors.clearAllErrors()
         println '--------------'
         command.validate()
         println command.errors.hasErrors()
@@ -90,14 +93,18 @@ class SampleTests extends GriffonUnitTestCase {
     }
 }
 
-class LoginCommand extends AbstractCommandObject {
-    final StringValue name = new StringValue()
-    final StringValue lastName = new StringValue()
-    final IntegerValue num = new IntegerValue()
+@CommandObject
+class LoginCommand {
+    // final StringValue name = new StringValue()
+    // final StringValue lastName = new StringValue()
+    // final IntegerValue num = new IntegerValue()
+    String name
+    String lastName
+    Integer num
 
     static constraints = {
         num(range: 0..10)
-        name(nullable: false, blank: false, unique: true)
+        name(nullable: false, blank: false)
         lastName(nullable: true)
     }
 }

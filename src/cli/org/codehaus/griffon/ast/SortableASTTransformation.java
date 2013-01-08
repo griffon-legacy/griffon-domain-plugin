@@ -1,5 +1,5 @@
 /* 
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2009-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import static org.codehaus.griffon.ast.GriffonASTUtils.*;
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 public class SortableASTTransformation extends AbstractASTTransformation {
     private static final ClassNode MY_TYPE = makeClassSafe(Sortable.class);
-    private static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage();
     private static final ClassNode COMPARABLE_TYPE = makeClassSafe(Comparable.class);
     private static final ClassNode COMPARATOR_TYPE = makeClassSafe(Comparator.class);
     private static final ClassNode ABSTRACT_COMPARATOR_TYPE = makeClassSafe(AbstractComparator.class);
@@ -108,6 +107,7 @@ public class SortableASTTransformation extends AbstractASTTransformation {
         statements.add(decls(var(VALUE, ClassHelper.int_TYPE), constx(0)));
         for (PropertyNode property : properties) {
             String name = property.getName();
+            // TODO: check that this.prop is Comparable otherwise KABOOM!
             // value = this.prop <=> obj.prop;
             statements.add(
                     assigns(var(VALUE), cmp(prop(THIS, name), prop(var(OBJ), name)))

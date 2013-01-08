@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2009-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 
-import javax.persistence.OneToOne;
+// import javax.persistence.OneToOne;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ import static org.codehaus.griffon.ast.GriffonASTUtils.injectProperty;
 public class DefaultGriffonDomainClassInjector extends GriffonDomainClassInjector {
     private List<ClassNode> classesWithInjectedToString = new ArrayList<ClassNode>();
     private static final ClassNode PROPERTY_TYPE = makeClassSafe(Long.class);
-    private static final ClassNode ONE_TO_ONE_TYPE = makeClassSafe(OneToOne.class);
+    // private static final ClassNode ONE_TO_ONE_TYPE = makeClassSafe(OneToOne.class);
     private static final String MAPPED_BY = "mappedBy";
 
     protected void performInjection(ClassNode classNode) {
@@ -73,6 +73,7 @@ public class DefaultGriffonDomainClassInjector extends GriffonDomainClassInjecto
         }
     }
 
+    /*
     private void injectAssociations(ClassNode classNode) {
         for (PropertyNode propertyNode : classNode.getProperties()) {
             AnnotationNode oneToOneAnnotation = getAnnotation(propertyNode, ONE_TO_ONE_TYPE);
@@ -89,6 +90,7 @@ public class DefaultGriffonDomainClassInjector extends GriffonDomainClassInjecto
             // owned side
         }
     }
+    */
 
     private String getMemberAsString(AnnotationNode annotation, String memberName) {
         final Expression member = annotation.getMember(memberName);

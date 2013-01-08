@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2009-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import griffon.plugins.validation.constraints.ConstrainedProperty;
 import org.codehaus.griffon.runtime.core.AbstractGriffonArtifact;
 import org.codehaus.griffon.runtime.validation.DefaultErrors;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,8 +39,12 @@ public abstract class AbstractGriffonDomain extends AbstractGriffonArtifact impl
         this.errors = new DefaultErrors(getClass());
     }
 
-    public boolean validate() {
-        return ConstraintsValidator.evaluate(this);
+    public boolean validate(String... properties) {
+        return ConstraintsValidator.evaluate(this, properties);
+    }
+
+    public boolean validate(List<String> properties) {
+        return ConstraintsValidator.evaluate(this, properties);
     }
 
     public Errors getErrors() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2009-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,16 @@
  */
 package griffon.plugins.validation;
 
-import griffon.plugins.domain.*;
+import griffon.plugins.domain.AtomicValue;
+import griffon.plugins.domain.GriffonDomain;
+import griffon.plugins.domain.GriffonDomainClass;
+import griffon.plugins.domain.GriffonDomainClassProperty;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
+import org.codehaus.groovy.runtime.InvokerHelper;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,31 +35,45 @@ public final class ConstraintsValidator {
 
     }
 
-    public static boolean evaluate(Validateable validateable) {
-        Map<String, ConstrainedProperty> constrainedProperties = validateable.constrainedProperties();
+    public static boolean evaluate(Validateable validateable, List<String> properties) {
+        List<String> list = properties != null ? properties : Collections.<String>emptyList();
+        return evaluate(validateable, list.toArray(new String[list.size()]));
+    }
 
-        Map<String, GriffonDomainProperty> domainProperties = fetchDomainProperties(validateable);
+    public static boolean evaluate(Validateable validateable, String... properties) {
+        Map<String, ConstrainedProperty> constrainedProperties = new LinkedHashMap<String, ConstrainedProperty>();
+
+        if (properties == null || properties.length == 0) {
+            constrainedProperties.putAll(validateable.constrainedProperties());
+        } else {
+            for (String property : properties) {
+                constrainedProperties.put(property, validateable.constrainedProperties().get(property));
+            }
+        }
+
         for (Map.Entry<String, ConstrainedProperty> entry : constrainedProperties.entrySet()) {
-            GriffonDomainProperty domainProperty = domainProperties.get(entry.getKey());
             ConstrainedProperty constrainedProperty = entry.getValue();
-            constrainedProperty.validate(validateable, domainProperty.getValue(validateable), validateable.getErrors());
+            constrainedProperty.validate(validateable, getPropertyValue(validateable, entry.getKey()), validateable.getErrors());
         }
 
         return !validateable.getErrors().hasErrors();
     }
 
-    private static Map<String, GriffonDomainProperty> fetchDomainProperties(Validateable validateable) {
-        Map<String, GriffonDomainProperty> domainProperties = new LinkedHashMap<String, GriffonDomainProperty>();
-
-        if (validateable instanceof CommandObject) {
-            domainProperties.putAll(((CommandObject) validateable).domainProperties());
-        } else if (validateable instanceof GriffonDomain) {
+    private static Object getPropertyValue(Validateable validateable, String propertyName) {
+        if (validateable instanceof GriffonDomain) {
             GriffonDomainClass griffonDomainClass = (GriffonDomainClass) ((GriffonDomain) validateable).getGriffonClass();
             for (GriffonDomainClassProperty property : griffonDomainClass.getPersistentProperties()) {
-                domainProperties.put(property.getName(), property);
+                if (property.getName().equals(propertyName)) {
+                    return property.getValue(validateable);
+                }
             }
+        } else {
+            Object value = InvokerHelper.getProperty(validateable, propertyName);
+            if (value instanceof AtomicValue) {
+                return ((AtomicValue) value).getValue();
+            }
+            return value;
         }
-
-        return domainProperties;
+        return null;
     }
 }

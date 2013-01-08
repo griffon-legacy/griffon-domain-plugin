@@ -1,5 +1,5 @@
 /*
- * Copyright 2009-2012 the original author or authors.
+ * Copyright 2009-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.Validateable;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
 import org.codehaus.griffon.runtime.validation.DefaultErrors;
+import org.codehaus.griffon.runtime.validation.constraints.ConstraintsEvaluator;
+import org.codehaus.griffon.runtime.validation.constraints.DefaultConstraintsEvaluator;
 import org.codehaus.groovy.ast.*;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
@@ -32,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedHashMap;
 
 import static org.codehaus.griffon.ast.GriffonASTUtils.*;
+import static org.codehaus.groovy.ast.ClassHelper.LIST_TYPE;
+import static org.codehaus.groovy.ast.ClassHelper.STRING_TYPE;
 
 /**
  * Handles generation of code for the {@code @Validateable} annotation.
@@ -46,11 +50,15 @@ public class ValidateableASTTransformation extends AbstractASTTransformation {
     private static final ClassNode VALIDATEABLE_ANNOTATION = makeClassSafe(griffon.transform.Validateable.class);
     private static final ClassNode ERRORS_TYPE = makeClassSafe(Errors.class);
     private static final ClassNode DEFAULT_ERRORS_TYPE = makeClassSafe(DefaultErrors.class);
-    private static final ClassNode CONSTRAINTS_EVALUATOR_TYPE = makeClassSafe(ConstraintsValidator.class);
-    private static final ClassNode CONSTRAINED_PROPERTY_TYPE = makeClassSafe(ConstrainedProperty.class);
+    private static final ClassNode CONSTRAINTS_VALIDATOR_TYPE = makeClassSafe(ConstraintsValidator.class);
+    private static final ClassNode CONSTRAINTS_EVALUATOR_TYPE = makeClassSafe(ConstraintsEvaluator.class);
+    private static final ClassNode DEFAULT_CONSTRAINTS_EVALUATOR_TYPE = makeClassSafe(DefaultConstraintsEvaluator.class);
 
     private static final String VALIDATE = "validate";
     private static final String GET_ERRORS = "getErrors";
+    private static final String GET_CLASS = "getClass";
+    private static final String PROPERTIES = "properties";
+    private static final String EVALUATE = "evaluate";
     private static final String CONSTRAINED_PROPERTIES = "constrainedProperties";
 
     /**
@@ -116,72 +124,104 @@ public class ValidateableASTTransformation extends AbstractASTTransformation {
         }
         if (foundValidate || foundGetErrors || foundConstrainedProperties) {
             sourceUnit.getErrorCollector().addErrorAndContinue(
-                    new SimpleMessage("@Validateable cannot be processed on "
-                            + declaringClass.getName()
-                            + " because some but not all of validate, getErrors and constrainedProperties were declared in the current class or super classes.",
-                            sourceUnit)
+                new SimpleMessage("@Validateable cannot be processed on "
+                    + declaringClass.getName()
+                    + " because some but not all of validate, getErrors and constrainedProperties were declared in the current class or super classes.",
+                    sourceUnit)
             );
             return false;
         }
         return true;
     }
 
-    protected static void addValidateable(ClassNode declaringClass) {
+    public static void addValidateable(ClassNode declaringClass) {
         injectInterface(declaringClass, VALIDATEABLE_TYPE);
+        addValidatableBehavior(declaringClass);
+    }
 
+    public static void addValidatableBehavior(ClassNode declaringClass) {
         // add field:
         // protected final Errors this$errors = new org.codehaus.griffon.runtime.validation.DefaultErrors(getClass())
         FieldNode errorsField = declaringClass.addField(
-                "this$errors",
-                ACC_FINAL | ACC_PRIVATE | ACC_SYNTHETIC,
-                ERRORS_TYPE,
-                ctor(DEFAULT_ERRORS_TYPE, call(THIS, "getClass", NO_ARGS)));
+            "this$errors",
+            ACC_FINAL | ACC_PROTECTED | ACC_SYNTHETIC,
+            ERRORS_TYPE,
+            ctor(DEFAULT_ERRORS_TYPE, call(THIS, GET_CLASS, NO_ARGS)));
 
         // add method:
-        // boolean validate() {
-        //      return ConstraintsValidator.evaluate(this);
+        // boolean validate(String... properties) {
+        //      return ConstraintsValidator.evaluate(this, properties);
         // }
         injectMethod(declaringClass, new MethodNode(
-                VALIDATE,
-                ACC_PUBLIC,
-                ClassHelper.boolean_TYPE,
-                params(),
-                ClassNode.EMPTY_ARRAY,
-                returns(call(CONSTRAINTS_EVALUATOR_TYPE, "evaluate", args(THIS)))
+            VALIDATE,
+            ACC_PUBLIC,
+            ClassHelper.boolean_TYPE,
+            params(param(makeClassSafe(STRING_TYPE).makeArray(), PROPERTIES)),
+            ClassNode.EMPTY_ARRAY,
+            returns(call(CONSTRAINTS_VALIDATOR_TYPE, EVALUATE, args(THIS, var(PROPERTIES))))
         ));
 
         // add method:
-        // Errors isEventPublishingEnabled() {
-        //      return $this.eventRouter;
+        // boolean validate(List<String> properties) {
+        //      return ConstraintsValidator.evaluate(this, properties);
         // }
         injectMethod(declaringClass, new MethodNode(
-                GET_ERRORS,
-                ACC_PUBLIC,
-                ERRORS_TYPE,
-                params(),
-                ClassNode.EMPTY_ARRAY,
-                returns(field(errorsField))
+            VALIDATE,
+            ACC_PUBLIC,
+            ClassHelper.boolean_TYPE,
+            params(param(makeClassSafe(LIST_TYPE), PROPERTIES)),
+            ClassNode.EMPTY_ARRAY,
+            returns(call(CONSTRAINTS_VALIDATOR_TYPE, EVALUATE, args(THIS, var(PROPERTIES))))
+        ));
+
+        // add method:
+        // Errors getErrors() {
+        //      return $this$errors;
+        // }
+        injectMethod(declaringClass, new MethodNode(
+            GET_ERRORS,
+            ACC_PUBLIC,
+            ERRORS_TYPE,
+            params(),
+            ClassNode.EMPTY_ARRAY,
+            returns(field(errorsField))
         ));
 
         // add field:
-        // private final Map<String, ConstrainedProperty> this$constrainedProperties = new LinkedHashMap()
+        // protected final Map<String, ConstrainedProperty> this$constrainedProperties = new LinkedHashMap()
         FieldNode constrainedPropertiesField = declaringClass.addField(
-                "this$constrainedProperties",
-                ACC_FINAL | ACC_PRIVATE | ACC_SYNTHETIC,
-                makeClassSafe(ClassHelper.MAP_TYPE),
-                ctor(makeClassSafe(LinkedHashMap.class), NO_ARGS));
+            "this$constrainedProperties",
+            ACC_FINAL | ACC_PROTECTED | ACC_SYNTHETIC,
+            makeClassSafe(ClassHelper.MAP_TYPE),
+            ctor(makeClassSafe(LinkedHashMap.class), NO_ARGS));
 
         // add method:
         // Map<String, ConstrainedProperty> constrainedProperties() {
         //      return this$constrainedProperties;
         // }
         injectMethod(declaringClass, new MethodNode(
-                CONSTRAINED_PROPERTIES,
-                ACC_PUBLIC,
-                makeClassSafe(ClassHelper.MAP_TYPE),
-                params(),
-                ClassNode.EMPTY_ARRAY,
-                returns(field(constrainedPropertiesField))
+            CONSTRAINED_PROPERTIES,
+            ACC_PUBLIC,
+            makeClassSafe(ClassHelper.MAP_TYPE),
+            params(),
+            ClassNode.EMPTY_ARRAY,
+            returns(field(constrainedPropertiesField))
+        ));
+
+        //ConstraintsEvaluator constraintsEvaluator = new DefaultConstraintsEvaluator();
+        declaringClass.addObjectInitializerStatements(decls(
+            var("constraintsEvaluator", CONSTRAINTS_EVALUATOR_TYPE),
+            ctor(DEFAULT_CONSTRAINTS_EVALUATOR_TYPE, NO_ARGS)
+        ));
+        //constrainedProperties.putAll(constraintsEvaluator.evaluate(getClass()));
+        declaringClass.addObjectInitializerStatements(stmnt(
+            call(
+                field(constrainedPropertiesField),
+                "putAll",
+                args(call(
+                    var("constraintsEvaluator"),
+                    EVALUATE,
+                    args(call(THIS, GET_CLASS, NO_ARGS)))))
         ));
     }
 }
