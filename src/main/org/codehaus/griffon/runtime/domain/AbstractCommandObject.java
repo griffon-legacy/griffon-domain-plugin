@@ -16,43 +16,11 @@
 package org.codehaus.griffon.runtime.domain;
 
 import griffon.plugins.domain.CommandObject;
-import griffon.plugins.validation.ConstraintsValidator;
-import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
-import org.codehaus.griffon.runtime.validation.DefaultErrors;
-import org.codehaus.griffon.runtime.validation.constraints.ConstraintsEvaluator;
-import org.codehaus.griffon.runtime.validation.constraints.DefaultConstraintsEvaluator;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import org.codehaus.griffon.runtime.validation.AbstractValidateable;
 
 /**
  * @author Andres Almiray
  */
-public abstract class AbstractCommandObject implements CommandObject {
-    private final Errors errors;
-    private final Map<String, ConstrainedProperty> constrainedProperties = new LinkedHashMap<String, ConstrainedProperty>();
+public abstract class AbstractCommandObject extends AbstractValidateable implements CommandObject {
 
-    public AbstractCommandObject() {
-        this.errors = new DefaultErrors(getClass());
-        ConstraintsEvaluator constraintsEvaluator = new DefaultConstraintsEvaluator();
-        constrainedProperties.putAll(constraintsEvaluator.evaluate(getClass()));
-    }
-
-    public boolean validate(String... properties) {
-        return ConstraintsValidator.evaluate(this, properties);
-    }
-
-    public boolean validate(List<String> properties) {
-        return ConstraintsValidator.evaluate(this, properties);
-    }
-
-    public Errors getErrors() {
-        return errors;
-    }
-
-    public Map<String, ConstrainedProperty> constrainedProperties() {
-        return constrainedProperties;
-    }
 }
