@@ -5,6 +5,8 @@ import griffon.test.GriffonUnitTestCase
 import griffon.test.mock.MockGriffonApplication
 import griffon.transform.CommandObject
 
+import java.beans.PropertyChangeListener
+
 class SampleTests extends GriffonUnitTestCase {
     private GriffonApplication app
 
@@ -81,15 +83,20 @@ class SampleTests extends GriffonUnitTestCase {
         println '--------------'
         command.constrainedProperties().each { println it }
         println '--------------'
+        command.errors.addPropertyChangeListener({ e ->
+            println "${e.propertyName} ${e.oldValue} ${e.newValue}"
+        } as PropertyChangeListener)
         command.num = 0
         command.validate('num')
         println command.errors.hasErrors()
         command.errors.allErrors.each { println it }
         command.errors.clearAllErrors()
         println '--------------'
+        command.num = -1
         command.validate()
         println command.errors.hasErrors()
         command.errors.allErrors.each { println it }
+        command.errors.clearAllErrors()
     }
 }
 

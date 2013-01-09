@@ -47,5 +47,4 @@ public interface MessageCodesResolver {
      * @return the message codes to use
      */
     String[] resolveMessageCodes(String errorCode, String objectName, String field, Class<?> fieldType);
-
 }

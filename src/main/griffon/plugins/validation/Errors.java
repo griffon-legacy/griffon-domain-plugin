@@ -15,12 +15,17 @@
  */
 package griffon.plugins.validation;
 
+import griffon.core.Observable;
+
 import java.util.List;
 
 /**
  * @author Andres Almiray
  */
-public interface Errors {
+public interface Errors extends Observable {
+    String HAS_ERRORS_PROPERTY = "hasErrors";
+    String ERROR_COUNT_PROPERTY = "errorCount";
+
     String getObjectName();
 
     boolean hasErrors();

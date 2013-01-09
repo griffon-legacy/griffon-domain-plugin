@@ -21,20 +21,22 @@ import griffon.plugins.validation.FieldObjectError;
 import griffon.plugins.validation.MessageCodesResolver;
 import griffon.plugins.validation.ObjectError;
 import griffon.util.GriffonClassUtils;
+import org.codehaus.griffon.runtime.core.AbstractObservable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static griffon.util.GriffonExceptionHandler.sanitize;
+import static griffon.util.GriffonNameUtils.capitalize;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Collections.unmodifiableList;
 
 /**
  * @author Andres Almiray
  */
-public class DefaultErrors implements Errors {
-    private final Map<String, List<FieldObjectError>> fieldErrors = synchronizedMap(new LinkedHashMap<String, java.util.List<FieldObjectError>>());
+public class DefaultErrors extends AbstractObservable implements Errors {
+    private final Map<String, List<FieldObjectError>> fieldErrors = synchronizedMap(new LinkedHashMap<String, List<FieldObjectError>>());
     private final List<ObjectError> objectErrors = new CopyOnWriteArrayList<ObjectError>();
     private MessageCodesResolver messageCodesResolver = new DefaultMessageCodesResolver();
     private final String objectName;
@@ -111,32 +113,85 @@ public class DefaultErrors implements Errors {
     public void addError(ObjectError objectError) {
         if (objectError instanceof FieldObjectError) {
             FieldObjectError fieldError = (FieldObjectError) objectError;
-            List<FieldObjectError> errors = fieldErrors.get(fieldError.getFieldName());
-            if (null == errors) {
-                errors = new ArrayList<FieldObjectError>();
-                fieldErrors.put(fieldError.getFieldName(), errors);
-            }
-            if (!errors.contains(fieldError)) {
-                errors.add(fieldError);
-            }
+            addFieldError(fieldError, fieldErrors.get(fieldError.getFieldName()));
+        } else if (objectError != null) {
+            addObjectError(objectError);
+        }
+    }
+
+    private void fireHasErrorFieldEvent(String fieldName, boolean oldValue, boolean newValue) {
+        firePropertyChange(fieldName + capitalize(HAS_ERRORS_PROPERTY), oldValue, newValue);
+    }
+
+    private void fireErrorCountFieldEvent(String fieldName, int oldValue, int newValue) {
+        firePropertyChange(fieldName + capitalize(ERROR_COUNT_PROPERTY), oldValue, newValue);
+    }
+
+    private void fireHasErrorEvent(boolean oldValue, boolean newValue) {
+        firePropertyChange(HAS_ERRORS_PROPERTY, oldValue, newValue);
+    }
+
+    private void fireErrorCountEvent(int oldValue, int newValue) {
+        firePropertyChange(ERROR_COUNT_PROPERTY, oldValue, newValue);
+    }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (oldValue != newValue) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
         }
     }
 
     public void clearAllErrors() {
-        clearGlobalErrors();
-        clearFieldErrors();
+        int totalErrorCount = getErrorCount();
+        Map<String, Integer> errorContPerField = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, List<FieldObjectError>> entry : fieldErrors.entrySet()) {
+            errorContPerField.put(entry.getKey(), entry.getValue().size());
+        }
+
+        objectErrors.clear();
+        fieldErrors.clear();
+
+        for (Map.Entry<String, Integer> entry : errorContPerField.entrySet()) {
+            fireHasErrorFieldEvent(entry.getKey(), true, false);
+            fireErrorCountFieldEvent(entry.getKey(), entry.getValue(), 0);
+        }
+        fireHasErrorEvent(totalErrorCount != 0, false);
+        fireErrorCountEvent(totalErrorCount, 0);
     }
 
     public void clearGlobalErrors() {
+        int totalErrorCount = getErrorCount();
         objectErrors.clear();
+        fireHasErrorEvent(totalErrorCount != 0, false);
+        fireErrorCountEvent(totalErrorCount, 0);
     }
 
     public void clearFieldErrors() {
+        int totalErrorCount = getErrorCount();
+        Map<String, Integer> errorContPerField = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, List<FieldObjectError>> entry : fieldErrors.entrySet()) {
+            errorContPerField.put(entry.getKey(), entry.getValue().size());
+        }
+
         fieldErrors.clear();
+
+        for (Map.Entry<String, Integer> entry : errorContPerField.entrySet()) {
+            fireHasErrorFieldEvent(entry.getKey(), true, false);
+            fireErrorCountFieldEvent(entry.getKey(), entry.getValue(), 0);
+        }
+        fireHasErrorEvent(totalErrorCount != 0, false);
+        fireErrorCountEvent(totalErrorCount, 0);
     }
 
     public void clearFieldErrors(String field) {
-        fieldErrors.remove(field);
+        int totalErrorCount = getErrorCount();
+        List<FieldObjectError> errors = fieldErrors.remove(field);
+
+        fireHasErrorFieldEvent(field, errors != null, false);
+        fireErrorCountFieldEvent(field, errors != null ? errors.size() : 0, 0);
+        fireHasErrorEvent(totalErrorCount != 0, false);
+        fireErrorCountEvent(totalErrorCount, 0);
     }
 
     public MessageCodesResolver getMessageCodesResolver() {
@@ -157,7 +212,16 @@ public class DefaultErrors implements Errors {
 
     public void reject(String code, Object[] args, String defaultMessage) {
         ObjectError objectError = new DefaultObjectError(resolveMessageCodes(code), args, defaultMessage);
-        if (!objectErrors.contains(objectError)) objectErrors.add(objectError);
+        addObjectError(objectError);
+    }
+
+    private void addObjectError(ObjectError objectError) {
+        if (!objectErrors.contains(objectError)) {
+            int totalErrorCount = getErrorCount();
+            objectErrors.add(objectError);
+            fireHasErrorEvent(totalErrorCount != 0, true);
+            fireErrorCountEvent(totalErrorCount, totalErrorCount + 1);
+        }
     }
 
     public void reject(String code, String defaultMessage) {
@@ -175,12 +239,28 @@ public class DefaultErrors implements Errors {
     public void rejectField(String field, Object rejectedValue, String code, Object[] args, String defaultMessage) {
         Class fieldType = getFieldType(field);
         FieldObjectError fieldError = new DefaultFieldObjectError(field, rejectedValue, resolveMessageCodes(code, field, fieldType), args, defaultMessage);
-        List<FieldObjectError> errors = fieldErrors.get(field);
+        addFieldError(fieldError, fieldErrors.get(field));
+    }
+
+    private void addFieldError(FieldObjectError fieldError, List<FieldObjectError> errors) {
         if (null == errors) {
+            int totalErrorCount = getErrorCount();
             errors = new ArrayList<FieldObjectError>();
-            fieldErrors.put(field, errors);
+            fieldErrors.put(fieldError.getFieldName(), errors);
+            fireHasErrorFieldEvent(fieldError.getFieldName(), false, true);
+            fireErrorCountFieldEvent(fieldError.getFieldName(), 0, 1);
+            fireErrorCountEvent(totalErrorCount, totalErrorCount + 1);
+            fireHasErrorEvent(totalErrorCount != 0, true);
         }
-        if (!errors.contains(fieldError)) errors.add(fieldError);
+        if (!errors.contains(fieldError)) {
+            int totalErrorCount = getErrorCount();
+            int fieldErrorCount = errors.size();
+            errors.add(fieldError);
+            fireHasErrorFieldEvent(fieldError.getFieldName(), fieldErrorCount != 0, true);
+            fireErrorCountFieldEvent(fieldError.getFieldName(), fieldErrorCount, fieldErrorCount + 1);
+            fireHasErrorEvent(totalErrorCount != 0, true);
+            fireErrorCountEvent(totalErrorCount, totalErrorCount + 1);
+        }
     }
 
     public void rejectField(String field, Object rejectedValue, String code, String defaultMessage) {
@@ -191,14 +271,11 @@ public class DefaultErrors implements Errors {
         try {
             return GriffonClassUtils.getPropertyDescriptor(objectClass, field).getPropertyType();
         } catch (IllegalAccessException e) {
-            sanitize(e);
-            throw new GriffonException(e);
+            throw new GriffonException(sanitize(e));
         } catch (InvocationTargetException e) {
-            sanitize(e);
-            throw new GriffonException(e);
+            throw new GriffonException(sanitize(e));
         } catch (NoSuchMethodException e) {
-            sanitize(e);
-            throw new GriffonException(e);
+            throw new GriffonException(sanitize(e));
         }
     }
 }

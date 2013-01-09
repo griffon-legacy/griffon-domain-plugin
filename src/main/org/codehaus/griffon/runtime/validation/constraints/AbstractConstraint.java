@@ -160,6 +160,10 @@ public abstract class AbstractConstraint implements Constraint {
                     args[1] = resolvedClassName;
                 }
 
+                if (args[1] instanceof Class<?>) {
+                    args[1] = ((Class<?>) args[1]).getName();
+                }
+
                 String propertyName = (String) args[0];
                 String propertyNameCode = fullClassName + '.' + propertyName + ".label";
                 String resolvedPropertyName = messageSource.getMessage(propertyNameCode, propertyName, locale);
