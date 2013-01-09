@@ -15,6 +15,7 @@
  */
 package griffon.plugins.validation.constraints;
 
+import griffon.util.CollectionUtils;
 import groovy.lang.Closure;
 import groovy.lang.IntRange;
 
@@ -26,6 +27,22 @@ import java.util.List;
 public final class Constraints {
     private Constraints() {
 
+    }
+
+    public static CollectionUtils.MapBuilder<String, List<ConstraintDef>> map() {
+        return CollectionUtils.<String, List<ConstraintDef>>map();
+    }
+
+    public static CollectionUtils.ListBuilder<ConstraintDef> list() {
+        return CollectionUtils.<ConstraintDef>list();
+    }
+
+    public static CollectionUtils.ListBuilder<ConstraintDef> list(ConstraintDef... defs) {
+        CollectionUtils.ListBuilder<ConstraintDef> list = CollectionUtils.<ConstraintDef>list();
+        for(ConstraintDef d : defs) {
+            list.add(d);
+        }
+        return list;
     }
 
     public static ConstraintDef blank(boolean value) {
