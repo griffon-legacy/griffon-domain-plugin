@@ -50,9 +50,6 @@ public abstract class AbstractConstraint implements Constraint {
     protected String classShortName;
     protected MessageSource messageSource;
 
-    /* (non-Javadoc)
-     * @see org.codehaus.groovy.grails.validation.Constraint#setMessageSource(org.springframework.context.MessageSource)
-     */
     public void setMessageSource(MessageSource source) {
         messageSource = source;
     }
@@ -206,14 +203,11 @@ public abstract class AbstractConstraint implements Constraint {
         try {
             return GriffonClassUtils.getPropertyDescriptor(target, constraintPropertyName).getPropertyType();
         } catch (IllegalAccessException e) {
-            sanitize(e);
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(sanitize(e));
         } catch (InvocationTargetException e) {
-            sanitize(e);
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(sanitize(e));
         } catch (NoSuchMethodException e) {
-            sanitize(e);
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(sanitize(e));
         }
     }
 

@@ -16,6 +16,7 @@
 package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.plugins.validation.constraints.ConstraintDef;
 import griffon.util.ApplicationHolder;
 import griffon.util.GriffonUtil;
 import groovy.lang.GroovySystem;
@@ -132,26 +133,63 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                     continue;
                 }
                 */
-                if (cp.supportsContraint(constraintName)) {
-                    cp.applyConstraint(constraintName, value);
-                } else {
-                    if (ConstrainedProperty.hasRegisteredConstraint(constraintName)) {
-                        // constraint is registered but doesn't support this property's type
-                        GriffonUtil.warn("Property [" + cp.getPropertyName() + "] of domain class " +
-                                targetClass.getName() + " has type [" + cp.getPropertyType().getName() +
-                                "] and doesn't support constraint [" + constraintName +
-                                "]. This constraint will not be checked during validation.");
-                    } else {
-                        // in the case where the constraint is not supported we still retain meta data
-                        // about the constraint in case its needed for other things
-                        cp.addMetaConstraint(constraintName, value);
-                    }
-                }
+                addConstraint(cp, constraintName, value);
             }
 
             return cp;
         } catch (InvalidPropertyException ipe) {
             throw new MissingMethodException((String) name, targetClass, new Object[]{attributes});
+        }
+    }
+
+    private void addConstraint(ConstrainedProperty cp, String constraintName, Object value) {
+        if (cp.supportsContraint(constraintName)) {
+            cp.applyConstraint(constraintName, value);
+        } else {
+            if (ConstrainedProperty.hasRegisteredConstraint(constraintName)) {
+                // constraint is registered but doesn't support this property's type
+                GriffonUtil.warn("Property [" + cp.getPropertyName() + "] of domain class " +
+                    targetClass.getName() + " has type [" + cp.getPropertyType().getName() +
+                    "] and doesn't support constraint [" + constraintName +
+                    "]. This constraint will not be checked during validation.");
+            } else {
+                // in the case where the constraint is not supported we still retain meta data
+                // about the constraint in case its needed for other things
+                cp.addMetaConstraint(constraintName, value);
+            }
+        }
+    }
+
+    public void assemble(Map<String, List<ConstraintDef>> constraints) {
+        for (Map.Entry<String, List<ConstraintDef>> entry : constraints.entrySet()) {
+            assembleConstraint(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void assembleConstraint(String property, List<ConstraintDef> constraints) {
+        ConstrainedProperty cp;
+        if (constrainedProperties.containsKey(property)) {
+            cp = constrainedProperties.get(property);
+        } else {
+            Class<?> propertyType = classPropertyFetcher.getPropertyType(property);
+            if (propertyType == null) {
+                throw new MissingPropertyException(property, targetClass);
+            }
+            cp = new ConstrainedProperty(targetClass, property, propertyType);
+            cp.setMessageSource(ApplicationHolder.getApplication());
+            // cp.setOrder(order++);
+            constrainedProperties.put(property, cp);
+        }
+
+        if (cp.getPropertyType() == null) {
+            return;
+        }
+
+        for (ConstraintDef constraintDef : constraints) {
+            String constraintName = constraintDef.getName();
+            Object value = constraintDef.getValue();
+            addConstraint(cp, constraintName, value);
         }
     }
 

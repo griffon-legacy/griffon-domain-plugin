@@ -18,6 +18,8 @@ import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassProperty;
 import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.plugins.validation.constraints.Constraint;
+import griffon.plugins.validation.constraints.ConstraintDef;
 import griffon.util.ApplicationHolder;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.*;
@@ -28,11 +30,8 @@ import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Default implementation of the {@link ConstraintsEvaluator} interface.
@@ -76,8 +75,8 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
      * @return A Map of constraints
      */
     protected Map<String, ConstrainedProperty> evaluateConstraints(
-            final Class<?> theClass,
-            GriffonDomainClassProperty[] properties) {
+        final Class<?> theClass,
+        GriffonDomainClassProperty[] properties) {
 
         // boolean javaEntity = theClass.isAnnotationPresent(Domain.class);
         LinkedList<?> classChain = getSuperClassChain(theClass);
@@ -88,18 +87,19 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
         // Evaluate all the constraints closures in the inheritance chain
         for (Object aClassChain : classChain) {
             clazz = (Class<?>) aClassChain;
-            Closure<?> c = (Closure<?>) GriffonClassUtils.getStaticPropertyValue(clazz, PROPERTY_NAME);
-            if (c == null) {
-                c = getConstraintsFromScript(theClass);
-            }
+            Object constraintsProperty = GriffonClassUtils.getStaticPropertyValue(clazz, PROPERTY_NAME);
 
-            if (c != null) {
+            if (constraintsProperty instanceof Closure) {
+                Closure<?> c = (Closure<?>) constraintsProperty;
                 c = (Closure<?>) c.clone();
                 c.setResolveStrategy(Closure.DELEGATE_ONLY);
                 c.setDelegate(delegate);
                 c.call();
+            } else if (constraintsProperty instanceof Map) {
+                Map<String, List<ConstraintDef>> constraints = (Map<String, List<ConstraintDef>>) constraintsProperty;
+                delegate.assemble(constraints);
             } else {
-                LOG.debug("User-defined constraints not found on class [" + clazz + "], applying default constraints");
+                LOG.debug("User-defined constraints not found on class [" + clazz.getName() + "]");
             }
         }
 
@@ -131,12 +131,12 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
         }
         if (properties == null || properties.length == 0) {
             final Set<Entry<String, ConstrainedProperty>> entrySet = constrainedProperties
-                    .entrySet();
+                .entrySet();
             for (Entry<String, ConstrainedProperty> entry : entrySet) {
                 final ConstrainedProperty constrainedProperty = entry
-                        .getValue();
+                    .getValue();
                 if (!constrainedProperty
-                        .hasAppliedConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT)) {
+                    .hasAppliedConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT)) {
                     applyDefaultNullableConstraint(constrainedProperty);
                 }
             }
@@ -257,12 +257,13 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
 
         final GriffonDomainClass domainClass = property.getDomainClass();
         // only apply default nullable to Groovy entities not legacy Java ones
-        if (!GroovyObject.class.isAssignableFrom(domainClass.getClazz())) return false;
+        if (!GroovyObject.class.isAssignableFrom(domainClass.getClazz()))
+            return false;
 
         final boolean isVersion = GriffonDomainProperty.VERSION.equals(property.getName());
         final boolean isIdentity = GriffonDomainProperty.IDENTITY.equals(property.getName());
         return !constrainedProperty.hasAppliedConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT) &&
-                isConstrainableProperty(property, propertyName) && !isIdentity && !isVersion /*&& !property.isDerived()*/;
+            isConstrainableProperty(property, propertyName) && !isIdentity && !isVersion /*&& !property.isDerived()*/;
     }
 
     /*
@@ -285,7 +286,7 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
 
     protected boolean isConstrainableProperty(GriffonDomainProperty p, String propertyName) {
         return !propertyName.equals(GriffonDomainProperty.DATE_CREATED) &&
-                !propertyName.equals(GriffonDomainProperty.LAST_UPDATED) /*&&
+            !propertyName.equals(GriffonDomainProperty.LAST_UPDATED) /*&&
                 !((p.isOneToOne() || p.isManyToOne()) && p.isCircular())*/;
     }
 
