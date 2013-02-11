@@ -78,26 +78,9 @@ class SampleTests extends GriffonUnitTestCase {
             assert !Sample.create(name: 'Dierk', lastName: 'Koenig', num: 35).save(failOnError: true)
         }
 
-        def command = new LoginCommand()
+    }
 
-        println '--------------'
-        command.constrainedProperties().each { println it }
-        println '--------------'
-        command.errors.addPropertyChangeListener({ e ->
-            println "${e.propertyName} ${e.oldValue} ${e.newValue}"
-        } as PropertyChangeListener)
-        command.num = 0
-        command.validate('num')
-        println command.errors.hasErrors()
-        command.errors.allErrors.each { println it }
-        command.errors.clearAllErrors()
-        println '--------------'
-        command.num = -1
-        command.validate()
-        println command.errors.hasErrors()
-        command.errors.allErrors.each { println it }
-        command.errors.clearAllErrors()
-
+    void testRelationships() {
         Author author = Author.create(name: 'Venkat', lastName: 'Subramanian')
         Book book1 = Book.create(title: 'Programming Groovy')
         Book book2 = Book.create(title: 'Programming Scala')
@@ -120,6 +103,50 @@ class SampleTests extends GriffonUnitTestCase {
         assert author.books == ([book2] as Set)
         assert !book1.author
     }
+
+    void testCommandObject() {
+        def command = new LoginCommand()
+
+        println '--------------'
+        command.constrainedProperties().each { println it }
+        println '--------------'
+        command.errors.addPropertyChangeListener({ e ->
+            println "${e.propertyName} ${e.oldValue} ${e.newValue}"
+        } as PropertyChangeListener)
+        command.num = 0
+        command.validate('num')
+        println command.errors.hasErrors()
+        command.errors.allErrors.each { println it }
+        command.errors.clearAllErrors()
+        println '--------------'
+        command.num = -1
+        command.validate()
+        println command.errors.hasErrors()
+        command.errors.allErrors.each { println it }
+        command.errors.clearAllErrors()
+    }
+
+    void testCommandObject2() {
+        def command = new LoginCommand2()
+
+        println '--------------'
+        command.constrainedProperties().each { println it }
+        println '--------------'
+        command.errors.addPropertyChangeListener({ e ->
+            println "${e.propertyName} ${e.oldValue} ${e.newValue}"
+        } as PropertyChangeListener)
+        command.num = 0
+        command.validate('num')
+        println command.errors.hasErrors()
+        command.errors.allErrors.each { println it }
+        command.errors.clearAllErrors()
+        println '--------------'
+        command.num = -1
+        command.validate()
+        println command.errors.hasErrors()
+        command.errors.allErrors.each { println it }
+        command.errors.clearAllErrors()
+    }
 }
 
 @CommandObject
@@ -131,6 +158,15 @@ class LoginCommand {
     String lastName
     Integer num
 
+    static constraints = {
+        num(range: 0..10)
+        name(nullable: false, blank: false)
+        lastName(nullable: true)
+    }
+}
+
+@CommandObject(Sample)
+class LoginCommand2 {
     static constraints = {
         num(range: 0..10)
         name(nullable: false, blank: false)

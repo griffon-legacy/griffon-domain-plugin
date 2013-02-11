@@ -81,45 +81,45 @@ public class GriffonDomainConfigurationUtil {
 
     static {
         Set<String> basics = new HashSet<String>(Arrays.asList(
-                boolean.class.getName(),
-                long.class.getName(),
-                short.class.getName(),
-                int.class.getName(),
-                byte.class.getName(),
-                float.class.getName(),
-                double.class.getName(),
-                char.class.getName(),
-                Boolean.class.getName(),
-                Long.class.getName(),
-                Short.class.getName(),
-                Integer.class.getName(),
-                Byte.class.getName(),
-                Float.class.getName(),
-                Double.class.getName(),
-                Character.class.getName(),
-                String.class.getName(),
-                java.util.Date.class.getName(),
-                Time.class.getName(),
-                Timestamp.class.getName(),
-                java.sql.Date.class.getName(),
-                BigDecimal.class.getName(),
-                BigInteger.class.getName(),
-                Locale.class.getName(),
-                Calendar.class.getName(),
-                GregorianCalendar.class.getName(),
-                java.util.Currency.class.getName(),
-                TimeZone.class.getName(),
-                Object.class.getName(),
-                Class.class.getName(),
-                byte[].class.getName(),
-                Byte[].class.getName(),
-                char[].class.getName(),
-                Character[].class.getName(),
-                Blob.class.getName(),
-                Clob.class.getName(),
-                Serializable.class.getName(),
-                URI.class.getName(),
-                URL.class.getName()));
+            boolean.class.getName(),
+            long.class.getName(),
+            short.class.getName(),
+            int.class.getName(),
+            byte.class.getName(),
+            float.class.getName(),
+            double.class.getName(),
+            char.class.getName(),
+            Boolean.class.getName(),
+            Long.class.getName(),
+            Short.class.getName(),
+            Integer.class.getName(),
+            Byte.class.getName(),
+            Float.class.getName(),
+            Double.class.getName(),
+            Character.class.getName(),
+            String.class.getName(),
+            java.util.Date.class.getName(),
+            Time.class.getName(),
+            Timestamp.class.getName(),
+            java.sql.Date.class.getName(),
+            BigDecimal.class.getName(),
+            BigInteger.class.getName(),
+            Locale.class.getName(),
+            Calendar.class.getName(),
+            GregorianCalendar.class.getName(),
+            java.util.Currency.class.getName(),
+            TimeZone.class.getName(),
+            Object.class.getName(),
+            Class.class.getName(),
+            byte[].class.getName(),
+            Byte[].class.getName(),
+            char[].class.getName(),
+            Character[].class.getName(),
+            Blob.class.getName(),
+            Clob.class.getName(),
+            Serializable.class.getName(),
+            URI.class.getName(),
+            URL.class.getName()));
         BASIC_TYPES = Collections.unmodifiableSet(basics);
     }
 
@@ -134,14 +134,23 @@ public class GriffonDomainConfigurationUtil {
     /**
      * Checks whether is property is configurational.
      *
-     * @param descriptor The descriptor
+     * @param descriptor The property descriptor
      * @return True if it is configurational
      */
     public static boolean isNotConfigurational(PropertyDescriptor descriptor) {
-        final String name = descriptor.getName();
+        return isNotConfigurational(descriptor.getName());
+    }
+
+    /**
+     * Checks whether is property is configurational.
+     *
+     * @param name The property name
+     * @return True if it is configurational
+     */
+    public static boolean isNotConfigurational(String name) {
         return
-                !GriffonDomainClass.STANDARD_PROPERTIES.contains(name) &&
-                        !GriffonDomainProperty.NON_CONFIGURATIONAL_PROPERTIES.contains(name);
+            !GriffonDomainClass.STANDARD_PROPERTIES.contains(name) &&
+                !GriffonDomainProperty.NON_CONFIGURATIONAL_PROPERTIES.contains(name);
     }
 
     public static boolean isTransientProperty(Class owner, PropertyDescriptor descriptor) {

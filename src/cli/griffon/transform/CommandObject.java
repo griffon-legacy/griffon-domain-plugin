@@ -33,4 +33,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @GroovyASTTransformationClass("org.codehaus.griffon.ast.CommandObjectASTTransformation")
 public @interface CommandObject {
+    Class [] value () default {};
 }

@@ -15,9 +15,10 @@
  */
 package griffon.plugins.domain;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static java.util.Arrays.asList;
 
 /**
  * @author Andres Almiray
@@ -35,7 +36,8 @@ public interface GriffonDomainProperty {
     String ERRORS = "errors";
     String PROPERTY_CHANGE_LISTENERS = "propertyChangeListeners";
     Set<String> NON_CONFIGURATIONAL_PROPERTIES = new TreeSet<String>(
-            Arrays.asList(TRANSIENTS, CONSTRAINTS, BELONGS_TO, HAS_MANY, HAS_ONE, ERRORS, PROPERTY_CHANGE_LISTENERS));
+        asList(TRANSIENTS, CONSTRAINTS, BELONGS_TO, HAS_MANY, HAS_ONE, ERRORS, PROPERTY_CHANGE_LISTENERS));
+    Set<String> STANDARD_DOMAIN_PROPERTIES = new TreeSet<String>(asList(IDENTITY, VERSION));
 
     /**
      * Returns the name of the property

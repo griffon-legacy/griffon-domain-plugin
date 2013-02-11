@@ -17,10 +17,16 @@
 package org.codehaus.griffon.ast;
 
 import griffon.plugins.domain.CommandObject;
+import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.domain.atoms.*;
 import griffon.plugins.domain.atoms.StringValue;
 import griffon.util.CollectionUtils;
+import org.codehaus.griffon.runtime.domain.GriffonDomainConfigurationUtil;
+import org.codehaus.groovy.GroovyBugError;
 import org.codehaus.groovy.ast.*;
+import org.codehaus.groovy.ast.expr.ClassExpression;
+import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.ListExpression;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
@@ -95,29 +101,73 @@ public class CommandObjectASTTransformation extends ValidateableASTTransformatio
      */
     public void visit(ASTNode[] nodes, SourceUnit source) {
         checkNodesForAnnotationAndType(nodes[0], nodes[1]);
-        addCommandObjectToClass(source, (ClassNode) nodes[1]);
+
+        AnnotationNode annotationNode = (AnnotationNode) nodes[0];
+        Expression expr = annotationNode.getMember("value");
+        Expression baseClasses = null;
+        if (expr instanceof ClassExpression) {
+            baseClasses = expr;
+        } else if (expr instanceof ListExpression) {
+            ListExpression listExpression = (ListExpression) expr;
+            for (Expression ex : listExpression.getExpressions()) {
+                if (!(ex instanceof ClassExpression)) {
+                    throw new GroovyBugError(COMMAND_OBJECT_ANNOTATION.getName() + " only accepts a single Class or an array of classes. Invalid expression " + ex.getText());
+                }
+            }
+            baseClasses = expr;
+        }
+
+        addCommandObjectToClass(source, (ClassNode) nodes[1], baseClasses);
     }
 
-    public static void addCommandObjectToClass(SourceUnit source, ClassNode classNode) {
+    public static void addCommandObjectToClass(SourceUnit source, ClassNode classNode, Expression baseClasses) {
         if (needsValidateable(classNode, source)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Injecting " + CommandObject.class.getName() + " into " + classNode.getName());
             }
-            addCommandObjectSupport(classNode);
+            addCommandObjectSupport(classNode, baseClasses);
         }
     }
 
-    public static void addCommandObjectSupport(ClassNode declaringClass) {
+    public static void addCommandObjectSupport(ClassNode declaringClass, Expression baseClasses) {
         injectInterface(declaringClass, COMMAND_OBJECT_TYPE);
+
+        if (baseClasses instanceof ClassExpression) {
+            addBaseProperties(declaringClass, ((ClassExpression) baseClasses).getType());
+        } else if (baseClasses instanceof ListExpression) {
+            ListExpression listExpression = (ListExpression) baseClasses;
+            for (Expression ex : listExpression.getExpressions()) {
+                addBaseProperties(declaringClass, ((ClassExpression) ex).getType());
+            }
+        }
+
         transformProperties(declaringClass);
         addValidatableBehavior(declaringClass);
+    }
+
+    private static void addBaseProperties(ClassNode declaringClass, ClassNode baseClass) {
+        for (PropertyNode propertyNode : baseClass.getProperties()) {
+            if (propertyNode.isStatic() || propertyNode.isSynthetic() || propertyNode.isDynamicTyped()
+                || !propertyNode.isPublic() || !GriffonDomainConfigurationUtil.isNotConfigurational(propertyNode.getName())
+                || GriffonDomainProperty.STANDARD_DOMAIN_PROPERTIES.contains(propertyNode.getName())) {
+                continue;
+            }
+            declaringClass.addProperty(
+                propertyNode.getName(),
+                propertyNode.getModifiers(),
+                makeClassSafe(propertyNode.getType()),
+                null,
+                null,
+                null
+            );
+        }
     }
 
     private static void transformProperties(ClassNode declaringClass) {
         List<PropertyNode> properties = new ArrayList<PropertyNode>(declaringClass.getProperties());
         for (PropertyNode propertyNode : properties) {
             if (propertyNode.isStatic() || propertyNode.isSynthetic() || propertyNode.isDynamicTyped()
-                && !propertyNode.isPrivate() && !isPropertyTypeSupported(propertyNode))
+                || !propertyNode.isPublic() || !isPropertyTypeSupported(propertyNode))
                 continue;
 
             String propertyName = propertyNode.getField().getName();
