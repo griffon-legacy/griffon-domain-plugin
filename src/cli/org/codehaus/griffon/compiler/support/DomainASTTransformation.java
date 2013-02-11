@@ -17,6 +17,7 @@ package org.codehaus.griffon.compiler.support;
 
 import griffon.transform.Domain;
 import org.codehaus.griffon.ast.AbstractASTTransformation;
+import org.codehaus.groovy.GroovyBugError;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
@@ -37,7 +38,7 @@ public class DomainASTTransformation extends AbstractASTTransformation {
 
     public void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
         if (!(astNodes[0] instanceof AnnotationNode) || !(astNodes[1] instanceof AnnotatedNode)) {
-            throw new RuntimeException("Internal error: wrong types: $node.class / $parent.class");
+            throw new GroovyBugError("Internal error: wrong types: $node.class / $parent.class");
         }
 
         AnnotatedNode parent = (AnnotatedNode) astNodes[1];

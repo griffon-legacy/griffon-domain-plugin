@@ -97,6 +97,28 @@ class SampleTests extends GriffonUnitTestCase {
         println command.errors.hasErrors()
         command.errors.allErrors.each { println it }
         command.errors.clearAllErrors()
+
+        Author author = Author.create(name: 'Venkat', lastName: 'Subramanian')
+        Book book1 = Book.create(title: 'Programming Groovy')
+        Book book2 = Book.create(title: 'Programming Scala')
+        assert !author.books
+        assert !book1.author
+
+        author.addToBooks(book1)
+        assert 1 == author.books.size()
+        assert author.books == ([book1] as Set)
+        assert book1.author == author
+
+        assert !book2.author
+        author.addToBooks(book2)
+        assert 2 == author.books.size()
+        assert author.books == ([book1, book2] as Set)
+        assert book2.author == author
+
+        author.removeFromBooks(book1)
+        assert 1 == author.books.size()
+        assert author.books == ([book2] as Set)
+        assert !book1.author
     }
 }
 
