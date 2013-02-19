@@ -16,7 +16,6 @@ package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.domain.AtomicValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 
 /**
  * Validates not null.
@@ -25,6 +24,9 @@ import griffon.plugins.validation.constraints.ConstrainedProperty;
  * @author Sergey Nebolsin (Grails 0.4)
  */
 public class NullableConstraint extends AbstractVetoingConstraint {
+    public static final String VALIDATION_DSL_NAME = "nullable";
+    public static final String DEFAULT_NULL_MESSAGE_CODE = "default.null.message";
+    public static final String DEFAULT_NULL_MESSAGE = "Property [{0}] of class [{1}] cannot be null";
 
     private boolean nullable;
 
@@ -46,9 +48,9 @@ public class NullableConstraint extends AbstractVetoingConstraint {
     @Override
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Boolean)) {
-            throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.NULLABLE_CONSTRAINT +
-                    "] of property [" + constraintPropertyName + "] of class [" +
-                    constraintOwningClass + "] must be a boolean value");
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME +
+                "] of property [" + constraintPropertyName + "] of class [" +
+                constraintOwningClass + "] must be a boolean value");
         }
 
         nullable = ((Boolean) constraintParameter).booleanValue();
@@ -56,7 +58,7 @@ public class NullableConstraint extends AbstractVetoingConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.NULLABLE_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
@@ -73,8 +75,8 @@ public class NullableConstraint extends AbstractVetoingConstraint {
         if (propertyValue == null) {
             if (!nullable) {
                 Object[] args = new Object[]{constraintPropertyName, constraintOwningClass};
-                rejectValue(target, errors, ConstrainedProperty.DEFAULT_NULL_MESSAGE_CODE,
-                        ConstrainedProperty.NULLABLE_CONSTRAINT, args);
+                rejectValue(target, errors, DEFAULT_NULL_MESSAGE_CODE,
+                    VALIDATION_DSL_NAME, args);
                 // null value is caught by 'blank' constraint, no addition validation needed
                 return true;
             }

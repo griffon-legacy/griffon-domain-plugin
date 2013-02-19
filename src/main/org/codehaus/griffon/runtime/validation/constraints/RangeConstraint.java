@@ -27,6 +27,9 @@ import groovy.lang.Range;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class RangeConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "range";
+    public static final String DEFAULT_INVALID_RANGE_MESSAGE_CODE = "default.invalid.range.message";
+    public static final String DEFAULT_INVALID_RANGE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] does not fall within the valid range from [{3}] to [{4}]";
 
     Range range;
 
@@ -42,7 +45,7 @@ public class RangeConstraint extends AbstractConstraint {
      */
     public boolean supports(Class type) {
         return type != null && (Comparable.class.isAssignableFrom(type) ||
-                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type)/* ||
+            GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type)/* ||
                 NumericAtomicValue.class.isAssignableFrom(type)*/);
     }
 
@@ -53,9 +56,9 @@ public class RangeConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Range)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.RANGE_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" +
-                    constraintOwningClass + "] must be a of type [groovy.lang.Range]");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" +
+                constraintOwningClass + "] must be a of type [groovy.lang.Range]");
         }
 
         range = (Range) constraintParameter;
@@ -63,7 +66,7 @@ public class RangeConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.RANGE_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class RangeConstraint extends AbstractConstraint {
         }
 
         Object[] args = new Object[]{constraintPropertyName, constraintOwningClass,
-                propertyValue, range.getFrom(), range.getTo()};
+            propertyValue, range.getFrom(), range.getTo()};
 
         Comparable from = range.getFrom();
         Comparable to = range.getTo();
@@ -93,11 +96,11 @@ public class RangeConstraint extends AbstractConstraint {
         }
 
         if (null == propertyValue || from.compareTo(propertyValue) > 0) {
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_RANGE_MESSAGE_CODE,
-                    ConstrainedProperty.RANGE_CONSTRAINT + ConstrainedProperty.TOOSMALL_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_INVALID_RANGE_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + TOOSMALL_SUFFIX, args);
         } else if (to.compareTo(propertyValue) < 0) {
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_RANGE_MESSAGE_CODE,
-                    ConstrainedProperty.RANGE_CONSTRAINT + ConstrainedProperty.TOOBIG_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_INVALID_RANGE_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + TOOBIG_SUFFIX, args);
         }
     }
 }

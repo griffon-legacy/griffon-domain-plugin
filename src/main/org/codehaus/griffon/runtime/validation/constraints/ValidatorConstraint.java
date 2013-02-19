@@ -15,7 +15,6 @@
 package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import groovy.lang.Closure;
 
 import java.util.Collection;
@@ -43,6 +42,9 @@ import java.util.Collection;
  * @author Marc Palmer (Grails 0.4)
  */
 public class ValidatorConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "validator";
+    public static final String DEFAULT_INVALID_VALIDATOR_MESSAGE_CODE = "default.invalid.validator.message";
+    public static final String DEFAULT_INVALID_VALIDATOR_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] does not pass custom validation";
 
     private Closure<?> validator;
     private int numValidatorParams;
@@ -103,9 +105,9 @@ public class ValidatorConstraint extends AbstractConstraint {
                 Object[] values = (result instanceof Collection<?>) ? ((Collection<?>) result).toArray() : (Object[]) result;
                 if (!(values[0] instanceof String)) {
                     throw new IllegalArgumentException("Return value from validation closure [" +
-                            ConstrainedProperty.VALIDATOR_CONSTRAINT + "] of property [" + constraintPropertyName + "] of class [" +
-                            constraintOwningClass + "] is returning a list but the first element must be a string " +
-                            "containing the error message code");
+                        VALIDATION_DSL_NAME + "] of property [" + constraintPropertyName + "] of class [" +
+                        constraintOwningClass + "] is returning a list but the first element must be a string " +
+                        "containing the error message code");
                 }
                 errmsg = (String) values[0];
                 args = new Object[values.length - 1 + 3];
@@ -116,17 +118,17 @@ public class ValidatorConstraint extends AbstractConstraint {
                 System.arraycopy(values, 1, args, i, values.length - 1);
             } else {
                 throw new IllegalArgumentException("Return value from validation closure [" +
-                        ConstrainedProperty.VALIDATOR_CONSTRAINT + "] of property [" + constraintPropertyName +
-                        "] of class [" + constraintOwningClass +
-                        "] must be a boolean, a string, an array or a collection");
+                    VALIDATION_DSL_NAME + "] of property [" + constraintPropertyName +
+                    "] of class [" + constraintOwningClass +
+                    "] must be a boolean, a string, an array or a collection");
             }
         }
         if (bad) {
             if (args == null) {
                 args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
             }
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_VALIDATOR_MESSAGE_CODE,
-                    errmsg == null ? ConstrainedProperty.VALIDATOR_CONSTRAINT + ConstrainedProperty.INVALID_SUFFIX : errmsg, args);
+            rejectValue(target, errors, DEFAULT_INVALID_VALIDATOR_MESSAGE_CODE,
+                errmsg == null ? VALIDATION_DSL_NAME + INVALID_SUFFIX : errmsg, args);
         }
     }
 
@@ -134,8 +136,8 @@ public class ValidatorConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Closure)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.VALIDATOR_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass + "] must be a Closure");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass + "] must be a Closure");
         }
 
         validator = (Closure<?>) constraintParameter;
@@ -143,11 +145,11 @@ public class ValidatorConstraint extends AbstractConstraint {
         Class<?>[] params = validator.getParameterTypes();
         // Groovy should always force one parameter, but let's check anyway...
         if (params.length == 0) {
-            throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.VALIDATOR_CONSTRAINT + "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass + "] must be a Closure taking at least 1 parameter (value, [object])");
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME + "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass + "] must be a Closure taking at least 1 parameter (value, [object])");
         }
 
         if (params.length > 3) {
-            throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.VALIDATOR_CONSTRAINT + "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass + "] must be a Closure taking no more than 3 parameters (value, [object, [errors]])");
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME + "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass + "] must be a Closure taking no more than 3 parameters (value, [object, [errors]])");
         }
 
         numValidatorParams = params.length;
@@ -156,7 +158,7 @@ public class ValidatorConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.VALIDATOR_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @SuppressWarnings("rawtypes")

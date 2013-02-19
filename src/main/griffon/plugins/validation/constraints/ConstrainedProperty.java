@@ -30,6 +30,8 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 
 import java.util.*;
 
+import static griffon.util.CollectionUtils.list;
+
 /**
  * Provides the ability to set constraints against a properties of a class. Constraints can either be
  * set via the property setters or via the <pre>applyConstraint(String constraintName, Object constrainingValue)</pre>
@@ -39,8 +41,8 @@ import java.util.*;
  * ...
  * <p/>
  * ConstrainedProperty cp = new ConstrainedProperty(owningClass, propertyName, propertyType);
- * if (cp.supportsConstraint(ConstrainedProperty.EMAIL_CONSTRAINT)) {
- * cp.applyConstraint(ConstrainedProperty.EMAIL_CONSTRAINT, new Boolean(true));
+ * if (cp.supportsConstraint(ConstrainedProperty.EmailConstraint.VALIDATION_DSL_NAME)) {
+ * cp.applyConstraint(ConstrainedProperty.EmailConstraint.VALIDATION_DSL_NAME, new Boolean(true));
  * }
  * </code>
  * <p/>
@@ -58,130 +60,47 @@ public class ConstrainedProperty {
     protected static Map<String, List<Object>> constraints = new HashMap<String, List<Object>>();
     public static final Map<String, String> DEFAULT_MESSAGES = new HashMap<String, String>();
 
-    public static final String CREDIT_CARD_CONSTRAINT = "creditCard";
-    public static final String EMAIL_CONSTRAINT = "email";
-    public static final String BLANK_CONSTRAINT = "blank";
-    public static final String RANGE_CONSTRAINT = "range";
-    public static final String IN_LIST_CONSTRAINT = "inList";
-    public static final String URL_CONSTRAINT = "url";
-    public static final String MATCHES_CONSTRAINT = "matches";
-    public static final String SIZE_CONSTRAINT = "size";
-    public static final String MIN_CONSTRAINT = "min";
-    public static final String MAX_CONSTRAINT = "max";
-    public static final String MAX_SIZE_CONSTRAINT = "maxSize";
-    public static final String MIN_SIZE_CONSTRAINT = "minSize";
-    public static final String SCALE_CONSTRAINT = "scale";
-    public static final String NOT_EQUAL_CONSTRAINT = "notEqual";
-    public static final String NULLABLE_CONSTRAINT = "nullable";
-    public static final String VALIDATOR_CONSTRAINT = "validator";
-
-    public static final String DEFAULT_NULL_MESSAGE_CODE = "default.null.message";
-    public static final String DEFAULT_INVALID_MIN_SIZE_MESSAGE_CODE = "default.invalid.min.size.message";
-    public static final String DEFAULT_INVALID_MAX_SIZE_MESSAGE_CODE = "default.invalid.max.size.message";
-    public static final String DEFAULT_NOT_EQUAL_MESSAGE_CODE = "default.not.equal.message";
-    public static final String DEFAULT_INVALID_MIN_MESSAGE_CODE = "default.invalid.min.message";
-    public static final String DEFAULT_INVALID_MAX_MESSAGE_CODE = "default.invalid.max.message";
-    public static final String DEFAULT_INVALID_SIZE_MESSAGE_CODE = "default.invalid.size.message";
-    public static final String DEFAULT_NOT_INLIST_MESSAGE_CODE = "default.not.inlist.message";
-    public static final String DEFAULT_INVALID_RANGE_MESSAGE_CODE = "default.invalid.range.message";
-    public static final String DEFAULT_INVALID_EMAIL_MESSAGE_CODE = "default.invalid.email.message";
-    public static final String DEFAULT_INVALID_CREDIT_CARD_MESSAGE_CODE = "default.invalid.creditCard.message";
-    public static final String DEFAULT_INVALID_URL_MESSAGE_CODE = "default.invalid.url.message";
-    public static final String DEFAULT_INVALID_VALIDATOR_MESSAGE_CODE = "default.invalid.validator.message";
-    public static final String DEFAULT_DOESNT_MATCH_MESSAGE_CODE = "default.doesnt.match.message";
-    public static final String DEFAULT_BLANK_MESSAGE_CODE = "default.blank.message";
-
-    public static final String DEFAULT_BLANK_MESSAGE = "Property [{0}] of class [{1}] cannot be blank";
-    public static final String DEFAULT_DOESNT_MATCH_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] does not match the required pattern [{3}]";
-    public static final String DEFAULT_INVALID_URL_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is not a valid URL";
-    public static final String DEFAULT_INVALID_CREDIT_CARD_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is not a valid credit card number";
-    public static final String DEFAULT_INVALID_EMAIL_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is not a valid e-mail address";
-    public static final String DEFAULT_INVALID_RANGE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] does not fall within the valid range from [{3}] to [{4}]";
-    public static final String DEFAULT_NOT_IN_LIST_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is not contained within the list [{3}]";
-    public static final String DEFAULT_INVALID_SIZE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] does not fall within the valid size range from [{3}] to [{4}]";
-    public static final String DEFAULT_INVALID_MAX_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] exceeds maximum value [{3}]";
-    public static final String DEFAULT_INVALID_MIN_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is less than minimum value [{3}]";
-    public static final String DEFAULT_NOT_EQUAL_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] cannot equal [{3}]";
-    public static final String DEFAULT_INVALID_MAX_SIZE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] exceeds the maximum size of [{3}]";
-    public static final String DEFAULT_INVALID_MIN_SIZE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is less than the minimum size of [{3}]";
-    public static final String DEFAULT_NULL_MESSAGE = "Property [{0}] of class [{1}] cannot be null";
-    public static final String DEFAULT_INVALID_VALIDATOR_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] does not pass custom validation";
-    public static final String DEFAULT_NOT_UNIQUE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] must be unique";
-
-    public static final String INVALID_SUFFIX = ".invalid";
-    public static final String EXCEEDED_SUFFIX = ".exceeded";
-    public static final String NOTMET_SUFFIX = ".notmet";
-    public static final String NOT_PREFIX = "not.";
-    public static final String TOOBIG_SUFFIX = ".toobig";
-    public static final String TOOLONG_SUFFIX = ".toolong";
-    public static final String TOOSMALL_SUFFIX = ".toosmall";
-    public static final String TOOSHORT_SUFFIX = ".tooshort";
-
     static {
-        DEFAULT_MESSAGES.put(DEFAULT_BLANK_MESSAGE_CODE, DEFAULT_BLANK_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_DOESNT_MATCH_MESSAGE_CODE, DEFAULT_DOESNT_MATCH_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_CREDIT_CARD_MESSAGE_CODE, DEFAULT_INVALID_CREDIT_CARD_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_EMAIL_MESSAGE_CODE, DEFAULT_INVALID_EMAIL_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_MAX_MESSAGE_CODE, DEFAULT_INVALID_MAX_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_MAX_SIZE_MESSAGE_CODE, DEFAULT_INVALID_MAX_SIZE_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_MIN_MESSAGE_CODE, DEFAULT_INVALID_MIN_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_MIN_SIZE_MESSAGE_CODE, DEFAULT_INVALID_MIN_SIZE_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_RANGE_MESSAGE_CODE, DEFAULT_INVALID_RANGE_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_SIZE_MESSAGE_CODE, DEFAULT_INVALID_SIZE_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_URL_MESSAGE_CODE, DEFAULT_INVALID_URL_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_NOT_EQUAL_MESSAGE_CODE, DEFAULT_NOT_EQUAL_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_NOT_INLIST_MESSAGE_CODE, DEFAULT_NOT_IN_LIST_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_NULL_MESSAGE_CODE, DEFAULT_NULL_MESSAGE);
-        DEFAULT_MESSAGES.put(DEFAULT_INVALID_VALIDATOR_MESSAGE_CODE, DEFAULT_INVALID_VALIDATOR_MESSAGE);
+        DEFAULT_MESSAGES.put(BlankConstraint.DEFAULT_BLANK_MESSAGE_CODE, BlankConstraint.DEFAULT_BLANK_MESSAGE);
+        DEFAULT_MESSAGES.put(MatchesConstraint.DEFAULT_DOESNT_MATCH_MESSAGE_CODE, MatchesConstraint.DEFAULT_DOESNT_MATCH_MESSAGE);
+        DEFAULT_MESSAGES.put(CreditCardConstraint.DEFAULT_INVALID_CREDIT_CARD_MESSAGE_CODE, CreditCardConstraint.DEFAULT_INVALID_CREDIT_CARD_MESSAGE);
+        DEFAULT_MESSAGES.put(EmailConstraint.DEFAULT_INVALID_EMAIL_MESSAGE_CODE, EmailConstraint.DEFAULT_INVALID_EMAIL_MESSAGE);
+        DEFAULT_MESSAGES.put(MaxConstraint.DEFAULT_INVALID_MAX_MESSAGE_CODE, MaxConstraint.DEFAULT_INVALID_MAX_MESSAGE);
+        DEFAULT_MESSAGES.put(MaxSizeConstraint.DEFAULT_INVALID_MAX_SIZE_MESSAGE_CODE, MaxSizeConstraint.DEFAULT_INVALID_MAX_SIZE_MESSAGE);
+        DEFAULT_MESSAGES.put(MinConstraint.DEFAULT_INVALID_MIN_MESSAGE_CODE, MinConstraint.DEFAULT_INVALID_MIN_MESSAGE);
+        DEFAULT_MESSAGES.put(MinSizeConstraint.DEFAULT_INVALID_MIN_SIZE_MESSAGE_CODE, MinSizeConstraint.DEFAULT_INVALID_MIN_SIZE_MESSAGE);
+        DEFAULT_MESSAGES.put(RangeConstraint.DEFAULT_INVALID_RANGE_MESSAGE_CODE, RangeConstraint.DEFAULT_INVALID_RANGE_MESSAGE);
+        DEFAULT_MESSAGES.put(SizeConstraint.DEFAULT_INVALID_SIZE_MESSAGE_CODE, SizeConstraint.DEFAULT_INVALID_SIZE_MESSAGE);
+        DEFAULT_MESSAGES.put(UrlConstraint.DEFAULT_INVALID_URL_MESSAGE_CODE, UrlConstraint.DEFAULT_INVALID_URL_MESSAGE);
+        DEFAULT_MESSAGES.put(NotEqualConstraint.DEFAULT_NOT_EQUAL_MESSAGE_CODE, NotEqualConstraint.DEFAULT_NOT_EQUAL_MESSAGE);
+        DEFAULT_MESSAGES.put(InListConstraint.DEFAULT_NOT_INLIST_MESSAGE_CODE, InListConstraint.DEFAULT_NOT_IN_LIST_MESSAGE);
+        DEFAULT_MESSAGES.put(NullableConstraint.DEFAULT_NULL_MESSAGE_CODE, NullableConstraint.DEFAULT_NULL_MESSAGE);
+        DEFAULT_MESSAGES.put(ValidatorConstraint.DEFAULT_INVALID_VALIDATOR_MESSAGE_CODE, ValidatorConstraint.DEFAULT_INVALID_VALIDATOR_MESSAGE);
+        DEFAULT_MESSAGES.put(DateConstraint.DEFAULT_INVALID_DATE_MESSAGE_CODE, DateConstraint.DEFAULT_INVALID_DATE_MESSAGE);
+        DEFAULT_MESSAGES.put(IPAddressConstraint.DEFAULT_INVALID_IP_ADDRESS_MESSAGE_CODE, IPAddressConstraint.DEFAULT_INVALID_IP_ADDRESS_MESSAGE);
+        DEFAULT_MESSAGES.put(ConfirmedPasswordConstraint.DEFAULT_INVALID_PASSWORD_CONFIRMATION_MESSAGE_CODE, ConfirmedPasswordConstraint.DEFAULT_INVALID_PASSWORD_CONFIRMATION_MESSAGE);
+        DEFAULT_MESSAGES.put(PostalCodeConstraint.DEFAULT_INVALID_POSTAL_CODE_MESSAGE_CODE, PostalCodeConstraint.DEFAULT_INVALID_POSTAL_CODE_MESSAGE);
 
-        constraints.put(CREDIT_CARD_CONSTRAINT, new ArrayList<Object>() {{
-            add(CreditCardConstraint.class);
-        }});
-        constraints.put(EMAIL_CONSTRAINT, new ArrayList<Object>() {{
-            add(EmailConstraint.class);
-        }});
-        constraints.put(BLANK_CONSTRAINT, new ArrayList<Object>() {{
-            add(BlankConstraint.class);
-        }});
-        constraints.put(RANGE_CONSTRAINT, new ArrayList<Object>() {{
-            add(RangeConstraint.class);
-        }});
-        constraints.put(IN_LIST_CONSTRAINT, new ArrayList<Object>() {{
-            add(InListConstraint.class);
-        }});
-        constraints.put(URL_CONSTRAINT, new ArrayList<Object>() {{
-            add(UrlConstraint.class);
-        }});
-        constraints.put(SIZE_CONSTRAINT, new ArrayList<Object>() {{
-            add(SizeConstraint.class);
-        }});
-        constraints.put(MATCHES_CONSTRAINT, new ArrayList<Object>() {{
-            add(MatchesConstraint.class);
-        }});
-        constraints.put(MIN_CONSTRAINT, new ArrayList<Object>() {{
-            add(MinConstraint.class);
-        }});
-        constraints.put(MAX_CONSTRAINT, new ArrayList<Object>() {{
-            add(MaxConstraint.class);
-        }});
-        constraints.put(MAX_SIZE_CONSTRAINT, new ArrayList<Object>() {{
-            add(MaxSizeConstraint.class);
-        }});
-        constraints.put(MIN_SIZE_CONSTRAINT, new ArrayList<Object>() {{
-            add(MinSizeConstraint.class);
-        }});
-        constraints.put(SCALE_CONSTRAINT, new ArrayList<Object>() {{
-            add(ScaleConstraint.class);
-        }});
-        constraints.put(NULLABLE_CONSTRAINT, new ArrayList<Object>() {{
-            add(NullableConstraint.class);
-        }});
-        constraints.put(NOT_EQUAL_CONSTRAINT, new ArrayList<Object>() {{
-            add(NotEqualConstraint.class);
-        }});
-        constraints.put(VALIDATOR_CONSTRAINT, new ArrayList<Object>() {{
-            add(ValidatorConstraint.class);
-        }});
+        constraints.put(CreditCardConstraint.VALIDATION_DSL_NAME, list().e(CreditCardConstraint.class));
+        constraints.put(EmailConstraint.VALIDATION_DSL_NAME, list().e(EmailConstraint.class));
+        constraints.put(BlankConstraint.VALIDATION_DSL_NAME, list().e(BlankConstraint.class));
+        constraints.put(RangeConstraint.VALIDATION_DSL_NAME, list().e(RangeConstraint.class));
+        constraints.put(InListConstraint.VALIDATION_DSL_NAME, list().e(InListConstraint.class));
+        constraints.put(UrlConstraint.VALIDATION_DSL_NAME, list().e(UrlConstraint.class));
+        constraints.put(SizeConstraint.VALIDATION_DSL_NAME, list().e(SizeConstraint.class));
+        constraints.put(MatchesConstraint.VALIDATION_DSL_NAME, list().e(MatchesConstraint.class));
+        constraints.put(MinConstraint.VALIDATION_DSL_NAME, list().e(MinConstraint.class));
+        constraints.put(MaxConstraint.VALIDATION_DSL_NAME, list().e(MaxConstraint.class));
+        constraints.put(MaxSizeConstraint.VALIDATION_DSL_NAME, list().e(MaxSizeConstraint.class));
+        constraints.put(MinSizeConstraint.VALIDATION_DSL_NAME, list().e(MinSizeConstraint.class));
+        constraints.put(ScaleConstraint.VALIDATION_DSL_NAME, list().e(ScaleConstraint.class));
+        constraints.put(NullableConstraint.VALIDATION_DSL_NAME, list().e(NullableConstraint.class));
+        constraints.put(NotEqualConstraint.VALIDATION_DSL_NAME, list().e(NotEqualConstraint.class));
+        constraints.put(ValidatorConstraint.VALIDATION_DSL_NAME, list().e(ValidatorConstraint.class));
+        constraints.put(DateConstraint.VALIDATION_DSL_NAME, list().e(DateConstraint.class));
+        constraints.put(IPAddressConstraint.VALIDATION_DSL_NAME, list().e(IPAddressConstraint.class));
+        constraints.put(ConfirmedPasswordConstraint.VALIDATION_DSL_NAME, list().e(ConfirmedPasswordConstraint.class));
+        constraints.put(PostalCodeConstraint.VALIDATION_DSL_NAME, list().e(PostalCodeConstraint.class));
     }
 
     protected static final Log LOG = LogFactory.getLog(ConstrainedProperty.class);
@@ -236,7 +155,7 @@ public class ConstrainedProperty {
         Assert.hasLength(name, "Argument [name] cannot be null");
         if (constraintClass == null || !Constraint.class.isAssignableFrom(constraintClass)) {
             throw new IllegalArgumentException("Argument [constraintClass] with value [" + constraintClass +
-                    "] is not a valid constraint");
+                "] is not a valid constraint");
         }
 
         List<Object> objects = getOrInitializeConstraint(name);
@@ -302,8 +221,8 @@ public class ConstrainedProperty {
     public Comparable getMax() {
         Comparable maxValue = null;
 
-        MaxConstraint maxConstraint = (MaxConstraint) appliedConstraints.get(MAX_CONSTRAINT);
-        RangeConstraint rangeConstraint = (RangeConstraint) appliedConstraints.get(RANGE_CONSTRAINT);
+        MaxConstraint maxConstraint = (MaxConstraint) appliedConstraints.get(MaxConstraint.VALIDATION_DSL_NAME);
+        RangeConstraint rangeConstraint = (RangeConstraint) appliedConstraints.get(RangeConstraint.VALIDATION_DSL_NAME);
 
         if ((maxConstraint != null) || (rangeConstraint != null)) {
             Comparable maxConstraintValue = maxConstraint != null ? maxConstraint.getMaxValue() : null;
@@ -327,21 +246,21 @@ public class ConstrainedProperty {
     @SuppressWarnings("rawtypes")
     public void setMax(Comparable max) {
         if (max == null) {
-            appliedConstraints.remove(MAX_CONSTRAINT);
+            appliedConstraints.remove(MaxConstraint.VALIDATION_DSL_NAME);
             return;
         }
 
         if (!propertyType.equals(max.getClass())) {
-            throw new MissingPropertyException(MAX_CONSTRAINT, propertyType);
+            throw new MissingPropertyException(MaxConstraint.VALIDATION_DSL_NAME, propertyType);
         }
 
         Range r = getRange();
         if (r != null) {
-            LOG.warn("Range constraint already set ignoring constraint [" + MAX_CONSTRAINT + "] for value [" + max + "]");
+            LOG.warn("Range constraint already set ignoring constraint [" + MaxConstraint.VALIDATION_DSL_NAME + "] for value [" + max + "]");
             return;
         }
 
-        Constraint c = appliedConstraints.get(MAX_CONSTRAINT);
+        Constraint c = appliedConstraints.get(MaxConstraint.VALIDATION_DSL_NAME);
         if (c != null) {
             c.setParameter(max);
         } else {
@@ -349,7 +268,7 @@ public class ConstrainedProperty {
             c.setOwningClass(owningClass);
             c.setPropertyName(propertyName);
             c.setParameter(max);
-            appliedConstraints.put(MAX_CONSTRAINT, c);
+            appliedConstraints.put(MaxConstraint.VALIDATION_DSL_NAME, c);
         }
     }
 
@@ -360,8 +279,8 @@ public class ConstrainedProperty {
     public Comparable getMin() {
         Comparable minValue = null;
 
-        MinConstraint minConstraint = (MinConstraint) appliedConstraints.get(MIN_CONSTRAINT);
-        RangeConstraint rangeConstraint = (RangeConstraint) appliedConstraints.get(RANGE_CONSTRAINT);
+        MinConstraint minConstraint = (MinConstraint) appliedConstraints.get(MinConstraint.VALIDATION_DSL_NAME);
+        RangeConstraint rangeConstraint = (RangeConstraint) appliedConstraints.get(RangeConstraint.VALIDATION_DSL_NAME);
 
         if ((minConstraint != null) || (rangeConstraint != null)) {
             Comparable minConstraintValue = minConstraint != null ? minConstraint.getMinValue() : null;
@@ -385,21 +304,21 @@ public class ConstrainedProperty {
     @SuppressWarnings("rawtypes")
     public void setMin(Comparable min) {
         if (min == null) {
-            appliedConstraints.remove(MIN_CONSTRAINT);
+            appliedConstraints.remove(MinConstraint.VALIDATION_DSL_NAME);
             return;
         }
 
         if (!propertyType.equals(min.getClass())) {
-            throw new MissingPropertyException(MIN_CONSTRAINT, propertyType);
+            throw new MissingPropertyException(MinConstraint.VALIDATION_DSL_NAME, propertyType);
         }
 
         Range r = getRange();
         if (r != null) {
-            LOG.warn("Range constraint already set ignoring constraint [" + MIN_CONSTRAINT + "] for value [" + min + "]");
+            LOG.warn("Range constraint already set ignoring constraint [" + MinConstraint.VALIDATION_DSL_NAME + "] for value [" + min + "]");
             return;
         }
 
-        Constraint c = appliedConstraints.get(MIN_CONSTRAINT);
+        Constraint c = appliedConstraints.get(MinConstraint.VALIDATION_DSL_NAME);
         if (c != null) {
             c.setParameter(min);
         } else {
@@ -407,7 +326,7 @@ public class ConstrainedProperty {
             c.setOwningClass(owningClass);
             c.setPropertyName(propertyName);
             c.setParameter(min);
-            appliedConstraints.put(MIN_CONSTRAINT, c);
+            appliedConstraints.put(MinConstraint.VALIDATION_DSL_NAME, c);
         }
     }
 
@@ -416,7 +335,7 @@ public class ConstrainedProperty {
      */
     @SuppressWarnings("rawtypes")
     public List getInList() {
-        InListConstraint c = (InListConstraint) appliedConstraints.get(IN_LIST_CONSTRAINT);
+        InListConstraint c = (InListConstraint) appliedConstraints.get(InListConstraint.VALIDATION_DSL_NAME);
         return c == null ? null : c.getList();
     }
 
@@ -425,9 +344,9 @@ public class ConstrainedProperty {
      */
     @SuppressWarnings("rawtypes")
     public void setInList(List inList) {
-        Constraint c = appliedConstraints.get(IN_LIST_CONSTRAINT);
+        Constraint c = appliedConstraints.get(InListConstraint.VALIDATION_DSL_NAME);
         if (inList == null) {
-            appliedConstraints.remove(IN_LIST_CONSTRAINT);
+            appliedConstraints.remove(InListConstraint.VALIDATION_DSL_NAME);
         } else {
             if (c != null) {
                 c.setParameter(inList);
@@ -436,7 +355,7 @@ public class ConstrainedProperty {
                 c.setOwningClass(owningClass);
                 c.setPropertyName(propertyName);
                 c.setParameter(inList);
-                appliedConstraints.put(IN_LIST_CONSTRAINT, c);
+                appliedConstraints.put(InListConstraint.VALIDATION_DSL_NAME, c);
             }
         }
     }
@@ -446,7 +365,7 @@ public class ConstrainedProperty {
      */
     @SuppressWarnings("rawtypes")
     public Range getRange() {
-        RangeConstraint c = (RangeConstraint) appliedConstraints.get(RANGE_CONSTRAINT);
+        RangeConstraint c = (RangeConstraint) appliedConstraints.get(RangeConstraint.VALIDATION_DSL_NAME);
         return c == null ? null : c.getRange();
     }
 
@@ -455,18 +374,18 @@ public class ConstrainedProperty {
      */
     @SuppressWarnings("rawtypes")
     public void setRange(Range range) {
-        if (appliedConstraints.containsKey(MAX_CONSTRAINT)) {
+        if (appliedConstraints.containsKey(MaxConstraint.VALIDATION_DSL_NAME)) {
             LOG.warn("Setting range constraint on property [" + propertyName + "] of class [" + owningClass + "] forced removal of max constraint");
-            appliedConstraints.remove(MAX_CONSTRAINT);
+            appliedConstraints.remove(MaxConstraint.VALIDATION_DSL_NAME);
         }
-        if (appliedConstraints.containsKey(MIN_CONSTRAINT)) {
+        if (appliedConstraints.containsKey(MinConstraint.VALIDATION_DSL_NAME)) {
             LOG.warn("Setting range constraint on property [" + propertyName + "] of class [" + owningClass + "] forced removal of min constraint");
-            appliedConstraints.remove(MIN_CONSTRAINT);
+            appliedConstraints.remove(MinConstraint.VALIDATION_DSL_NAME);
         }
         if (range == null) {
-            appliedConstraints.remove(RANGE_CONSTRAINT);
+            appliedConstraints.remove(RangeConstraint.VALIDATION_DSL_NAME);
         } else {
-            Constraint c = appliedConstraints.get(RANGE_CONSTRAINT);
+            Constraint c = appliedConstraints.get(RangeConstraint.VALIDATION_DSL_NAME);
             if (c != null) {
                 c.setParameter(range);
             } else {
@@ -475,7 +394,7 @@ public class ConstrainedProperty {
                 c.setPropertyName(propertyName);
                 c.setParameter(range);
 
-                appliedConstraints.put(RANGE_CONSTRAINT, c);
+                appliedConstraints.put(RangeConstraint.VALIDATION_DSL_NAME, c);
             }
         }
     }
@@ -484,7 +403,7 @@ public class ConstrainedProperty {
      * @return The scale, if defined for this property; null, otherwise
      */
     public Integer getScale() {
-        ScaleConstraint scaleConstraint = (ScaleConstraint) appliedConstraints.get(SCALE_CONSTRAINT);
+        ScaleConstraint scaleConstraint = (ScaleConstraint) appliedConstraints.get(ScaleConstraint.VALIDATION_DSL_NAME);
         if (scaleConstraint != null) {
             return scaleConstraint.getScale();
         }
@@ -497,7 +416,7 @@ public class ConstrainedProperty {
      */
     @SuppressWarnings("rawtypes")
     public Range getSize() {
-        SizeConstraint c = (SizeConstraint) appliedConstraints.get(SIZE_CONSTRAINT);
+        SizeConstraint c = (SizeConstraint) appliedConstraints.get(SizeConstraint.VALIDATION_DSL_NAME);
         return c == null ? null : c.getRange();
     }
 
@@ -506,9 +425,9 @@ public class ConstrainedProperty {
      */
     @SuppressWarnings("rawtypes")
     public void setSize(Range size) {
-        Constraint c = appliedConstraints.get(SIZE_CONSTRAINT);
+        Constraint c = appliedConstraints.get(SizeConstraint.VALIDATION_DSL_NAME);
         if (size == null) {
-            appliedConstraints.remove(SIZE_CONSTRAINT);
+            appliedConstraints.remove(SizeConstraint.VALIDATION_DSL_NAME);
         } else {
             if (c != null) {
                 c.setParameter(size);
@@ -517,7 +436,7 @@ public class ConstrainedProperty {
                 c.setOwningClass(owningClass);
                 c.setPropertyName(propertyName);
                 c.setParameter(size);
-                appliedConstraints.put(SIZE_CONSTRAINT, c);
+                appliedConstraints.put(SizeConstraint.VALIDATION_DSL_NAME, c);
             }
         }
     }
@@ -526,7 +445,7 @@ public class ConstrainedProperty {
      * @return Returns the blank.
      */
     public boolean isBlank() {
-        Object cons = appliedConstraints.get(BLANK_CONSTRAINT);
+        Object cons = appliedConstraints.get(BlankConstraint.VALIDATION_DSL_NAME);
         return cons == null || ((Boolean) ((BlankConstraint) cons).getParameter()).booleanValue();
     }
 
@@ -536,13 +455,13 @@ public class ConstrainedProperty {
     public void setBlank(boolean blank) {
         if (isNotValidStringType()) {
             throw new MissingPropertyException("Blank constraint can only be applied to a String property",
-                    BLANK_CONSTRAINT, owningClass);
+                BlankConstraint.VALIDATION_DSL_NAME, owningClass);
         }
 
         if (!blank) {
-            appliedConstraints.remove(BLANK_CONSTRAINT);
+            appliedConstraints.remove(BlankConstraint.VALIDATION_DSL_NAME);
         } else {
-            Constraint c = appliedConstraints.get(BLANK_CONSTRAINT);
+            Constraint c = appliedConstraints.get(BlankConstraint.VALIDATION_DSL_NAME);
             if (c != null) {
                 c.setParameter(Boolean.valueOf(blank));
             } else {
@@ -550,7 +469,7 @@ public class ConstrainedProperty {
                 c.setOwningClass(owningClass);
                 c.setPropertyName(propertyName);
                 c.setParameter(Boolean.valueOf(blank));
-                appliedConstraints.put(BLANK_CONSTRAINT, c);
+                appliedConstraints.put(BlankConstraint.VALIDATION_DSL_NAME, c);
             }
         }
     }
@@ -561,10 +480,10 @@ public class ConstrainedProperty {
     public boolean isEmail() {
         if (isNotValidStringType()) {
             throw new MissingPropertyException("Email constraint only applies to a String property",
-                    EMAIL_CONSTRAINT, owningClass);
+                EmailConstraint.VALIDATION_DSL_NAME, owningClass);
         }
 
-        return appliedConstraints.containsKey(EMAIL_CONSTRAINT);
+        return appliedConstraints.containsKey(EmailConstraint.VALIDATION_DSL_NAME);
     }
 
     /**
@@ -573,10 +492,10 @@ public class ConstrainedProperty {
     public void setEmail(boolean email) {
         if (isNotValidStringType()) {
             throw new MissingPropertyException("Email constraint can only be applied to a String property",
-                    EMAIL_CONSTRAINT, owningClass);
+                EmailConstraint.VALIDATION_DSL_NAME, owningClass);
         }
 
-        Constraint c = appliedConstraints.get(EMAIL_CONSTRAINT);
+        Constraint c = appliedConstraints.get(EmailConstraint.VALIDATION_DSL_NAME);
         if (email) {
             if (c != null) {
                 c.setParameter(Boolean.valueOf(email));
@@ -585,11 +504,11 @@ public class ConstrainedProperty {
                 c.setOwningClass(owningClass);
                 c.setPropertyName(propertyName);
                 c.setParameter(Boolean.valueOf(email));
-                appliedConstraints.put(EMAIL_CONSTRAINT, c);
+                appliedConstraints.put(EmailConstraint.VALIDATION_DSL_NAME, c);
             }
         } else {
             if (c != null) {
-                appliedConstraints.remove(EMAIL_CONSTRAINT);
+                appliedConstraints.remove(EmailConstraint.VALIDATION_DSL_NAME);
             }
         }
     }
@@ -604,10 +523,10 @@ public class ConstrainedProperty {
     public boolean isCreditCard() {
         if (isNotValidStringType()) {
             throw new MissingPropertyException("CreditCard constraint only applies to a String property",
-                    CREDIT_CARD_CONSTRAINT, owningClass);
+                CreditCardConstraint.VALIDATION_DSL_NAME, owningClass);
         }
 
-        return appliedConstraints.containsKey(CREDIT_CARD_CONSTRAINT);
+        return appliedConstraints.containsKey(CreditCardConstraint.VALIDATION_DSL_NAME);
     }
 
     /**
@@ -616,10 +535,10 @@ public class ConstrainedProperty {
     public void setCreditCard(boolean creditCard) {
         if (isNotValidStringType()) {
             throw new MissingPropertyException("CreditCard constraint only applies to a String property",
-                    CREDIT_CARD_CONSTRAINT, owningClass);
+                CreditCardConstraint.VALIDATION_DSL_NAME, owningClass);
         }
 
-        Constraint c = appliedConstraints.get(CREDIT_CARD_CONSTRAINT);
+        Constraint c = appliedConstraints.get(CreditCardConstraint.VALIDATION_DSL_NAME);
         if (creditCard) {
             if (c != null) {
                 c.setParameter(Boolean.valueOf(creditCard));
@@ -628,11 +547,11 @@ public class ConstrainedProperty {
                 c.setOwningClass(owningClass);
                 c.setPropertyName(propertyName);
                 c.setParameter(Boolean.valueOf(creditCard));
-                appliedConstraints.put(CREDIT_CARD_CONSTRAINT, c);
+                appliedConstraints.put(CreditCardConstraint.VALIDATION_DSL_NAME, c);
             }
         } else {
             if (c != null) {
-                appliedConstraints.remove(CREDIT_CARD_CONSTRAINT);
+                appliedConstraints.remove(CreditCardConstraint.VALIDATION_DSL_NAME);
             }
         }
     }
@@ -643,9 +562,9 @@ public class ConstrainedProperty {
     public String getMatches() {
         if (isNotValidStringType()) {
             throw new MissingPropertyException("Matches constraint only applies to a String property",
-                    MATCHES_CONSTRAINT, owningClass);
+                MatchesConstraint.VALIDATION_DSL_NAME, owningClass);
         }
-        MatchesConstraint c = (MatchesConstraint) appliedConstraints.get(MATCHES_CONSTRAINT);
+        MatchesConstraint c = (MatchesConstraint) appliedConstraints.get(MatchesConstraint.VALIDATION_DSL_NAME);
         return c == null ? null : c.getRegex();
     }
 
@@ -655,12 +574,12 @@ public class ConstrainedProperty {
     public void setMatches(String regex) {
         if (isNotValidStringType()) {
             throw new MissingPropertyException("Matches constraint can only be applied to a String property",
-                    MATCHES_CONSTRAINT, owningClass);
+                MatchesConstraint.VALIDATION_DSL_NAME, owningClass);
         }
 
-        Constraint c = appliedConstraints.get(MATCHES_CONSTRAINT);
+        Constraint c = appliedConstraints.get(MatchesConstraint.VALIDATION_DSL_NAME);
         if (regex == null) {
-            appliedConstraints.remove(MATCHES_CONSTRAINT);
+            appliedConstraints.remove(MatchesConstraint.VALIDATION_DSL_NAME);
         } else {
             if (c != null) {
                 c.setParameter(regex);
@@ -669,7 +588,7 @@ public class ConstrainedProperty {
                 c.setOwningClass(owningClass);
                 c.setPropertyName(propertyName);
                 c.setParameter(regex);
-                appliedConstraints.put(MATCHES_CONSTRAINT, c);
+                appliedConstraints.put(MatchesConstraint.VALIDATION_DSL_NAME, c);
             }
         }
     }
@@ -678,7 +597,7 @@ public class ConstrainedProperty {
      * @return Returns the notEqual.
      */
     public Object getNotEqual() {
-        NotEqualConstraint c = (NotEqualConstraint) appliedConstraints.get(NOT_EQUAL_CONSTRAINT);
+        NotEqualConstraint c = (NotEqualConstraint) appliedConstraints.get(NotEqualConstraint.VALIDATION_DSL_NAME);
         return c == null ? null : c.getNotEqualTo();
     }
 
@@ -688,8 +607,8 @@ public class ConstrainedProperty {
     public Integer getMaxSize() {
         Integer maxSize = null;
 
-        MaxSizeConstraint maxSizeConstraint = (MaxSizeConstraint) appliedConstraints.get(MAX_SIZE_CONSTRAINT);
-        SizeConstraint sizeConstraint = (SizeConstraint) appliedConstraints.get(SIZE_CONSTRAINT);
+        MaxSizeConstraint maxSizeConstraint = (MaxSizeConstraint) appliedConstraints.get(MaxSizeConstraint.VALIDATION_DSL_NAME);
+        SizeConstraint sizeConstraint = (SizeConstraint) appliedConstraints.get(SizeConstraint.VALIDATION_DSL_NAME);
 
         if ((maxSizeConstraint != null) || (sizeConstraint != null)) {
             int maxSizeConstraintValue = maxSizeConstraint != null ? maxSizeConstraint.getMaxSize() : Integer.MAX_VALUE;
@@ -704,7 +623,7 @@ public class ConstrainedProperty {
      * @param maxSize The maxSize to set.
      */
     public void setMaxSize(Integer maxSize) {
-        Constraint c = appliedConstraints.get(MAX_SIZE_CONSTRAINT);
+        Constraint c = appliedConstraints.get(MaxSizeConstraint.VALIDATION_DSL_NAME);
         if (c != null) {
             c.setParameter(maxSize);
         } else {
@@ -712,7 +631,7 @@ public class ConstrainedProperty {
             c.setOwningClass(owningClass);
             c.setPropertyName(propertyName);
             c.setParameter(maxSize);
-            appliedConstraints.put(MAX_SIZE_CONSTRAINT, c);
+            appliedConstraints.put(MaxSizeConstraint.VALIDATION_DSL_NAME, c);
         }
     }
 
@@ -722,8 +641,8 @@ public class ConstrainedProperty {
     public Integer getMinSize() {
         Integer minSize = null;
 
-        MinSizeConstraint minSizeConstraint = (MinSizeConstraint) appliedConstraints.get(MIN_SIZE_CONSTRAINT);
-        SizeConstraint sizeConstraint = (SizeConstraint) appliedConstraints.get(SIZE_CONSTRAINT);
+        MinSizeConstraint minSizeConstraint = (MinSizeConstraint) appliedConstraints.get(MinSizeConstraint.VALIDATION_DSL_NAME);
+        SizeConstraint sizeConstraint = (SizeConstraint) appliedConstraints.get(SizeConstraint.VALIDATION_DSL_NAME);
 
         if ((minSizeConstraint != null) || (sizeConstraint != null)) {
             int minSizeConstraintValue = minSizeConstraint != null ? minSizeConstraint.getMinSize() : Integer.MIN_VALUE;
@@ -739,7 +658,7 @@ public class ConstrainedProperty {
      * @param minSize The minLength to set.
      */
     public void setMinSize(Integer minSize) {
-        Constraint c = appliedConstraints.get(MIN_SIZE_CONSTRAINT);
+        Constraint c = appliedConstraints.get(MinSizeConstraint.VALIDATION_DSL_NAME);
         if (c != null) {
             c.setParameter(minSize);
         } else {
@@ -747,7 +666,7 @@ public class ConstrainedProperty {
             c.setOwningClass(owningClass);
             c.setPropertyName(propertyName);
             c.setParameter(minSize);
-            appliedConstraints.put(MIN_SIZE_CONSTRAINT, c);
+            appliedConstraints.put(MinSizeConstraint.VALIDATION_DSL_NAME, c);
         }
     }
 
@@ -756,13 +675,13 @@ public class ConstrainedProperty {
      */
     public void setNotEqual(Object notEqual) {
         if (notEqual == null) {
-            appliedConstraints.remove(NOT_EQUAL_CONSTRAINT);
+            appliedConstraints.remove(NotEqualConstraint.VALIDATION_DSL_NAME);
         } else {
             Constraint c = new NotEqualConstraint();
             c.setOwningClass(owningClass);
             c.setPropertyName(propertyName);
             c.setParameter(notEqual);
-            appliedConstraints.put(NOT_EQUAL_CONSTRAINT, c);
+            appliedConstraints.put(NotEqualConstraint.VALIDATION_DSL_NAME, c);
         }
     }
 
@@ -770,8 +689,8 @@ public class ConstrainedProperty {
      * @return Returns the nullable.
      */
     public boolean isNullable() {
-        if (appliedConstraints.containsKey(NULLABLE_CONSTRAINT)) {
-            NullableConstraint nc = (NullableConstraint) appliedConstraints.get(NULLABLE_CONSTRAINT);
+        if (appliedConstraints.containsKey(NullableConstraint.VALIDATION_DSL_NAME)) {
+            NullableConstraint nc = (NullableConstraint) appliedConstraints.get(NullableConstraint.VALIDATION_DSL_NAME);
             return nc.isNullable();
         }
 
@@ -782,12 +701,12 @@ public class ConstrainedProperty {
      * @param nullable The nullable to set.
      */
     public void setNullable(boolean nullable) {
-        NullableConstraint nc = (NullableConstraint) appliedConstraints.get(NULLABLE_CONSTRAINT);
+        NullableConstraint nc = (NullableConstraint) appliedConstraints.get(NullableConstraint.VALIDATION_DSL_NAME);
         if (nc == null) {
             nc = new NullableConstraint();
             nc.setOwningClass(owningClass);
             nc.setPropertyName(propertyName);
-            appliedConstraints.put(NULLABLE_CONSTRAINT, nc);
+            appliedConstraints.put(NullableConstraint.VALIDATION_DSL_NAME, nc);
         }
 
         nc.setParameter(Boolean.valueOf(nullable));
@@ -813,9 +732,9 @@ public class ConstrainedProperty {
     public boolean isUrl() {
         if (isNotValidStringType()) {
             throw new MissingPropertyException("URL constraint can only be applied to a String property",
-                    URL_CONSTRAINT, owningClass);
+                UrlConstraint.VALIDATION_DSL_NAME, owningClass);
         }
-        return appliedConstraints.containsKey(URL_CONSTRAINT);
+        return appliedConstraints.containsKey(UrlConstraint.VALIDATION_DSL_NAME);
     }
 
     /**
@@ -823,10 +742,10 @@ public class ConstrainedProperty {
      */
     public void setUrl(boolean url) {
         if (isNotValidStringType()) {
-            throw new MissingPropertyException("URL constraint can only be applied to a String property", URL_CONSTRAINT, owningClass);
+            throw new MissingPropertyException("URL constraint can only be applied to a String property", UrlConstraint.VALIDATION_DSL_NAME, owningClass);
         }
 
-        Constraint c = appliedConstraints.get(URL_CONSTRAINT);
+        Constraint c = appliedConstraints.get(UrlConstraint.VALIDATION_DSL_NAME);
         if (url) {
             if (c != null) {
                 c.setParameter(Boolean.valueOf(url));
@@ -835,11 +754,11 @@ public class ConstrainedProperty {
                 c.setOwningClass(owningClass);
                 c.setPropertyName(propertyName);
                 c.setParameter(Boolean.valueOf(url));
-                appliedConstraints.put(URL_CONSTRAINT, c);
+                appliedConstraints.put(UrlConstraint.VALIDATION_DSL_NAME, c);
             }
         } else {
             if (c != null) {
-                appliedConstraints.remove(URL_CONSTRAINT);
+                appliedConstraints.remove(UrlConstraint.VALIDATION_DSL_NAME);
             }
         }
     }
@@ -907,9 +826,9 @@ public class ConstrainedProperty {
             return c != null && c.supports(propertyType);
         } catch (Exception e) {
             LOG.error("Exception thrown instantiating constraint [" + constraintName +
-                    "] to class [" + owningClass + "]", e);
+                "] to class [" + owningClass + "]", e);
             throw new ConstraintException("Exception thrown instantiating  constraint [" + constraintName +
-                    "] to class [" + owningClass + "]");
+                "] to class [" + owningClass + "]");
         }
     }
 
@@ -933,16 +852,16 @@ public class ConstrainedProperty {
                     }
                 } catch (Exception e) {
                     LOG.error("Exception thrown applying constraint [" + constraintName +
-                            "] to class [" + owningClass + "] for value [" + constrainingValue + "]: " + e.getMessage(), e);
+                        "] to class [" + owningClass + "] for value [" + constrainingValue + "]: " + e.getMessage(), e);
                     throw new ConstraintException("Exception thrown applying constraint [" + constraintName +
-                            "] to class [" + owningClass + "] for value [" + constrainingValue + "]: " + e.getMessage(), e);
+                        "] to class [" + owningClass + "] for value [" + constrainingValue + "]: " + e.getMessage(), e);
                 }
             }
         } else if (GriffonClassUtils.isWritable(this, constraintName)) {
             InvokerHelper.setProperty(this, constraintName, constrainingValue);
         } else {
             throw new ConstraintException("Constraint [" + constraintName + "] is not supported for property [" +
-                    propertyName + "] of class [" + owningClass + "] with type [" + propertyType + "]");
+                propertyName + "] of class [" + owningClass + "] with type [" + propertyType + "]");
         }
     }
 
@@ -962,7 +881,6 @@ public class ConstrainedProperty {
             c.setPropertyName(propertyName);
 
             if (validate && c.isValid()) {
-
                 return c;
             } else if (!validate) {
                 return c;
@@ -978,12 +896,12 @@ public class ConstrainedProperty {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append(owningClass)
-                .append(propertyName)
-                .append(propertyType)
-                .append(appliedConstraints)
-                .append(metaConstraints)
-                .toString();
+            .append(owningClass)
+            .append(propertyName)
+            .append(propertyType)
+            .append(appliedConstraints)
+            .append(metaConstraints)
+            .toString();
     }
 
     /**

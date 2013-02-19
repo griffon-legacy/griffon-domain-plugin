@@ -16,7 +16,6 @@ package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.domain.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -29,6 +28,9 @@ import java.util.Collection;
  * @author Graeme Rocher (Grails 0.4)
  */
 public class MaxSizeConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "maxSize";
+    public static final String DEFAULT_INVALID_MAX_SIZE_MESSAGE_CODE = "default.invalid.max.size.message";
+    public static final String DEFAULT_INVALID_MAX_SIZE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] exceeds the maximum size of [{3}]";
 
     private int maxSize;
 
@@ -46,9 +48,9 @@ public class MaxSizeConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Integer)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.MAX_SIZE_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must be a of type [java.lang.Integer]");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must be a of type [java.lang.Integer]");
         }
 
         maxSize = ((Integer) constraintParameter).intValue();
@@ -56,7 +58,7 @@ public class MaxSizeConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.MAX_SIZE_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     /* (non-Javadoc)
@@ -65,10 +67,10 @@ public class MaxSizeConstraint extends AbstractConstraint {
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
         return type != null && (
-                String.class.isAssignableFrom(type) ||
-                        StringValue.class.isAssignableFrom(type) ||
-                        Collection.class.isAssignableFrom(type) ||
-                        type.isArray());
+            String.class.isAssignableFrom(type) ||
+                StringValue.class.isAssignableFrom(type) ||
+                Collection.class.isAssignableFrom(type) ||
+                type.isArray());
     }
 
     @Override
@@ -87,8 +89,8 @@ public class MaxSizeConstraint extends AbstractConstraint {
 
         if (length > maxSize) {
             Object[] args = {constraintPropertyName, constraintOwningClass, propertyValue, maxSize};
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_MAX_SIZE_MESSAGE_CODE,
-                    ConstrainedProperty.MAX_SIZE_CONSTRAINT + ConstrainedProperty.EXCEEDED_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_INVALID_MAX_SIZE_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + EXCEEDED_SUFFIX, args);
         }
     }
 }

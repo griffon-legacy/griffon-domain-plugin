@@ -25,6 +25,9 @@ import org.apache.commons.lang.StringUtils;
  * @author Graeme Rocher (Grails 0.4)
  */
 public class BlankConstraint extends AbstractVetoingConstraint {
+    public static final String VALIDATION_DSL_NAME = "blank";
+    public static final String DEFAULT_BLANK_MESSAGE_CODE = "default.blank.message";
+    public static final String DEFAULT_BLANK_MESSAGE = "Property [{0}] of class [{1}] cannot be blank";
 
     private boolean blank;
 
@@ -52,9 +55,9 @@ public class BlankConstraint extends AbstractVetoingConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Boolean)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.BLANK_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must be a boolean value");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must be a boolean value");
         }
 
         blank = ((Boolean) constraintParameter).booleanValue();
@@ -62,7 +65,7 @@ public class BlankConstraint extends AbstractVetoingConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.BLANK_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
@@ -72,14 +75,15 @@ public class BlankConstraint extends AbstractVetoingConstraint {
 
     @Override
     protected boolean processValidateWithVetoing(Object target, Object propertyValue, Errors errors) {
-        if(propertyValue instanceof StringValue) {
+        if (propertyValue instanceof StringValue) {
             propertyValue = ((StringValue) propertyValue).stringValue();
         }
         if (propertyValue instanceof String && StringUtils.isBlank((String) propertyValue)) {
             if (!blank) {
                 Object[] args = new Object[]{constraintPropertyName, constraintOwningClass};
-                rejectValue(target, errors, ConstrainedProperty.DEFAULT_BLANK_MESSAGE_CODE,
-                        ConstrainedProperty.BLANK_CONSTRAINT, args);
+                rejectValue(target, errors,
+                    DEFAULT_BLANK_MESSAGE_CODE,
+                    VALIDATION_DSL_NAME, args);
                 // empty string is caught by 'blank' constraint, no addition validation needed
                 return true;
             }

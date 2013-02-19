@@ -14,9 +14,8 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.domain.atoms.*;
+import griffon.plugins.domain.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 
@@ -26,6 +25,9 @@ import org.apache.commons.validator.routines.EmailValidator;
  * @author Graeme Rocher (Grails 0.4)
  */
 public class EmailConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "email";
+    public static final String DEFAULT_INVALID_EMAIL_MESSAGE_CODE = "default.invalid.email.message";
+    public static final String DEFAULT_INVALID_EMAIL_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is not a valid e-mail address";
 
     private boolean email;
 
@@ -44,9 +46,9 @@ public class EmailConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Boolean)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.EMAIL_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must be a boolean value");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must be a boolean value");
         }
 
         email = ((Boolean) constraintParameter).booleanValue();
@@ -54,7 +56,7 @@ public class EmailConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.EMAIL_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class EmailConstraint extends AbstractConstraint {
         EmailValidator emailValidator = EmailValidator.getInstance();
         Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
 
-        if(propertyValue instanceof StringValue) {
+        if (propertyValue instanceof StringValue) {
             propertyValue = ((StringValue) propertyValue).stringValue();
         }
 
@@ -76,8 +78,8 @@ public class EmailConstraint extends AbstractConstraint {
         }
 
         if (!emailValidator.isValid(value)) {
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_EMAIL_MESSAGE_CODE,
-                    ConstrainedProperty.EMAIL_CONSTRAINT + ConstrainedProperty.INVALID_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_INVALID_EMAIL_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + INVALID_SUFFIX, args);
         }
     }
 }

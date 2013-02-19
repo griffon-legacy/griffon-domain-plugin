@@ -136,7 +136,7 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
                 final ConstrainedProperty constrainedProperty = entry
                     .getValue();
                 if (!constrainedProperty
-                    .hasAppliedConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT)) {
+                    .hasAppliedConstraint(NullableConstraint.VALIDATION_DSL_NAME)) {
                     applyDefaultNullableConstraint(constrainedProperty);
                 }
             }
@@ -248,7 +248,7 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
 
     protected void applyDefaultNullableConstraint(ConstrainedProperty cp) {
         boolean isCollection = Collection.class.isAssignableFrom(cp.getPropertyType()) || Map.class.isAssignableFrom(cp.getPropertyType());
-        cp.applyConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT, isCollection);
+        cp.applyConstraint(NullableConstraint.VALIDATION_DSL_NAME, isCollection);
     }
 
 
@@ -262,7 +262,7 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
 
         final boolean isVersion = GriffonDomainProperty.VERSION.equals(property.getName());
         final boolean isIdentity = GriffonDomainProperty.IDENTITY.equals(property.getName());
-        return !constrainedProperty.hasAppliedConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT) &&
+        return !constrainedProperty.hasAppliedConstraint(NullableConstraint.VALIDATION_DSL_NAME) &&
             isConstrainableProperty(property, propertyName) && !isIdentity && !isVersion /*&& !property.isDerived()*/;
     }
 

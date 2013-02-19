@@ -17,7 +17,6 @@ package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.domain.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.util.GriffonClassUtils;
 
 /**
@@ -27,6 +26,9 @@ import griffon.util.GriffonClassUtils;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class MinConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "min";
+    public static final String DEFAULT_INVALID_MIN_MESSAGE_CODE = "default.invalid.min.message";
+    public static final String DEFAULT_INVALID_MIN_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is less than minimum value [{3}]";
 
     private Comparable minValue;
 
@@ -42,9 +44,9 @@ public class MinConstraint extends AbstractConstraint {
      */
     public boolean supports(Class type) {
         return type != null && (
-                Comparable.class.isAssignableFrom(type) ||
-                        GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type) ||
-                        NumericAtomicValue.class.isAssignableFrom(type));
+            Comparable.class.isAssignableFrom(type) ||
+                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type) ||
+                NumericAtomicValue.class.isAssignableFrom(type));
     }
 
     /* (non-Javadoc)
@@ -54,22 +56,22 @@ public class MinConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (constraintParameter == null) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.MIN_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass + "] cannot be null");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass + "] cannot be null");
         }
 
         if (!(constraintParameter instanceof Comparable<?>) && (!constraintParameter.getClass().isPrimitive())) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.MIN_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must implement the interface [java.lang.Comparable]");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must implement the interface [java.lang.Comparable]");
         }
 
         Class<?> propertyClass = GriffonClassUtils.getPropertyType(constraintOwningClass, constraintPropertyName);
         if (!GriffonClassUtils.isAssignableOrConvertibleFrom(constraintParameter.getClass(), propertyClass)) {
-            throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.MIN_CONSTRAINT +
-                    "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must be the same type as property: [" + propertyClass.getName() + "]");
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME +
+                "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must be the same type as property: [" + propertyClass.getName() + "]");
         }
 
         minValue = (Comparable<?>) constraintParameter;
@@ -77,7 +79,7 @@ public class MinConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.MIN_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
@@ -91,7 +93,7 @@ public class MinConstraint extends AbstractConstraint {
         }
 
         Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, minValue};
-        rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_MIN_MESSAGE_CODE,
-                ConstrainedProperty.MIN_CONSTRAINT + ConstrainedProperty.NOTMET_SUFFIX, args);
+        rejectValue(target, errors, DEFAULT_INVALID_MIN_MESSAGE_CODE,
+            VALIDATION_DSL_NAME + NOTMET_SUFFIX, args);
     }
 }

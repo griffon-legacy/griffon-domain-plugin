@@ -36,7 +36,7 @@ import java.util.List;
  */
 public abstract class AbstractUniqueConstraint extends AbstractConstraint {
     private static final String DEFAULT_NOT_UNIQUE_MESSAGE_CODE = "default.not.unique.message";
-    public static final String UNIQUE_CONSTRAINT = "unique";
+    public static final String VALIDATION_DSL_NAME = "unique";
 
     private boolean unique;
     private List<String> uniquenessGroup = new ArrayList<String>();
@@ -65,20 +65,20 @@ public abstract class AbstractUniqueConstraint extends AbstractConstraint {
     @Override
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Boolean ||
-                constraintParameter instanceof String ||
-                constraintParameter instanceof CharSequence ||
-                constraintParameter instanceof List<?>)) {
-            throw new IllegalArgumentException("Parameter for constraint [" + UNIQUE_CONSTRAINT +
-                    "] of property [" + constraintPropertyName + "] of class [" +
-                    constraintOwningClass + "] must be a boolean or string value");
+            constraintParameter instanceof String ||
+            constraintParameter instanceof CharSequence ||
+            constraintParameter instanceof List<?>)) {
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME +
+                "] of property [" + constraintPropertyName + "] of class [" +
+                constraintOwningClass + "] must be a boolean or string value");
         }
 
         if (constraintParameter instanceof List<?>) {
             for (Object parameter : ((List<?>) constraintParameter)) {
                 if (!(parameter instanceof String || parameter instanceof CharSequence)) {
-                    throw new IllegalArgumentException("Parameter for constraint [" + UNIQUE_CONSTRAINT +
-                            "] of property [" + constraintPropertyName + "] of class [" +
-                            constraintOwningClass + "] must be a boolean or string value");
+                    throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME +
+                        "] of property [" + constraintPropertyName + "] of class [" +
+                        constraintOwningClass + "] must be a boolean or string value");
                 }
                 uniquenessGroup.add(parameter.toString());
             }
@@ -94,9 +94,9 @@ public abstract class AbstractUniqueConstraint extends AbstractConstraint {
             for (Object anUniquenessGroup : uniquenessGroup) {
                 String propertyName = (String) anUniquenessGroup;
                 if (GriffonClassUtils.getPropertyType(constraintOwningClass, propertyName) == null) {
-                    throw new IllegalArgumentException("Scope for constraint [" + UNIQUE_CONSTRAINT +
-                            "] of property [" + constraintPropertyName + "] of class [" +
-                            constraintOwningClass + "] must be a valid property name of same class");
+                    throw new IllegalArgumentException("Scope for constraint [" + VALIDATION_DSL_NAME +
+                        "] of property [" + constraintPropertyName + "] of class [" +
+                        constraintOwningClass + "] must be a valid property name of same class");
                 }
             }
         }
@@ -105,7 +105,7 @@ public abstract class AbstractUniqueConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return UNIQUE_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
@@ -118,8 +118,8 @@ public abstract class AbstractUniqueConstraint extends AbstractConstraint {
             InvokerHelper.getProperty(target, GriffonDomainProperty.IDENTITY);
         } catch (MissingPropertyException e) {
             throw new GriffonException("Target of [unique] constraints [" + target +
-                    "] is not a domain instance. Unique constraint can only be applied to " +
-                    "domain classes and not custom user types or embedded instances");
+                "] is not a domain instance. Unique constraint can only be applied to " +
+                "domain classes and not custom user types or embedded instances");
         }
 
         doUniqueConstraintCheck(target, propertyValue, errors);

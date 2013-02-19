@@ -17,7 +17,6 @@ package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.domain.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.util.GriffonClassUtils;
 
 /**
@@ -27,6 +26,9 @@ import griffon.util.GriffonClassUtils;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class MaxConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "max";
+    public static final String DEFAULT_INVALID_MAX_MESSAGE_CODE = "default.invalid.max.message";
+    public static final String DEFAULT_INVALID_MAX_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] exceeds maximum value [{3}]";
 
     private Comparable maxValue;
 
@@ -42,9 +44,9 @@ public class MaxConstraint extends AbstractConstraint {
      */
     public boolean supports(Class type) {
         return type != null && (
-                Comparable.class.isAssignableFrom(type) ||
-                        GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type) ||
-                        NumericAtomicValue.class.isAssignableFrom(type));
+            Comparable.class.isAssignableFrom(type) ||
+                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type) ||
+                NumericAtomicValue.class.isAssignableFrom(type));
     }
 
     /* (non-Javadoc)
@@ -54,22 +56,22 @@ public class MaxConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (constraintParameter == null) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.MAX_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass + "] cannot be null");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass + "] cannot be null");
         }
 
         if (!(constraintParameter instanceof Comparable<?>) && (!constraintParameter.getClass().isPrimitive())) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.MAX_CONSTRAINT + "] of property [" + constraintPropertyName +
-                    "] of class [" + constraintOwningClass + "] must implement the interface [java.lang.Comparable]");
+                VALIDATION_DSL_NAME + "] of property [" + constraintPropertyName +
+                "] of class [" + constraintOwningClass + "] must implement the interface [java.lang.Comparable]");
         }
 
         Class<?> propertyClass = GriffonClassUtils.getPropertyType(constraintOwningClass, constraintPropertyName);
         if (!GriffonClassUtils.isAssignableOrConvertibleFrom(constraintParameter.getClass(), propertyClass)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.MAX_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must be the same type as property: [" + propertyClass.getName() + "]");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must be the same type as property: [" + propertyClass.getName() + "]");
         }
 
         maxValue = (Comparable) constraintParameter;
@@ -77,7 +79,7 @@ public class MaxConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.MAX_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
@@ -86,10 +88,10 @@ public class MaxConstraint extends AbstractConstraint {
             propertyValue = ((NumericAtomicValue) propertyValue).getValue();
         }
 
-        if (null == propertyValue || maxValue.compareTo(propertyValue) < 0){
+        if (null == propertyValue || maxValue.compareTo(propertyValue) < 0) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, maxValue};
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_MAX_MESSAGE_CODE,
-                    ConstrainedProperty.MAX_CONSTRAINT + ConstrainedProperty.EXCEEDED_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_INVALID_MAX_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + EXCEEDED_SUFFIX, args);
         }
     }
 }

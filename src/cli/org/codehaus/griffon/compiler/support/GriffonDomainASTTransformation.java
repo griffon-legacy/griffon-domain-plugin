@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.codehaus.griffon.compiler.support;
 
 import griffon.plugins.domain.Event;
@@ -20,18 +21,13 @@ import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.transform.Domain;
 import org.codehaus.griffon.compiler.GriffonCompilerContext;
-import org.codehaus.griffon.compiler.SourceUnitCollector;
 import org.codehaus.griffon.runtime.domain.AbstractGriffonDomain;
-import org.codehaus.groovy.ast.ClassHelper;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.Parameter;
+import org.codehaus.groovy.GroovyBugError;
+import org.codehaus.groovy.ast.*;
 import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Modifier;
 
@@ -45,63 +41,77 @@ import static org.codehaus.griffon.ast.GriffonASTUtils.addMethod;
  */
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 public class GriffonDomainASTTransformation extends GriffonArtifactASTTransformation {
-    private static final Logger LOG = LoggerFactory.getLogger(GriffonDomainASTTransformation.class);
     private static final String ARTIFACT_PATH = "domain";
     private static final ClassNode DOMAIN_CLASS = makeClassSafe(Domain.class);
     private static final ClassNode GRIFFON_DOMAIN_CLASS = makeClassSafe(GriffonDomain.class);
     private static final ClassNode ABSTRACT_GRIFFON_DOMAIN_CLASS = makeClassSafe(AbstractGriffonDomain.class);
 
     public static boolean isDomainArtifact(ClassNode classNode, SourceUnit source) {
+        System.out.println(classNode + " " + source);
         if (classNode == null || source == null) return false;
-        return ARTIFACT_PATH.equals(GriffonCompilerContext.getArtifactPath(source));
+        System.out.println(ARTIFACT_PATH.equals(GriffonCompilerContext.getArtifactPath(source)) &&
+            !classNode.getAnnotations(DOMAIN_CLASS).isEmpty());
+        return ARTIFACT_PATH.equals(GriffonCompilerContext.getArtifactPath(source)) &&
+            !classNode.getAnnotations(DOMAIN_CLASS).isEmpty();
     }
 
-    protected void transform(ClassNode classNode, SourceUnit source, String artifactPath) {
-        if (!isDomainArtifact(classNode, source) ||
-                !classNode.getAnnotations(DOMAIN_CLASS).isEmpty()) return;
+    public void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
+        if (!(astNodes[0] instanceof AnnotationNode) || !(astNodes[1] instanceof AnnotatedNode)) {
+            throw new GroovyBugError("Internal error: wrong types: $node.class / $parent.class");
+        }
 
-        inject(classNode);
+        AnnotatedNode parent = (AnnotatedNode) astNodes[1];
+        AnnotationNode node = (AnnotationNode) astNodes[0];
+        if (!DOMAIN_CLASS.equals(node.getClassNode()) || !(parent instanceof ClassNode)) {
+            return;
+        }
+
+        ClassNode classNode = (ClassNode) parent;
+        String cName = classNode.getName();
+        if (classNode.isInterface()) {
+            throw new RuntimeException("Error processing interface '" + cName + "'. " +
+                DOMAIN_CLASS + " not allowed for interfaces.");
+        }
+
+        transform(classNode);
+        injectDomainBehavior(classNode);
     }
 
-    public static void inject(ClassNode classNode) {
-        injectBaseBehavior(classNode);
-        injectBehavior(classNode);
-    }
-
-    public static void injectBaseBehavior(ClassNode classNode) {
-        if (ClassHelper.OBJECT_TYPE.equals(classNode.getSuperClass())) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Setting " + ABSTRACT_GRIFFON_DOMAIN_CLASS.getName() + " as the superclass of " + classNode.getName());
-            }
-            classNode.setSuperClass(ABSTRACT_GRIFFON_DOMAIN_CLASS);
-        } else if (!classNode.implementsInterface(GRIFFON_DOMAIN_CLASS)) {
-            ClassNode superClass = classNode.getSuperClass();
-            SourceUnit superSource = SourceUnitCollector.getInstance().getSourceUnit(superClass);
-            if (isDomainArtifact(superClass, superSource)) return;
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Injecting " + GRIFFON_DOMAIN_CLASS.getName() + " behavior to " + classNode.getName());
-            }
-            // 1. add interface
-            classNode.addInterface(GRIFFON_DOMAIN_CLASS);
-            // 2. add methods
-            ASTInjector injector = new GriffonArtifactASTInjector();
-            injector.inject(classNode, GriffonDomainClass.TYPE);
-
-            for (String eventName : Event.getAllEvents()) {
-                addMethod(classNode, new MethodNode(
-                        eventName,
-                        Modifier.PUBLIC,
-                        ClassHelper.VOID_TYPE,
-                        Parameter.EMPTY_ARRAY,
-                        ClassNode.EMPTY_ARRAY,
-                        new EmptyStatement()
-                ));
-            }
+    private void injectDomainBehavior(ClassNode classNode) {
+        ASTInjector injector = new DefaultGriffonDomainClassInjector();
+        injector.inject(classNode, getArtifactType());
+        for (String eventName : Event.getAllEvents()) {
+            addMethod(classNode, new MethodNode(
+                eventName,
+                Modifier.PUBLIC,
+                ClassHelper.VOID_TYPE,
+                Parameter.EMPTY_ARRAY,
+                ClassNode.EMPTY_ARRAY,
+                new EmptyStatement()
+            ));
         }
     }
 
-    public static void injectBehavior(ClassNode classNode) {
-        GriffonDomainClassInjector injector = new DefaultGriffonDomainClassInjector();
-        injector.performInjectionOn(classNode);
+    protected String getArtifactType() {
+        return GriffonDomainClass.TYPE;
+    }
+
+    protected ClassNode getSuperClassNode(ClassNode classNode) {
+        return ABSTRACT_GRIFFON_DOMAIN_CLASS;
+    }
+
+    protected ClassNode getInterfaceNode() {
+        return GRIFFON_DOMAIN_CLASS;
+    }
+
+    protected boolean matches(ClassNode classNode, SourceUnit source) {
+        return isDomainArtifact(classNode, source);
+    }
+
+    protected ASTInjector[] getASTInjectors() {
+        return new ASTInjector[]{
+            new GriffonArtifactASTInjector(),
+            new DefaultGriffonDomainClassInjector()
+        };
     }
 }

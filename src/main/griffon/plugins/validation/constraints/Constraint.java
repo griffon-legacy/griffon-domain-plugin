@@ -24,6 +24,15 @@ import griffon.plugins.validation.Errors;
  * @author Graeme Rocher (Grails)
  */
 public interface Constraint {
+    String INVALID_SUFFIX = ".invalid";
+    String EXCEEDED_SUFFIX = ".exceeded";
+    String NOTMET_SUFFIX = ".notmet";
+    String NOT_PREFIX = "not.";
+    String TOOBIG_SUFFIX = ".toobig";
+    String TOOLONG_SUFFIX = ".toolong";
+    String TOOSMALL_SUFFIX = ".toosmall";
+    String TOOSHORT_SUFFIX = ".tooshort";
+
     /**
      * Returns whether the constraint supports being applied against the specified type;
      *

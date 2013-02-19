@@ -16,13 +16,15 @@ package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.domain.AtomicValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.util.GriffonClassUtils;
 
 /**
  * Validates not equal to something.
  */
 public class NotEqualConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "notEqual";
+    public static final String DEFAULT_NOT_EQUAL_MESSAGE_CODE = "default.not.equal.message";
+    public static final String DEFAULT_NOT_EQUAL_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] cannot equal [{3}]";
 
     /* (non-Javadoc)
      * @see org.codehaus.groovy.grails.validation.Constraint#supports(java.lang.Class)
@@ -33,7 +35,7 @@ public class NotEqualConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.NOT_EQUAL_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     /* (non-Javadoc)
@@ -42,18 +44,18 @@ public class NotEqualConstraint extends AbstractConstraint {
     @Override
     public void setParameter(Object constraintParameter) {
         if (constraintParameter == null) {
-            throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.NOT_EQUAL_CONSTRAINT +
-                    "] of property [" + constraintPropertyName + "] of class [" +
-                    constraintOwningClass + "] cannot be null");
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME +
+                "] of property [" + constraintPropertyName + "] of class [" +
+                constraintOwningClass + "] cannot be null");
         }
 
         Class<?> propertyClass = GriffonClassUtils.getPropertyType(constraintOwningClass, constraintPropertyName);
         // TODO: Find an alternative way to do the UrlMapping check!
         if (!GriffonClassUtils.isAssignableOrConvertibleFrom(constraintParameter.getClass(), propertyClass) && propertyClass != null) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.NOT_EQUAL_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must be the same type as property: [" + propertyClass.getName() + "]");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must be the same type as property: [" + propertyClass.getName() + "]");
         }
         super.setParameter(constraintParameter);
     }
@@ -73,8 +75,8 @@ public class NotEqualConstraint extends AbstractConstraint {
 
         if (constraintParameter.equals(propertyValue)) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, constraintParameter};
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_NOT_EQUAL_MESSAGE_CODE,
-                    ConstrainedProperty.NOT_EQUAL_CONSTRAINT, args);
+            rejectValue(target, errors, DEFAULT_NOT_EQUAL_MESSAGE_CODE,
+                VALIDATION_DSL_NAME, args);
         }
     }
 }

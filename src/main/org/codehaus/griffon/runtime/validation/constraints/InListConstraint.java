@@ -15,9 +15,7 @@
 package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.domain.AtomicValue;
-import griffon.plugins.domain.atoms.*;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 
 import java.util.List;
 
@@ -27,6 +25,9 @@ import java.util.List;
  * @author Graeme Rocher (Grails 0.4)
  */
 public class InListConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "inList";
+    public static final String DEFAULT_NOT_INLIST_MESSAGE_CODE = "default.not.inlist.message";
+    public static final String DEFAULT_NOT_IN_LIST_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is not contained within the list [{3}]";
 
     List<?> list;
 
@@ -52,9 +53,9 @@ public class InListConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof List<?>)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.IN_LIST_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must implement the interface [java.util.List]");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must implement the interface [java.util.List]");
         }
 
         list = (List<?>) constraintParameter;
@@ -62,19 +63,19 @@ public class InListConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.IN_LIST_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
         // Check that the list contains the given value. If not, add an error.
-        if(propertyValue instanceof AtomicValue) {
+        if (propertyValue instanceof AtomicValue) {
             propertyValue = ((AtomicValue) propertyValue).getValue();
         }
         if (!list.contains(propertyValue)) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, list};
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_NOT_INLIST_MESSAGE_CODE,
-                    ConstrainedProperty.NOT_PREFIX + ConstrainedProperty.IN_LIST_CONSTRAINT, args);
+            rejectValue(target, errors, DEFAULT_NOT_INLIST_MESSAGE_CODE,
+                NOT_PREFIX + VALIDATION_DSL_NAME, args);
         }
     }
 }

@@ -19,7 +19,6 @@ import griffon.plugins.domain.atoms.DoubleValue;
 import griffon.plugins.domain.atoms.FloatValue;
 import griffon.plugins.domain.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.util.GriffonClassUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
@@ -48,6 +47,7 @@ import java.math.BigDecimal;
  * @since 0.4
  */
 public class ScaleConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "scale";
 
     private int scale;
 
@@ -58,12 +58,12 @@ public class ScaleConstraint extends AbstractConstraint {
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
         return type != null && (
-                BigDecimal.class.isAssignableFrom(type) ||
-                        GriffonClassUtils.isAssignableOrConvertibleFrom(Float.class, type) ||
-                        GriffonClassUtils.isAssignableOrConvertibleFrom(Double.class, type) ||
-                        BigDecimalValue.class.isAssignableFrom(type) ||
-                        FloatValue.class.isAssignableFrom(type) ||
-                        DoubleValue.class.isAssignableFrom(type));
+            BigDecimal.class.isAssignableFrom(type) ||
+                GriffonClassUtils.isAssignableOrConvertibleFrom(Float.class, type) ||
+                GriffonClassUtils.isAssignableOrConvertibleFrom(Double.class, type) ||
+                BigDecimalValue.class.isAssignableFrom(type) ||
+                FloatValue.class.isAssignableFrom(type) ||
+                DoubleValue.class.isAssignableFrom(type));
     }
 
     /*
@@ -71,7 +71,7 @@ public class ScaleConstraint extends AbstractConstraint {
      * @see org.codehaus.groovy.grails.validation.Constraint#getName()
      */
     public String getName() {
-        return ConstrainedProperty.SCALE_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     /**
@@ -89,16 +89,16 @@ public class ScaleConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Integer)) {
             throw new IllegalArgumentException("Parameter for constraint [" + getName() + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must be a of type [java.lang.Integer]");
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must be a of type [java.lang.Integer]");
         }
 
         int requestedScale = ((Integer) constraintParameter).intValue();
 
         if (requestedScale < 0) {
             throw new IllegalArgumentException("Parameter for constraint [" + getName() + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must have a nonnegative value");
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must have a nonnegative value");
         }
 
         scale = requestedScale;
@@ -133,7 +133,7 @@ public class ScaleConstraint extends AbstractConstraint {
             InvokerHelper.setProperty(target, getPropertyName(), bigDecimal);
         } else {
             throw new IllegalArgumentException("Unsupported type detected in constraint [" + getName() +
-                    "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass + "]");
+                "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass + "]");
         }
     }
 

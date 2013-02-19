@@ -14,9 +14,8 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.domain.atoms.*;
+import griffon.plugins.domain.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import org.apache.commons.validator.routines.RegexValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 
@@ -29,6 +28,9 @@ import java.util.List;
  * @since 0.4
  */
 public class UrlConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "url";
+    public static final String DEFAULT_INVALID_URL_MESSAGE_CODE = "default.invalid.url.message";
+    public static final String DEFAULT_INVALID_URL_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is not a valid URL";
 
     private boolean url;
     private UrlValidator validator;
@@ -50,30 +52,27 @@ public class UrlConstraint extends AbstractConstraint {
 
         if (constraintParameter instanceof Boolean) {
             url = ((Boolean) constraintParameter).booleanValue();
-        }
-        else if (constraintParameter instanceof String) {
+        } else if (constraintParameter instanceof String) {
             url = true;
             domainValidator = new RegexValidator((String) constraintParameter);
-        }
-        else if (constraintParameter instanceof List<?>) {
+        } else if (constraintParameter instanceof List<?>) {
             url = true;
             List<?> regexpList = (List<?>) constraintParameter;
             domainValidator = new RegexValidator(regexpList.toArray(new String[regexpList.size()]));
-        }
-        else {
-            throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.URL_CONSTRAINT +
-                    "] of property [" + constraintPropertyName + "] of class [" +
-                    constraintOwningClass + "] must be a boolean, string, or list value");
+        } else {
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME +
+                "] of property [" + constraintPropertyName + "] of class [" +
+                constraintOwningClass + "] must be a boolean, string, or list value");
         }
 
         validator = new UrlValidator(domainValidator,
-                UrlValidator.ALLOW_ALL_SCHEMES + UrlValidator.ALLOW_2_SLASHES);
+            UrlValidator.ALLOW_ALL_SCHEMES + UrlValidator.ALLOW_2_SLASHES);
 
         super.setParameter(constraintParameter);
     }
 
     public String getName() {
-        return ConstrainedProperty.URL_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
@@ -82,14 +81,14 @@ public class UrlConstraint extends AbstractConstraint {
             return;
         }
 
-        if(propertyValue instanceof StringValue) {
+        if (propertyValue instanceof StringValue) {
             propertyValue = ((StringValue) propertyValue).stringValue();
         }
 
         if (null == propertyValue || !validator.isValid(propertyValue.toString())) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_URL_MESSAGE_CODE,
-                    ConstrainedProperty.URL_CONSTRAINT + ConstrainedProperty.INVALID_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_INVALID_URL_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + INVALID_SUFFIX, args);
         }
     }
 }

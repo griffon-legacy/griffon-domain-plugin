@@ -14,9 +14,8 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.domain.atoms.*;
+import griffon.plugins.domain.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 
 /**
  * A constraint that validates the property against a supplied regular expression.
@@ -24,6 +23,9 @@ import griffon.plugins.validation.constraints.ConstrainedProperty;
  * @author Graeme Rocher (Grails 0.4)
  */
 public class MatchesConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "matches";
+    public static final String DEFAULT_DOESNT_MATCH_MESSAGE_CODE = "default.doesnt.match.message";
+    public static final String DEFAULT_DOESNT_MATCH_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] does not match the required pattern [{3}]";
 
     private String regex;
 
@@ -48,7 +50,7 @@ public class MatchesConstraint extends AbstractConstraint {
     @Override
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof String)) {
-            throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.MATCHES_CONSTRAINT + "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass + "] must be of type [java.lang.String]");
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME + "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass + "] must be of type [java.lang.String]");
         }
 
         regex = (String) constraintParameter;
@@ -56,19 +58,19 @@ public class MatchesConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.MATCHES_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
-        if(propertyValue instanceof StringValue) {
+        if (propertyValue instanceof StringValue) {
             propertyValue = ((StringValue) propertyValue).stringValue();
         }
 
         if (!propertyValue.toString().matches(regex)) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, regex};
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_DOESNT_MATCH_MESSAGE_CODE,
-                    ConstrainedProperty.MATCHES_CONSTRAINT + ConstrainedProperty.INVALID_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_DOESNT_MATCH_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + INVALID_SUFFIX, args);
         }
     }
 }

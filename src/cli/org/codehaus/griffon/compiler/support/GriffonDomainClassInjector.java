@@ -38,7 +38,7 @@ import static org.codehaus.griffon.ast.GriffonASTUtils.*;
  *
  * @author Andres Almiray
  */
-public abstract class GriffonDomainClassInjector {
+public abstract class GriffonDomainClassInjector extends AbstractASTInjector {
     private static final int ACC_SYNTHETIC = 4096;
     private static final String GRIFFON_DOMAIN_CLASSNAME = GriffonDomain.class.getName();
     private static final ClassNode APPLICATION_HOLDER_TYPE = makeClassSafe(ApplicationHolder.class);
@@ -46,7 +46,7 @@ public abstract class GriffonDomainClassInjector {
     private final ClassNode METHOD_MISSING_INTERCEPTOR_CLASS = makeClassSafe(MethodMissingInterceptor.class);
     protected static final String DOMAIN_HANDLER_METHOD_NAME = "domainHandler";
 
-    public void performInjectionOn(ClassNode classNode) {
+    public void inject(ClassNode classNode, String artifactType) {
         injectDomainHandler(classNode);
         injectMethodMissing(classNode);
         injectMethods(classNode);

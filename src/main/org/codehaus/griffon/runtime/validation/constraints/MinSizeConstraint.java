@@ -16,7 +16,6 @@ package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.domain.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -29,6 +28,9 @@ import java.util.Collection;
  * @author Graeme Rocher (Grails 0.4)
  */
 public class MinSizeConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "minSize";
+    public static final String DEFAULT_INVALID_MIN_SIZE_MESSAGE_CODE = "default.invalid.min.size.message";
+    public static final String DEFAULT_INVALID_MIN_SIZE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is less than the minimum size of [{3}]";
 
     private int minSize;
 
@@ -45,9 +47,9 @@ public class MinSizeConstraint extends AbstractConstraint {
     @Override
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Integer)) {
-            throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.MIN_SIZE_CONSTRAINT +
-                    "] of property [" + constraintPropertyName + "] of class [" +
-                    constraintOwningClass + "] must be a of type [java.lang.Integer]");
+            throw new IllegalArgumentException("Parameter for constraint [" + VALIDATION_DSL_NAME +
+                "] of property [" + constraintPropertyName + "] of class [" +
+                constraintOwningClass + "] must be a of type [java.lang.Integer]");
         }
 
         minSize = ((Integer) constraintParameter).intValue();
@@ -55,7 +57,7 @@ public class MinSizeConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.MIN_SIZE_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     /* (non-Javadoc)
@@ -64,10 +66,10 @@ public class MinSizeConstraint extends AbstractConstraint {
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
         return type != null && (
-                String.class.isAssignableFrom(type) ||
-                        StringValue.class.isAssignableFrom(type) ||
-                        Collection.class.isAssignableFrom(type) ||
-                        type.isArray());
+            String.class.isAssignableFrom(type) ||
+                StringValue.class.isAssignableFrom(type) ||
+                Collection.class.isAssignableFrom(type) ||
+                type.isArray());
     }
 
     @Override
@@ -86,8 +88,8 @@ public class MinSizeConstraint extends AbstractConstraint {
 
         if (length < minSize) {
             Object[] args = {constraintPropertyName, constraintOwningClass, propertyValue, minSize};
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_MIN_SIZE_MESSAGE_CODE,
-                    ConstrainedProperty.MIN_SIZE_CONSTRAINT + ConstrainedProperty.NOTMET_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_INVALID_MIN_SIZE_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + NOTMET_SUFFIX, args);
         }
     }
 }

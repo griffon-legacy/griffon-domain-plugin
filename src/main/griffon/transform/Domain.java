@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@GroovyASTTransformationClass("org.codehaus.griffon.compiler.support.DomainASTTransformation")
+@GroovyASTTransformationClass("org.codehaus.griffon.compiler.support.GriffonDomainASTTransformation")
 public @interface Domain {
     /**
      * The value of the persistence mapping implementation.

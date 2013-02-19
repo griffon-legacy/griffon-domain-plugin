@@ -15,9 +15,8 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.domain.atoms.*;
+import griffon.plugins.domain.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import org.apache.commons.validator.routines.CreditCardValidator;
 
 /**
@@ -26,6 +25,10 @@ import org.apache.commons.validator.routines.CreditCardValidator;
  * @author Graeme Rocher (Grails 0.4)
  */
 public class CreditCardConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "creditCard";
+    public static final String DEFAULT_INVALID_CREDIT_CARD_MESSAGE_CODE = "default.invalid.creditCard.message";
+    public static final String DEFAULT_INVALID_CREDIT_CARD_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] is not a valid credit card number";
+
     private boolean creditCard;
 
     @Override
@@ -36,14 +39,14 @@ public class CreditCardConstraint extends AbstractConstraint {
 
         CreditCardValidator validator = new CreditCardValidator();
 
-        if(propertyValue instanceof StringValue) {
+        if (propertyValue instanceof StringValue) {
             propertyValue = ((StringValue) propertyValue).stringValue();
         }
 
         if (!validator.isValid(propertyValue.toString())) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
-            rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_CREDIT_CARD_MESSAGE_CODE,
-                    ConstrainedProperty.CREDIT_CARD_CONSTRAINT + ConstrainedProperty.INVALID_SUFFIX, args);
+            rejectValue(target, errors, DEFAULT_INVALID_CREDIT_CARD_MESSAGE_CODE,
+                VALIDATION_DSL_NAME + INVALID_SUFFIX, args);
         }
     }
 
@@ -51,9 +54,9 @@ public class CreditCardConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof Boolean)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.CREDIT_CARD_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" +
-                    constraintOwningClass + "] must be a boolean value");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" +
+                constraintOwningClass + "] must be a boolean value");
         }
 
         creditCard = ((Boolean) constraintParameter).booleanValue();
@@ -61,7 +64,7 @@ public class CreditCardConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.CREDIT_CARD_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @SuppressWarnings("rawtypes")

@@ -16,7 +16,6 @@ package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.domain.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import groovy.lang.IntRange;
 
 import java.lang.reflect.Array;
@@ -30,6 +29,9 @@ import java.util.Collection;
  * @author Graeme Rocher (Grails 0.4)
  */
 public class SizeConstraint extends AbstractConstraint {
+    public static final String VALIDATION_DSL_NAME = "size";
+    public static final String DEFAULT_INVALID_SIZE_MESSAGE_CODE = "default.invalid.size.message";
+    public static final String DEFAULT_INVALID_SIZE_MESSAGE = "Property [{0}] of class [{1}] with value [{2}] does not fall within the valid size range from [{3}] to [{4}]";
 
     private IntRange range;
 
@@ -46,10 +48,10 @@ public class SizeConstraint extends AbstractConstraint {
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
         return type != null && (
-                String.class.isAssignableFrom(type) ||
-                        StringValue.class.isAssignableFrom(type) ||
-                        Collection.class.isAssignableFrom(type) ||
-                        type.isArray());
+            String.class.isAssignableFrom(type) ||
+                StringValue.class.isAssignableFrom(type) ||
+                Collection.class.isAssignableFrom(type) ||
+                type.isArray());
     }
 
     /* (non-Javadoc)
@@ -59,9 +61,9 @@ public class SizeConstraint extends AbstractConstraint {
     public void setParameter(Object constraintParameter) {
         if (!(constraintParameter instanceof IntRange)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
-                    ConstrainedProperty.SIZE_CONSTRAINT + "] of property [" +
-                    constraintPropertyName + "] of class [" + constraintOwningClass +
-                    "] must be a of type [groovy.lang.IntRange]");
+                VALIDATION_DSL_NAME + "] of property [" +
+                constraintPropertyName + "] of class [" + constraintOwningClass +
+                "] must be a of type [groovy.lang.IntRange]");
         }
 
         range = (IntRange) constraintParameter;
@@ -69,14 +71,14 @@ public class SizeConstraint extends AbstractConstraint {
     }
 
     public String getName() {
-        return ConstrainedProperty.SIZE_CONSTRAINT;
+        return VALIDATION_DSL_NAME;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
         Object[] args = {constraintPropertyName, constraintOwningClass, propertyValue,
-                range.getFrom(), range.getTo()};
+            range.getFrom(), range.getTo()};
 
         int size;
         if (propertyValue.getClass().isArray()) {
@@ -92,15 +94,15 @@ public class SizeConstraint extends AbstractConstraint {
 
         if (!range.contains(size)) {
             if (range.getFrom().compareTo(size) == 1) {
-                rejectValue(args, errors, target, ConstrainedProperty.TOOSMALL_SUFFIX);
+                rejectValue(args, errors, target, TOOSMALL_SUFFIX);
             } else if (range.getTo().compareTo(size) == -1) {
-                rejectValue(args, errors, target, ConstrainedProperty.TOOBIG_SUFFIX);
+                rejectValue(args, errors, target, TOOBIG_SUFFIX);
             }
         }
     }
 
     private void rejectValue(Object[] args, Errors errors, Object target, String suffix) {
-        rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_SIZE_MESSAGE_CODE,
-                ConstrainedProperty.SIZE_CONSTRAINT + suffix, args);
+        rejectValue(target, errors, DEFAULT_INVALID_SIZE_MESSAGE_CODE,
+            VALIDATION_DSL_NAME + suffix, args);
     }
 }
