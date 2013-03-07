@@ -16,11 +16,15 @@
 
 package org.codehaus.griffon.ast;
 
+import griffon.plugins.domain.AtomicValue;
 import griffon.plugins.domain.CommandObject;
 import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.domain.atoms.*;
 import griffon.plugins.domain.atoms.StringValue;
+import griffon.util.ApplicationClassLoader;
 import griffon.util.CollectionUtils;
+import griffon.util.RunnableWithArgs;
+import griffon.util.RunnableWithArgsClosure;
 import org.codehaus.griffon.runtime.domain.GriffonDomainConfigurationUtil;
 import org.codehaus.groovy.GroovyBugError;
 import org.codehaus.groovy.ast.*;
@@ -33,12 +37,16 @@ import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URL;
 import java.util.*;
 
+import static griffon.util.GriffonExceptionHandler.sanitize;
 import static griffon.util.GriffonNameUtils.*;
 import static org.codehaus.griffon.ast.GriffonASTUtils.*;
+import static org.codehaus.groovy.runtime.ResourceGroovyMethods.eachLine;
 
 /**
  * Handles generation of code for the {@code @CommandObject} annotation.
@@ -77,6 +85,76 @@ public class CommandObjectASTTransformation extends ValidateableASTTransformatio
         .e(makeClassSafe(Long.TYPE), makeClassSafe(LongValue.class))
         .e(makeClassSafe(Short.TYPE), makeClassSafe(ShortValue.class));
 
+    static {
+        initializeAtomTypes();
+    }
+
+    private static void initializeAtomTypes() {
+        Enumeration<URL> urls = null;
+
+        try {
+            urls = ApplicationClassLoader.get().getResources("META-INF/services/" + AtomicValue.class.getName());
+        } catch (IOException ioe) {
+            return;
+        }
+
+        if (urls == null) return;
+
+        while (urls.hasMoreElements()) {
+            URL url = urls.nextElement();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Reading " + AtomicValue.class.getName() + " definitions from " + url);
+            }
+
+            try {
+                eachLine(url, new RunnableWithArgsClosure(new RunnableWithArgs() {
+                    @Override
+                    public void run(Object[] args) {
+                        String line = (String) args[0];
+                        if (line.startsWith("#") || isBlank(line)) return;
+                        try {
+                            String[] parts = line.trim().split("=");
+                            Class targetType = loadClass(parts[0].trim());
+                            Class atomicValueClass = loadClass(parts[1].trim());
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Registering " + atomicValueClass.getName() + " as AtomicValue for " + targetType.getName());
+                            }
+                            SUPPORTED_ATOM_TYPES.put(makeClassSafe(targetType), makeClassSafe(atomicValueClass));
+                        } catch (Exception e) {
+                            if (LOG.isWarnEnabled()) {
+                                LOG.warn("Could not load AtomicValue with " + line, sanitize(e));
+                            }
+                        }
+                    }
+                }));
+            } catch (IOException e) {
+                if (LOG.isWarnEnabled()) {
+                    LOG.warn("Could not load AtomicValue definitions from " + url, sanitize(e));
+                }
+            }
+        }
+    }
+
+    public static Class<?> loadClass(String className) throws ClassNotFoundException {
+        ClassNotFoundException cnfe = null;
+
+        ClassLoader cl = CommandObjectASTTransformation.class.getClassLoader();
+        try {
+            return cl.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            cnfe = e;
+        }
+
+        cl = Thread.currentThread().getContextClassLoader();
+        try {
+            return cl.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            cnfe = e;
+        }
+
+        if (cnfe != null) throw cnfe;
+        return null;
+    }
 
     /**
      * Convenience method to see if an annotated node is {@code @CommandObject}.
