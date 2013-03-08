@@ -13,43 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
-
-import java.util.Date;
+package griffon.plugins.scaffolding.atoms;
 
 /**
  * @author Andres Almiray
  */
-public class DateValue extends AbstractAtomicValue implements NumericAtomicValue {
-    public DateValue() {
+public class DoubleValue extends AbstractAtomicValue implements NumericAtomicValue {
+    public DoubleValue() {
     }
 
-    public DateValue(Date arg) {
+    public DoubleValue(Double arg) {
         setValue(arg);
     }
 
-    public DateValue(Number arg) {
+    public DoubleValue(Number arg) {
         setValue(arg);
     }
 
-    public Date dateValue() {
-        return (Date) value;
+    public Double doubleValue() {
+        return (Double) value;
     }
 
     @Override
     public void setValue(Object value) {
-        if (value == null || value instanceof Date) {
+        if (value == null || value instanceof Double) {
             super.setValue(value);
         } else if (value instanceof Number) {
-            Date d = new Date();
-            d.setTime(((Number) value).longValue());
-            super.setValue(d);
+            super.setValue(((Number) value).doubleValue());
         } else {
             throw new IllegalArgumentException("Invalid value " + value);
         }
     }
 
     public Class getValueType() {
-        return Date.class;
+        return Double.class;
     }
 }

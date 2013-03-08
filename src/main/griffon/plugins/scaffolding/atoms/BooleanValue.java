@@ -13,39 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
+package griffon.plugins.scaffolding.atoms;
 
 /**
  * @author Andres Almiray
  */
-public class DoubleValue extends AbstractAtomicValue implements NumericAtomicValue {
-    public DoubleValue() {
+public class BooleanValue extends AbstractAtomicValue {
+    public BooleanValue() {
     }
 
-    public DoubleValue(Double arg) {
+    public BooleanValue(Boolean arg) {
         setValue(arg);
     }
 
-    public DoubleValue(Number arg) {
-        setValue(arg);
-    }
-
-    public Double doubleValue() {
-        return (Double) value;
+    public Boolean booleanValue() {
+        return (Boolean) value;
     }
 
     @Override
     public void setValue(Object value) {
-        if (value == null || value instanceof Double) {
+        if (value == null || value instanceof Boolean) {
             super.setValue(value);
-        } else if (value instanceof Number) {
-            super.setValue(((Number) value).doubleValue());
         } else {
             throw new IllegalArgumentException("Invalid value " + value);
         }
     }
 
     public Class getValueType() {
-        return Double.class;
+        return Boolean.class;
     }
 }

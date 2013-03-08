@@ -14,9 +14,8 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.domain.atoms.NumericAtomicValue;
+import griffon.plugins.scaffolding.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.Range;
 

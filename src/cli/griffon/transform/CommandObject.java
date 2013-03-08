@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * <p>Annotates a class.</p>
  *
  * @author Andres Almiray
- * @see griffon.plugins.domain.CommandObject
+ * @see griffon.plugins.scaffolding.CommandObject
  * @see org.codehaus.griffon.ast.CommandObjectASTTransformation
  */
 @Retention(RetentionPolicy.SOURCE)

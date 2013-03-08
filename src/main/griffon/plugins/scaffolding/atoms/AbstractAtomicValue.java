@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
+package griffon.plugins.scaffolding.atoms;
 
 import griffon.exceptions.BeanInstantiationException;
-import griffon.plugins.domain.AtomicValue;
+import griffon.plugins.scaffolding.AtomicValue;
 import org.codehaus.griffon.runtime.core.AbstractObservable;
-
-import java.io.Serializable;
 
 import static griffon.util.GriffonExceptionHandler.sanitize;
 

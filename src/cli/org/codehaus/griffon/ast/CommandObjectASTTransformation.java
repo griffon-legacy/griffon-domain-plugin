@@ -16,11 +16,11 @@
 
 package org.codehaus.griffon.ast;
 
-import griffon.plugins.domain.AtomicValue;
-import griffon.plugins.domain.CommandObject;
+import griffon.plugins.scaffolding.AtomicValue;
+import griffon.plugins.scaffolding.CommandObject;
 import griffon.plugins.domain.GriffonDomainProperty;
-import griffon.plugins.domain.atoms.*;
-import griffon.plugins.domain.atoms.StringValue;
+import griffon.plugins.scaffolding.atoms.*;
+import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.util.ApplicationClassLoader;
 import griffon.util.CollectionUtils;
 import griffon.util.RunnableWithArgs;

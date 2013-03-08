@@ -13,35 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
+package griffon.plugins.scaffolding.atoms;
 
 /**
  * @author Andres Almiray
  */
-public class StringValue extends AbstractAtomicValue {
-    public StringValue() {
+public class ByteValue extends AbstractAtomicValue implements NumericAtomicValue {
+    public ByteValue() {
     }
 
-    public StringValue(CharSequence arg) {
+    public ByteValue(Byte arg) {
         setValue(arg);
     }
 
-    public String stringValue() {
-        return (String) value;
+    public ByteValue(Number arg) {
+        setValue(arg);
+    }
+
+    public Byte byteValue() {
+        return (Byte) value;
     }
 
     @Override
     public void setValue(Object value) {
-        if (value == null) {
+        if (value == null || value instanceof Byte) {
             super.setValue(value);
-        } else if (value instanceof CharSequence) {
-            super.setValue(value.toString());
+        } else if (value instanceof Number) {
+            super.setValue(((Number) value).byteValue());
         } else {
             throw new IllegalArgumentException("Invalid value " + value);
         }
     }
 
     public Class getValueType() {
-        return String.class;
+        return Byte.class;
     }
 }

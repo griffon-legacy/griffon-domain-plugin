@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codehaus.griffon.runtime.domain;
+package griffon.plugins.scaffolding;
 
-import griffon.plugins.domain.CommandObject;
-import org.codehaus.griffon.runtime.validation.AbstractValidateable;
+import griffon.plugins.validation.Validateable;
 
 /**
  * @author Andres Almiray
  */
-public abstract class AbstractCommandObject extends AbstractValidateable implements CommandObject {
-
+public interface ComplexValue extends Value, Validateable {
+    String title();
 }

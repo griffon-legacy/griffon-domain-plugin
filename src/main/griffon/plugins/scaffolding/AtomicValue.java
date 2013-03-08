@@ -13,33 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
+package griffon.plugins.scaffolding;
 
 /**
  * @author Andres Almiray
  */
-public class BooleanValue extends AbstractAtomicValue {
-    public BooleanValue() {
-    }
+public interface AtomicValue extends Value {
+    Object getValue();
 
-    public BooleanValue(Boolean arg) {
-        setValue(arg);
-    }
+    void setValue(Object value);
 
-    public Boolean booleanValue() {
-        return (Boolean) value;
-    }
-
-    @Override
-    public void setValue(Object value) {
-        if (value == null || value instanceof Boolean) {
-            super.setValue(value);
-        } else {
-            throw new IllegalArgumentException("Invalid value " + value);
-        }
-    }
-
-    public Class getValueType() {
-        return Boolean.class;
-    }
+    Class getValueType();
 }

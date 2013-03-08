@@ -13,39 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
+package griffon.plugins.scaffolding.atoms;
+
+import java.math.BigInteger;
 
 /**
  * @author Andres Almiray
  */
-public class ShortValue extends AbstractAtomicValue implements NumericAtomicValue {
-    public ShortValue() {
+public class BigIntegerValue extends AbstractAtomicValue implements NumericAtomicValue {
+    public BigIntegerValue() {
     }
 
-    public ShortValue(Short arg) {
+    public BigIntegerValue(BigInteger arg) {
         setValue(arg);
     }
 
-    public ShortValue(Number arg) {
+    public BigIntegerValue(Number arg) {
         setValue(arg);
     }
-
-    public Short shortValue() {
-        return (Short) value;
+    
+    public BigInteger bigIntegerValue() {
+        return (BigInteger) value;
     }
 
     @Override
     public void setValue(Object value) {
-        if (value == null || value instanceof Short) {
+        if (value == null || value instanceof BigInteger) {
             super.setValue(value);
         } else if (value instanceof Number) {
-            super.setValue(((Number) value).shortValue());
+            long val = ((Number) value).longValue();
+            super.setValue(BigInteger.valueOf(val));
         } else {
             throw new IllegalArgumentException("Invalid value " + value);
         }
     }
 
     public Class getValueType() {
-        return Short.class;
+        return BigInteger.class;
     }
 }

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain;
+package org.codehaus.griffon.runtime.scaffolding;
 
-import griffon.core.Observable;
+import griffon.plugins.scaffolding.CommandObject;
+import org.codehaus.griffon.runtime.validation.AbstractValidateable;
 
 /**
  * @author Andres Almiray
  */
-public interface Value extends Observable {
+public abstract class AbstractCommandObject extends AbstractValidateable implements CommandObject {
+
 }

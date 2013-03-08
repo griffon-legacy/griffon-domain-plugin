@@ -14,7 +14,7 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.domain.atoms.StringValue;
+import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
 
 import java.lang.reflect.Array;

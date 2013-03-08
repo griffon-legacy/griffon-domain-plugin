@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain;
+package griffon.plugins.scaffolding;
 
-import griffon.plugins.validation.Validateable;
+import griffon.core.Observable;
 
 /**
  * @author Andres Almiray
  */
-public interface ComplexValue extends Value, Validateable {
-    String title();
+public interface Value extends Observable {
 }

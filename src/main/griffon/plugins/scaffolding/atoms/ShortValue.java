@@ -13,42 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
-
-import java.math.BigDecimal;
+package griffon.plugins.scaffolding.atoms;
 
 /**
  * @author Andres Almiray
  */
-public class BigDecimalValue extends AbstractAtomicValue implements NumericAtomicValue {
-    public BigDecimalValue() {
+public class ShortValue extends AbstractAtomicValue implements NumericAtomicValue {
+    public ShortValue() {
     }
 
-    public BigDecimalValue(BigDecimal arg) {
+    public ShortValue(Short arg) {
         setValue(arg);
     }
 
-    public BigDecimalValue(Number arg) {
+    public ShortValue(Number arg) {
         setValue(arg);
     }
 
-    public BigDecimal bigDecimalValue() {
-        return (BigDecimal) value;
+    public Short shortValue() {
+        return (Short) value;
     }
 
     @Override
     public void setValue(Object value) {
-        if (value == null || value instanceof BigDecimal) {
+        if (value == null || value instanceof Short) {
             super.setValue(value);
         } else if (value instanceof Number) {
-            double val = ((Number) value).doubleValue();
-            super.setValue(BigDecimal.valueOf(val));
+            super.setValue(((Number) value).shortValue());
         } else {
             throw new IllegalArgumentException("Invalid value " + value);
         }
     }
 
     public Class getValueType() {
-        return BigDecimal.class;
+        return Short.class;
     }
 }

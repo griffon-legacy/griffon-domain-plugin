@@ -13,50 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
-
-import java.util.Calendar;
-import java.util.Date;
+package griffon.plugins.scaffolding.atoms;
 
 /**
  * @author Andres Almiray
  */
-public class CalendarValue extends AbstractAtomicValue implements NumericAtomicValue {
-    public CalendarValue() {
+public class FloatValue extends AbstractAtomicValue implements NumericAtomicValue {
+    public FloatValue() {
     }
 
-    public CalendarValue(Calendar arg) {
+    public FloatValue(Float arg) {
         setValue(arg);
     }
 
-    public CalendarValue(Number arg) {
+    public FloatValue(Number arg) {
         setValue(arg);
     }
 
-    public Calendar calendarValue() {
-        return (Calendar) value;
+    public Float floatValue() {
+        return (Float) value;
     }
 
     @Override
     public void setValue(Object value) {
-        if (value == null || value instanceof Calendar) {
+        if (value == null || value instanceof Float) {
             super.setValue(value);
-        } else if (value instanceof Date) {
-            Calendar c = Calendar.getInstance();
-            c.setTime((Date) value);
-            super.setValue(c);
         } else if (value instanceof Number) {
-            Date d = new Date();
-            d.setTime(((Number) value).longValue());
-            Calendar c = Calendar.getInstance();
-            c.setTime(d);
-            super.setValue(c);
+            super.setValue(((Number) value).floatValue());
         } else {
             throw new IllegalArgumentException("Invalid value " + value);
         }
     }
 
     public Class getValueType() {
-        return Calendar.class;
+        return Float.class;
     }
 }

@@ -13,39 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
+package griffon.plugins.scaffolding.atoms;
 
 /**
  * @author Andres Almiray
  */
-public class LongValue extends AbstractAtomicValue implements NumericAtomicValue {
-    public LongValue() {
+public class IntegerValue extends AbstractAtomicValue implements NumericAtomicValue {
+    public IntegerValue() {
     }
 
-    public LongValue(Long arg) {
+    public IntegerValue(Integer arg) {
         setValue(arg);
     }
 
-    public LongValue(Number arg) {
+    public IntegerValue(Number arg) {
         setValue(arg);
     }
 
-    public Long longValue() {
-        return (Long) value;
+    public Integer integerValue() {
+        return (Integer) value;
+    }
+
+    public Integer intValue() {
+        return (Integer) value;
     }
 
     @Override
     public void setValue(Object value) {
-        if (value == null || value instanceof Long) {
+        if (value == null || value instanceof Integer) {
             super.setValue(value);
         } else if (value instanceof Number) {
-            super.setValue(((Number) value).longValue());
+            super.setValue(((Number) value).intValue());
         } else {
             throw new IllegalArgumentException("Invalid value " + value);
         }
     }
 
     public Class getValueType() {
-        return Long.class;
+        return Integer.class;
     }
 }

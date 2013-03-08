@@ -13,43 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
+package griffon.plugins.scaffolding.atoms;
 
-import java.math.BigInteger;
-import java.math.BigInteger;
+import java.util.Date;
 
 /**
  * @author Andres Almiray
  */
-public class BigIntegerValue extends AbstractAtomicValue implements NumericAtomicValue {
-    public BigIntegerValue() {
+public class DateValue extends AbstractAtomicValue implements NumericAtomicValue {
+    public DateValue() {
     }
 
-    public BigIntegerValue(BigInteger arg) {
+    public DateValue(Date arg) {
         setValue(arg);
     }
 
-    public BigIntegerValue(Number arg) {
+    public DateValue(Number arg) {
         setValue(arg);
     }
-    
-    public BigInteger bigIntegerValue() {
-        return (BigInteger) value;
+
+    public Date dateValue() {
+        return (Date) value;
     }
 
     @Override
     public void setValue(Object value) {
-        if (value == null || value instanceof BigInteger) {
+        if (value == null || value instanceof Date) {
             super.setValue(value);
         } else if (value instanceof Number) {
-            long val = ((Number) value).longValue();
-            super.setValue(BigInteger.valueOf(val));
+            Date d = new Date();
+            d.setTime(((Number) value).longValue());
+            super.setValue(d);
         } else {
             throw new IllegalArgumentException("Invalid value " + value);
         }
     }
 
     public Class getValueType() {
-        return BigInteger.class;
+        return Date.class;
     }
 }

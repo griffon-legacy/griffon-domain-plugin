@@ -14,7 +14,7 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.domain.AtomicValue;
+import griffon.plugins.scaffolding.AtomicValue;
 import griffon.plugins.validation.Errors;
 import griffon.util.GriffonClassUtils;
 

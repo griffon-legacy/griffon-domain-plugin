@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.domain.atoms;
+package griffon.plugins.scaffolding;
 
-import griffon.plugins.domain.AtomicValue;
+import griffon.plugins.validation.Validateable;
 
 /**
  * @author Andres Almiray
  */
-public interface NumericAtomicValue extends AtomicValue {
+public interface CommandObject extends Validateable {
+
 }

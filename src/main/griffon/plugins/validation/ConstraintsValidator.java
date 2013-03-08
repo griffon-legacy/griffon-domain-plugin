@@ -15,7 +15,7 @@
  */
 package griffon.plugins.validation;
 
-import griffon.plugins.domain.AtomicValue;
+import griffon.plugins.scaffolding.AtomicValue;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassProperty;

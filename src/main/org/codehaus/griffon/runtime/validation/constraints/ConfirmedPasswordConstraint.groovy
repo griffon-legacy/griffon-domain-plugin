@@ -17,7 +17,7 @@
 package org.codehaus.griffon.runtime.validation.constraints
 
 import griffon.plugins.validation.Errors
-import groovy.transform.CompileStatic
+// import groovy.transform.CompileStatic
 
 /**
  * Validates an IP Address.
@@ -25,7 +25,7 @@ import groovy.transform.CompileStatic
  * @author Antony Jones (Grails)
  * @author Andres Almiray
  */
-@CompileStatic
+// @CompileStatic
 class ConfirmedPasswordConstraint extends AbstractConstraint {
     public static final String VALIDATION_DSL_NAME = 'confirmedPassword'
     public static final String DEFAULT_INVALID_PASSWORD_CONFIRMATION_MESSAGE_CODE = 'default.not.confirmedPassword.message'

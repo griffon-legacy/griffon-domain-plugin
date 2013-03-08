@@ -14,10 +14,10 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.domain.atoms.BigDecimalValue;
-import griffon.plugins.domain.atoms.DoubleValue;
-import griffon.plugins.domain.atoms.FloatValue;
-import griffon.plugins.domain.atoms.NumericAtomicValue;
+import griffon.plugins.scaffolding.atoms.BigDecimalValue;
+import griffon.plugins.scaffolding.atoms.DoubleValue;
+import griffon.plugins.scaffolding.atoms.FloatValue;
+import griffon.plugins.scaffolding.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
 import griffon.util.GriffonClassUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
