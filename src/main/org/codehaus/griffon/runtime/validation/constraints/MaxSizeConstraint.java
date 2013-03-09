@@ -14,7 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
 
 import java.lang.reflect.Array;
@@ -68,7 +67,6 @@ public class MaxSizeConstraint extends AbstractConstraint {
     public boolean supports(Class type) {
         return type != null && (
             String.class.isAssignableFrom(type) ||
-                StringValue.class.isAssignableFrom(type) ||
                 Collection.class.isAssignableFrom(type) ||
                 type.isArray());
     }
@@ -80,9 +78,6 @@ public class MaxSizeConstraint extends AbstractConstraint {
             length = Array.getLength(propertyValue);
         } else if (propertyValue instanceof Collection<?>) {
             length = ((Collection<?>) propertyValue).size();
-        } else if (propertyValue instanceof StringValue) {
-            String s = ((StringValue) propertyValue).stringValue();
-            length = s != null ? s.length() : 0;
         } else { // String
             length = ((String) propertyValue).length();
         }

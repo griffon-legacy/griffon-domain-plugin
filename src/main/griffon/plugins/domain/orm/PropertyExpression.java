@@ -16,9 +16,6 @@
 
 package griffon.plugins.domain.orm;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
 /**
  * @author Andres Almiray
  */
@@ -49,23 +46,25 @@ public class PropertyExpression implements Criterion {
         return propertyName + " " + operator + " " + otherPropertyName;
     }
 
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(propertyName)
-                .append(operator)
-                .append(otherPropertyName)
-                .toHashCode();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PropertyExpression that = (PropertyExpression) o;
+
+        if (operator != that.operator) return false;
+        if (!otherPropertyName.equals(that.otherPropertyName)) return false;
+        if (!propertyName.equals(that.propertyName)) return false;
+
+        return true;
     }
 
-    public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (obj.getClass() != getClass()) return false;
-        PropertyExpression rhs = (PropertyExpression) obj;
-        return new EqualsBuilder()
-                .append(propertyName, rhs.propertyName)
-                .append(operator, rhs.operator)
-                .append(otherPropertyName, rhs.otherPropertyName)
-                .isEquals();
+    @Override
+    public int hashCode() {
+        int result = propertyName.hashCode();
+        result = 31 * result + operator.hashCode();
+        result = 31 * result + otherPropertyName.hashCode();
+        return result;
     }
 }

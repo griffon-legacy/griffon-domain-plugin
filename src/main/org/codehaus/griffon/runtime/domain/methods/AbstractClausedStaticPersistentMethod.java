@@ -22,10 +22,10 @@ import griffon.plugins.domain.orm.Criterion;
 import griffon.plugins.domain.orm.Restrictions;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.MissingMethodException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ import static griffon.util.GriffonNameUtils.uncapitalize;
  * @author Andres Almiray
  */
 public abstract class AbstractClausedStaticPersistentMethod extends AbstractPersistentStaticDynamicMethodInvocation {
-    private static final Log LOG = LogFactory.getLog(AbstractClausedStaticPersistentMethod.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractClausedStaticPersistentMethod.class);
     private final String[] operators;
     private final Pattern[] operatorPatterns;
 
@@ -230,9 +230,9 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
         public String toString() {
             StringBuffer buf = new StringBuffer("[GriffonMethodExpression] ");
             buf.append(propertyName)
-                    .append(" ")
-                    .append(type)
-                    .append(" ");
+                .append(" ")
+                .append(type)
+                .append(" ");
 
             for (int i = 0; i < arguments.length; i++) {
                 buf.append(arguments[i]);
@@ -243,7 +243,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
         }
 
         void setArguments(Object[] args)
-                throws IllegalArgumentException {
+            throws IllegalArgumentException {
             if (args.length != argumentsRequired)
                 throw new IllegalArgumentException("Method expression '" + this.type + "' requires " + argumentsRequired + " arguments");
 
@@ -301,13 +301,14 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
         protected static GriffonMethodExpression create(GriffonDomainClass domainClass, String queryParameter, boolean strict) {
             if (strict) {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, null),
-                        EQUAL,
-                        1,
-                        isNegation(queryParameter, EQUAL)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, null),
+                    EQUAL,
+                    1,
+                    isNegation(queryParameter, EQUAL)) {
                     Criterion createCriterion() {
-                        if (arguments[0] == null) return Restrictions.isNull(this.propertyName);
+                        if (arguments[0] == null)
+                            return Restrictions.isNull(this.propertyName);
                         return Restrictions.eq(this.propertyName, this.arguments[0]);
                     }
                 };
@@ -315,48 +316,51 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
 
             if (queryParameter.endsWith(LESS_THAN_OR_EQUAL)) {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, LESS_THAN_OR_EQUAL),
-                        LESS_THAN_OR_EQUAL,
-                        1,
-                        isNegation(queryParameter, LESS_THAN_OR_EQUAL)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, LESS_THAN_OR_EQUAL),
+                    LESS_THAN_OR_EQUAL,
+                    1,
+                    isNegation(queryParameter, LESS_THAN_OR_EQUAL)) {
                     Criterion createCriterion() {
                         return Restrictions.le(this.propertyName, arguments[0]);
                     }
                 };
             } else if (queryParameter.endsWith(LESS_THAN)) {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, LESS_THAN),
-                        LESS_THAN,
-                        1, // argument count
-                        isNegation(queryParameter, LESS_THAN)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, LESS_THAN),
+                    LESS_THAN,
+                    1, // argument count
+                    isNegation(queryParameter, LESS_THAN)) {
                     Criterion createCriterion() {
-                        if (arguments[0] == null) return Restrictions.isNull(this.propertyName);
+                        if (arguments[0] == null)
+                            return Restrictions.isNull(this.propertyName);
                         return Restrictions.lt(this.propertyName, arguments[0]);
                     }
                 };
             } else if (queryParameter.endsWith(GREATER_THAN_OR_EQUAL)) {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, GREATER_THAN_OR_EQUAL),
-                        GREATER_THAN_OR_EQUAL,
-                        1,
-                        isNegation(queryParameter, GREATER_THAN_OR_EQUAL)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, GREATER_THAN_OR_EQUAL),
+                    GREATER_THAN_OR_EQUAL,
+                    1,
+                    isNegation(queryParameter, GREATER_THAN_OR_EQUAL)) {
                     Criterion createCriterion() {
-                        if (arguments[0] == null) return Restrictions.isNull(this.propertyName);
+                        if (arguments[0] == null)
+                            return Restrictions.isNull(this.propertyName);
                         return Restrictions.ge(this.propertyName, arguments[0]);
                     }
                 };
             } else if (queryParameter.endsWith(GREATER_THAN)) {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, GREATER_THAN),
-                        GREATER_THAN,
-                        1,
-                        isNegation(queryParameter, GREATER_THAN)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, GREATER_THAN),
+                    GREATER_THAN,
+                    1,
+                    isNegation(queryParameter, GREATER_THAN)) {
                     Criterion createCriterion() {
-                        if (arguments[0] == null) return Restrictions.isNull(this.propertyName);
+                        if (arguments[0] == null)
+                            return Restrictions.isNull(this.propertyName);
                         return Restrictions.gt(this.propertyName, arguments[0]);
                     }
 
@@ -392,11 +396,11 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
 //            }
             else if (queryParameter.endsWith(IS_NOT_NULL)) {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, IS_NOT_NULL),
-                        IS_NOT_NULL,
-                        0,
-                        isNegation(queryParameter, IS_NOT_NULL)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, IS_NOT_NULL),
+                    IS_NOT_NULL,
+                    0,
+                    isNegation(queryParameter, IS_NOT_NULL)) {
                     Criterion createCriterion() {
                         return Restrictions.isNotNull(this.propertyName);
                     }
@@ -404,11 +408,11 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
                 };
             } else if (queryParameter.endsWith(IS_NULL)) {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, IS_NULL),
-                        IS_NULL,
-                        0,
-                        isNegation(queryParameter, IS_NULL)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, IS_NULL),
+                    IS_NULL,
+                    0,
+                    isNegation(queryParameter, IS_NULL)) {
                     Criterion createCriterion() {
                         return Restrictions.isNull(this.propertyName);
                     }
@@ -444,26 +448,28 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractPers
 //            }
             else if (queryParameter.endsWith(NOT_EQUAL)) {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, NOT_EQUAL),
-                        NOT_EQUAL,
-                        1,
-                        isNegation(queryParameter, NOT_EQUAL)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, NOT_EQUAL),
+                    NOT_EQUAL,
+                    1,
+                    isNegation(queryParameter, NOT_EQUAL)) {
                     Criterion createCriterion() {
-                        if (arguments[0] == null) return Restrictions.isNotNull(this.propertyName);
+                        if (arguments[0] == null)
+                            return Restrictions.isNotNull(this.propertyName);
                         return Restrictions.ne(this.propertyName, this.arguments[0]);
                     }
 
                 };
             } else {
                 return new GriffonMethodExpression(
-                        domainClass,
-                        calcPropertyName(queryParameter, null),
-                        EQUAL,
-                        1,
-                        isNegation(queryParameter, EQUAL)) {
+                    domainClass,
+                    calcPropertyName(queryParameter, null),
+                    EQUAL,
+                    1,
+                    isNegation(queryParameter, EQUAL)) {
                     Criterion createCriterion() {
-                        if (arguments[0] == null) return Restrictions.isNull(this.propertyName);
+                        if (arguments[0] == null)
+                            return Restrictions.isNull(this.propertyName);
                         return Restrictions.eq(this.propertyName, this.arguments[0]);
                     }
                 };

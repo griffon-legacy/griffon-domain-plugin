@@ -14,7 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
 
 /**
@@ -41,7 +40,7 @@ public class MatchesConstraint extends AbstractConstraint {
      */
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
-        return type != null && (String.class.isAssignableFrom(type) || StringValue.class.isAssignableFrom(type));
+        return type != null && (String.class.isAssignableFrom(type));
     }
 
     /* (non-Javadoc)
@@ -63,10 +62,6 @@ public class MatchesConstraint extends AbstractConstraint {
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
-        if (propertyValue instanceof StringValue) {
-            propertyValue = ((StringValue) propertyValue).stringValue();
-        }
-
         if (!propertyValue.toString().matches(regex)) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, regex};
             rejectValue(target, errors, DEFAULT_DOESNT_MATCH_MESSAGE_CODE,

@@ -16,9 +16,6 @@
 
 package griffon.plugins.domain.orm;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
 /**
  * @author Andres Almiray
  */
@@ -43,21 +40,23 @@ public class UnaryExpression implements Criterion {
         return propertyName + " " + operator;
     }
 
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(propertyName)
-                .append(operator)
-                .toHashCode();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UnaryExpression that = (UnaryExpression) o;
+
+        if (operator != that.operator) return false;
+        if (!propertyName.equals(that.propertyName)) return false;
+
+        return true;
     }
 
-    public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (obj.getClass() != getClass()) return false;
-        UnaryExpression rhs = (UnaryExpression) obj;
-        return new EqualsBuilder()
-                .append(propertyName, rhs.propertyName)
-                .append(operator, rhs.operator)
-                .isEquals();
+    @Override
+    public int hashCode() {
+        int result = propertyName.hashCode();
+        result = 31 * result + operator.hashCode();
+        return result;
     }
 }

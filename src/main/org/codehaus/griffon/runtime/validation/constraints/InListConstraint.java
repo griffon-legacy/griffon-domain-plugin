@@ -14,7 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.AtomicValue;
 import griffon.plugins.validation.Errors;
 
 import java.util.List;
@@ -69,9 +68,6 @@ public class InListConstraint extends AbstractConstraint {
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
         // Check that the list contains the given value. If not, add an error.
-        if (propertyValue instanceof AtomicValue) {
-            propertyValue = ((AtomicValue) propertyValue).getValue();
-        }
         if (!list.contains(propertyValue)) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, list};
             rejectValue(target, errors, DEFAULT_NOT_INLIST_MESSAGE_CODE,

@@ -14,8 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-
-import griffon.plugins.scaffolding.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
 import griffon.util.GriffonClassUtils;
 
@@ -45,8 +43,7 @@ public class MaxConstraint extends AbstractConstraint {
     public boolean supports(Class type) {
         return type != null && (
             Comparable.class.isAssignableFrom(type) ||
-                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type) ||
-                NumericAtomicValue.class.isAssignableFrom(type));
+                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type));
     }
 
     /* (non-Javadoc)
@@ -84,10 +81,6 @@ public class MaxConstraint extends AbstractConstraint {
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
-        if (propertyValue instanceof NumericAtomicValue) {
-            propertyValue = ((NumericAtomicValue) propertyValue).getValue();
-        }
-
         if (null == propertyValue || maxValue.compareTo(propertyValue) < 0) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, maxValue};
             rejectValue(target, errors, DEFAULT_INVALID_MAX_MESSAGE_CODE,

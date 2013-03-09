@@ -19,7 +19,7 @@
  */
 class DomainGriffonPlugin {
     // the plugin version
-    String version = '0.1-SNAPSHOT'
+    String version = '0.1'
     // the version or versions of Griffon the plugin is designed for
     String griffonVersion = '1.3.0 > *'
     // the other plugins this plugin depends on
@@ -47,7 +47,7 @@ class DomainGriffonPlugin {
             ]
     ]
 
-    String title = 'Domain class and basic scaffolding support'
+    String title = 'Domain class and validation support'
     // accepts Markdown syntax. See http://daringfireball.net/projects/markdown/ for details
     String description = '''
 

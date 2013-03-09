@@ -25,7 +25,6 @@ import groovy.lang.MissingMethodException;
 import groovy.lang.MissingPropertyException;
 import groovy.util.BuilderSupport;
 import org.codehaus.griffon.runtime.core.ClassPropertyFetcher;
-import org.springframework.beans.InvalidPropertyException;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -94,9 +93,9 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     @SuppressWarnings("rawtypes")
     @Override
     protected Object createNode(Object name, Map attributes) {
-        // we do this so that missing property exception is throw if it doesn't exist
+        // we do this so that missing property exception is thrown if it doesn't exist
 
-        try {
+        // try {
             String property = (String) name;
             ConstrainedProperty cp;
             if (constrainedProperties.containsKey(property)) {
@@ -137,9 +136,9 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
             }
 
             return cp;
-        } catch (InvalidPropertyException ipe) {
-            throw new MissingMethodException((String) name, targetClass, new Object[]{attributes});
-        }
+        // } catch (InvalidPropertyException ipe) {
+        //     throw new MissingMethodException((String) name, targetClass, new Object[]{attributes});
+        // }
     }
 
     private void addConstraint(ConstrainedProperty cp, String constraintName, Object value) {

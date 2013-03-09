@@ -17,7 +17,7 @@ package org.codehaus.griffon.runtime.domain;
 
 import griffon.core.GriffonApplication;
 import griffon.plugins.domain.GriffonDomainClassProperty;
-import org.apache.commons.lang.ClassUtils;
+import griffon.util.GriffonClassUtils;
 import org.codehaus.griffon.runtime.validation.constraints.ConstraintsEvaluator;
 import org.codehaus.griffon.runtime.validation.constraints.DefaultConstraintsEvaluator;
 
@@ -65,6 +65,6 @@ public class DefaultGriffonDomainClass extends AbstractGriffonDomainClass {
     }
 
     public String getName() {
-        return ClassUtils.getShortClassName(super.getName());
+        return GriffonClassUtils.getShortClassName(super.getName());
     }
 }

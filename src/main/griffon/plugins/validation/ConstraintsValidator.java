@@ -15,7 +15,6 @@
  */
 package griffon.plugins.validation;
 
-import griffon.plugins.scaffolding.AtomicValue;
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassProperty;
@@ -68,11 +67,7 @@ public final class ConstraintsValidator {
                 }
             }
         } else {
-            Object value = InvokerHelper.getProperty(validateable, propertyName);
-            if (value instanceof AtomicValue) {
-                return ((AtomicValue) value).getValue();
-            }
-            return value;
+            return InvokerHelper.getProperty(validateable, propertyName);
         }
         return null;
     }

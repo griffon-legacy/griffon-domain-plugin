@@ -14,7 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.AtomicValue;
 import griffon.plugins.validation.Errors;
 import griffon.util.GriffonClassUtils;
 
@@ -69,10 +68,6 @@ public class NotEqualConstraint extends AbstractConstraint {
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
-        if (propertyValue instanceof AtomicValue) {
-            propertyValue = ((AtomicValue) propertyValue).getValue();
-        }
-
         if (constraintParameter.equals(propertyValue)) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue, constraintParameter};
             rejectValue(target, errors, DEFAULT_NOT_EQUAL_MESSAGE_CODE,

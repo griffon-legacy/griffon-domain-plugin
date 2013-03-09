@@ -14,10 +14,10 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+
+import static griffon.util.GriffonNameUtils.isBlank;
 
 /**
  * Validates an email address.
@@ -36,7 +36,7 @@ public class EmailConstraint extends AbstractConstraint {
      */
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
-        return type != null && (String.class.isAssignableFrom(type) || StringValue.class.isAssignableFrom(type));
+        return type != null && (String.class.isAssignableFrom(type));
     }
 
     /* (non-Javadoc)
@@ -68,12 +68,8 @@ public class EmailConstraint extends AbstractConstraint {
         EmailValidator emailValidator = EmailValidator.getInstance();
         Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
 
-        if (propertyValue instanceof StringValue) {
-            propertyValue = ((StringValue) propertyValue).stringValue();
-        }
-
         String value = propertyValue.toString();
-        if (StringUtils.isBlank(value)) {
+        if (isBlank(value)) {
             return;
         }
 

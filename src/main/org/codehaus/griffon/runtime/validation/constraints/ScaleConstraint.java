@@ -14,10 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.BigDecimalValue;
-import griffon.plugins.scaffolding.atoms.DoubleValue;
-import griffon.plugins.scaffolding.atoms.FloatValue;
-import griffon.plugins.scaffolding.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
 import griffon.util.GriffonClassUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -60,10 +56,7 @@ public class ScaleConstraint extends AbstractConstraint {
         return type != null && (
             BigDecimal.class.isAssignableFrom(type) ||
                 GriffonClassUtils.isAssignableOrConvertibleFrom(Float.class, type) ||
-                GriffonClassUtils.isAssignableOrConvertibleFrom(Double.class, type) ||
-                BigDecimalValue.class.isAssignableFrom(type) ||
-                FloatValue.class.isAssignableFrom(type) ||
-                DoubleValue.class.isAssignableFrom(type));
+                GriffonClassUtils.isAssignableOrConvertibleFrom(Double.class, type));
     }
 
     /*
@@ -114,10 +107,6 @@ public class ScaleConstraint extends AbstractConstraint {
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
         BigDecimal bigDecimal;
-
-        if (propertyValue instanceof NumericAtomicValue) {
-            propertyValue = ((NumericAtomicValue) propertyValue).getValue();
-        }
 
         if (propertyValue instanceof Float) {
             bigDecimal = new BigDecimal(propertyValue.toString());

@@ -3,7 +3,7 @@ package griffon.plugins.domain
 import griffon.plugins.validation.exceptions.ValidationException
 import griffon.test.GriffonUnitTestCase
 import griffon.test.mock.MockGriffonApplication
-import griffon.transform.CommandObject
+// import griffon.transform.CommandObject
 
 import java.beans.PropertyChangeListener
 
@@ -104,6 +104,7 @@ class SampleTests extends GriffonUnitTestCase {
         assert !book1.author
     }
 
+/*
     void testCommandObject() {
         def command = new LoginCommand()
 
@@ -147,8 +148,10 @@ class SampleTests extends GriffonUnitTestCase {
         command.errors.allErrors.each { println it }
         command.errors.clearAllErrors()
     }
+*/
 }
 
+/*
 @CommandObject
 class LoginCommand {
     // final StringValue name = new StringValue()
@@ -173,3 +176,4 @@ class LoginCommand2 {
         lastName(nullable: true)
     }
 }
+*/

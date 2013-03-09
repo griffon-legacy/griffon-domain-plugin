@@ -15,7 +15,6 @@
 package org.codehaus.griffon.runtime.validation.constraints;
 
 
-import griffon.plugins.scaffolding.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
 import griffon.util.GriffonClassUtils;
 
@@ -45,8 +44,7 @@ public class MinConstraint extends AbstractConstraint {
     public boolean supports(Class type) {
         return type != null && (
             Comparable.class.isAssignableFrom(type) ||
-                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type) ||
-                NumericAtomicValue.class.isAssignableFrom(type));
+                GriffonClassUtils.isAssignableOrConvertibleFrom(Number.class, type));
     }
 
     /* (non-Javadoc)
@@ -84,10 +82,6 @@ public class MinConstraint extends AbstractConstraint {
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
-        if (propertyValue instanceof NumericAtomicValue) {
-            propertyValue = ((NumericAtomicValue) propertyValue).getValue();
-        }
-
         if (null == propertyValue || minValue.compareTo(propertyValue) <= 0) {
             return;
         }

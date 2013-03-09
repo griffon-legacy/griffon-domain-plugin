@@ -16,8 +16,8 @@
 package griffon.plugins.domain.methods;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import java.util.Arrays;
 
 import static org.codehaus.groovy.runtime.DefaultGroovyMethods.join;
 
@@ -96,41 +96,44 @@ public class MethodSignature implements Comparable<MethodSignature> {
 
     public String toString() {
         return (isStatic ? "static " : "") +
-                returnType.getName() + " " +
-                methodName + "(" +
-                join(parameterTypes, ",") +
-                ")";
+            returnType.getName() + " " +
+            methodName + "(" +
+            join(parameterTypes, ",") +
+            ")";
     }
 
-    public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (obj.getClass() != getClass()) return false;
-        MethodSignature rhs = (MethodSignature) obj;
-        return new EqualsBuilder()
-                .append(methodName, rhs.methodName)
-                .append(parameterClassnames, rhs.parameterClassnames)
-                .append(returnType.getName(), rhs.returnType.getName())
-                .append(isStatic, rhs.isStatic)
-                .isEquals();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MethodSignature that = (MethodSignature) o;
+
+        if (!returnType.equals(that.returnType)) return false;
+        if (!methodName.equals(that.methodName)) return false;
+        if (!Arrays.equals(parameterClassnames, that.parameterClassnames))
+            return false;
+        if (isStatic != that.isStatic) return false;
+
+        return true;
     }
 
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(methodName)
-                .append(parameterClassnames)
-                .append(returnType.getName())
-                .append(isStatic)
-                .toHashCode();
+        int result = methodName.hashCode();
+        result = 31 * result + returnType.hashCode();
+        result = 31 * result + Arrays.hashCode(parameterClassnames);
+        result = 31 * result + (isStatic ? 1 : 0);
+        return result;
     }
 
     public int compareTo(MethodSignature other) {
         return new CompareToBuilder()
-                .append(methodName, other.methodName)
-                .append(parameterClassnames, other.parameterClassnames)
-                .append(returnType, other.returnType)
-                .append(isStatic, other.isStatic)
-                .toComparison();
+            .append(methodName, other.methodName)
+            .append(parameterClassnames, other.parameterClassnames)
+            .append(returnType, other.returnType)
+            .append(isStatic, other.isStatic)
+            .toComparison();
 
     }
 }

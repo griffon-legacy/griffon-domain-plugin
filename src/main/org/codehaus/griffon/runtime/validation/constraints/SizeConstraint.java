@@ -14,7 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
 import groovy.lang.IntRange;
 
@@ -49,7 +48,6 @@ public class SizeConstraint extends AbstractConstraint {
     public boolean supports(Class type) {
         return type != null && (
             String.class.isAssignableFrom(type) ||
-                StringValue.class.isAssignableFrom(type) ||
                 Collection.class.isAssignableFrom(type) ||
                 type.isArray());
     }
@@ -85,9 +83,6 @@ public class SizeConstraint extends AbstractConstraint {
             size = Array.getLength(propertyValue);
         } else if (propertyValue instanceof Collection<?>) {
             size = ((Collection<?>) propertyValue).size();
-        } else if (propertyValue instanceof StringValue) {
-            String s = ((StringValue) propertyValue).stringValue();
-            size = s != null ? s.length() : 0;
         } else { // String
             size = ((String) propertyValue).length();
         }

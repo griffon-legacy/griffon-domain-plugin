@@ -14,7 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.NumericAtomicValue;
 import griffon.plugins.validation.Errors;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.Range;
@@ -86,9 +85,6 @@ public class RangeConstraint extends AbstractConstraint {
         }
         if (to instanceof Number) {
             to = ((Number) to).longValue();
-        }
-        if (propertyValue instanceof NumericAtomicValue) {
-            propertyValue = ((NumericAtomicValue) propertyValue).getValue();
         }
         if (propertyValue instanceof Number) {
             propertyValue = ((Number) propertyValue).longValue();

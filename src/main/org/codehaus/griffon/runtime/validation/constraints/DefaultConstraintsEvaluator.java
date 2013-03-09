@@ -18,15 +18,14 @@ import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassProperty;
 import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
-import griffon.plugins.validation.constraints.Constraint;
 import griffon.plugins.validation.constraints.ConstraintDef;
 import griffon.util.ApplicationHolder;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +39,7 @@ import java.util.Map.Entry;
  * @author Graeme Rocher (Grails 2.0)
  */
 public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
-    private static final Log LOG = LogFactory.getLog(DefaultConstraintsEvaluator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultConstraintsEvaluator.class);
     // private Map<String, Object> defaultConstraints;
 
     /*

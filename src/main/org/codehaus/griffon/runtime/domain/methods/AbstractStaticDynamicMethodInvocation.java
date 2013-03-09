@@ -16,7 +16,6 @@
 package org.codehaus.griffon.runtime.domain.methods;
 
 import griffon.plugins.domain.methods.DynamicMethodInvocation;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.util.regex.Pattern;
 
@@ -24,8 +23,8 @@ import java.util.regex.Pattern;
  * @author Andres Almiray
  */
 public abstract class AbstractStaticDynamicMethodInvocation
-        extends AbstractStaticMethodInvocation
-        implements DynamicMethodInvocation {
+    extends AbstractStaticMethodInvocation
+    implements DynamicMethodInvocation {
     private final Pattern pattern;
 
     public AbstractStaticDynamicMethodInvocation(Pattern pattern) {
@@ -40,9 +39,12 @@ public abstract class AbstractStaticDynamicMethodInvocation
         return this.pattern.matcher(methodName.subSequence(0, methodName.length())).find();
     }
 
+    @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("Pattern", this.pattern)
-                .toString();
+        final StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append("{pattern=").append(pattern);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -24,7 +24,6 @@ import griffon.util.ApplicationHolder;
 import griffon.util.Assert;
 import griffon.util.GriffonClassUtils;
 import griffon.util.GriffonNameUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.codehaus.griffon.runtime.validation.DefaultErrors;
 import org.codehaus.griffon.runtime.validation.DefaultFieldObjectError;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -188,10 +187,10 @@ public abstract class AbstractConstraint implements Constraint {
         }
 
         FieldObjectError error = new DefaultFieldObjectError(constraintPropertyName,
-                getPropertyValue(errors, target),
-                newCodes.toArray(new String[newCodes.size()]),
-                args,
-                defaultMessage);
+            getPropertyValue(errors, target),
+            newCodes.toArray(new String[newCodes.size()]),
+            args,
+            defaultMessage);
         errors.addError(error);
     }
 
@@ -247,10 +246,11 @@ public abstract class AbstractConstraint implements Constraint {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append(constraintOwningClass)
-                .append(constraintPropertyName)
-                .append(constraintParameter).toString();
+        return "AbstractConstraint{" +
+            "constraintOwningClass=" + constraintOwningClass +
+            ", constraintPropertyName='" + constraintPropertyName + '\'' +
+            ", constraintParameter=" + constraintParameter +
+            '}';
     }
 
     /**

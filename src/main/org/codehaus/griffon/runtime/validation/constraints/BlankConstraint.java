@@ -14,9 +14,8 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import org.apache.commons.lang.StringUtils;
+import griffon.util.GriffonNameUtils;
 
 /**
  * A Constraint that validates a string is not blank.
@@ -35,7 +34,7 @@ public class BlankConstraint extends AbstractVetoingConstraint {
      */
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
-        return type != null && (String.class.isAssignableFrom(type) || StringValue.class.isAssignableFrom(type));
+        return type != null && (String.class.isAssignableFrom(type));
     }
 
     @Override
@@ -74,10 +73,7 @@ public class BlankConstraint extends AbstractVetoingConstraint {
 
     @Override
     protected boolean processValidateWithVetoing(Object target, Object propertyValue, Errors errors) {
-        if (propertyValue instanceof StringValue) {
-            propertyValue = ((StringValue) propertyValue).stringValue();
-        }
-        if (propertyValue instanceof String && StringUtils.isBlank((String) propertyValue)) {
+        if (propertyValue instanceof String && GriffonNameUtils.isBlank((String) propertyValue)) {
             if (!blank) {
                 Object[] args = new Object[]{constraintPropertyName, constraintOwningClass};
                 rejectValue(target, errors,

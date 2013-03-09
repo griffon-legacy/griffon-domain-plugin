@@ -14,7 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.AtomicValue;
 import griffon.plugins.validation.Errors;
 
 /**
@@ -68,10 +67,6 @@ public class NullableConstraint extends AbstractVetoingConstraint {
 
     @Override
     protected boolean processValidateWithVetoing(Object target, Object propertyValue, Errors errors) {
-        if (propertyValue instanceof AtomicValue) {
-            propertyValue = ((AtomicValue) propertyValue).getValue();
-        }
-
         if (propertyValue == null) {
             if (!nullable) {
                 Object[] args = new Object[]{constraintPropertyName, constraintOwningClass};

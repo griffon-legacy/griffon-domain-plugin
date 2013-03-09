@@ -22,11 +22,10 @@ import griffon.util.Assert;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.MissingPropertyException;
 import groovy.lang.Range;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.griffon.runtime.validation.constraints.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -103,7 +102,7 @@ public class ConstrainedProperty {
         constraints.put(PostalCodeConstraint.VALIDATION_DSL_NAME, list().e(PostalCodeConstraint.class));
     }
 
-    protected static final Log LOG = LogFactory.getLog(ConstrainedProperty.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(ConstrainedProperty.class);
 
     // move these to subclass
 
@@ -893,6 +892,7 @@ public class ConstrainedProperty {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /*
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -902,6 +902,20 @@ public class ConstrainedProperty {
             .append(appliedConstraints)
             .append(metaConstraints)
             .toString();
+    }
+    */
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append("{owningClass=").append(owningClass);
+        sb.append(", propertyName='").append(propertyName).append('\'');
+        sb.append(", propertyType=").append(propertyType);
+        sb.append(", appliedConstraints=").append(appliedConstraints);
+        sb.append(", metaConstraints=").append(metaConstraints);
+        sb.append('}');
+        return sb.toString();
     }
 
     /**

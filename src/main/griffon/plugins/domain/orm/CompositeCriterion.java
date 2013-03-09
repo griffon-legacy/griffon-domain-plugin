@@ -16,9 +16,7 @@
 
 package griffon.plugins.domain.orm;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import java.util.Arrays;
 
 /**
  * @author Andres Almiray
@@ -56,28 +54,33 @@ public final class CompositeCriterion implements Criterion {
         return this.operator;
     }
 
+    @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("operator", operator)
-                .append("criteria", criteria)
-                .toString();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("CompositeCriterion");
+        sb.append("{criteria=").append(criteria == null ? "null" : Arrays.asList(criteria).toString());
+        sb.append(", operator=").append(operator);
+        sb.append('}');
+        return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CompositeCriterion that = (CompositeCriterion) o;
+
+        if (!Arrays.equals(criteria, that.criteria)) return false;
+        if (operator != that.operator) return false;
+
+        return true;
+    }
+
+    @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(operator)
-                .append(criteria)
-                .toHashCode();
-    }
-
-    public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (obj.getClass() != getClass()) return false;
-        CompositeCriterion rhs = (CompositeCriterion) obj;
-        return new EqualsBuilder()
-                .append(operator, rhs.operator)
-                .append(criteria, rhs.criteria)
-                .isEquals();
+        int result = Arrays.hashCode(criteria);
+        result = 31 * result + operator.hashCode();
+        return result;
     }
 }

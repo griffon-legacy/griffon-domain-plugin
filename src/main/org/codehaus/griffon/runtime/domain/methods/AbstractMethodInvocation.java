@@ -16,15 +16,10 @@
 package org.codehaus.griffon.runtime.domain.methods;
 
 import griffon.plugins.domain.methods.MethodInvocation;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * @author Andres Almiray
  */
 abstract class AbstractMethodInvocation
-        implements MethodInvocation {
-    public String toString() {
-        return new ToStringBuilder(this)
-                .toString();
-    }
+    implements MethodInvocation {
 }

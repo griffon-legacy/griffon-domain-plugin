@@ -15,7 +15,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
 import org.apache.commons.validator.routines.CreditCardValidator;
 
@@ -38,10 +37,6 @@ public class CreditCardConstraint extends AbstractConstraint {
         }
 
         CreditCardValidator validator = new CreditCardValidator();
-
-        if (propertyValue instanceof StringValue) {
-            propertyValue = ((StringValue) propertyValue).stringValue();
-        }
 
         if (!validator.isValid(propertyValue.toString())) {
             Object[] args = new Object[]{constraintPropertyName, constraintOwningClass, propertyValue};
@@ -69,6 +64,6 @@ public class CreditCardConstraint extends AbstractConstraint {
 
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
-        return type != null && (String.class.isAssignableFrom(type) || StringValue.class.isAssignableFrom(type));
+        return type != null && (String.class.isAssignableFrom(type));
     }
 }

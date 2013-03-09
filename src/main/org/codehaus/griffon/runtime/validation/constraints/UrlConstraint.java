@@ -14,7 +14,6 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
 import org.apache.commons.validator.routines.RegexValidator;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -40,7 +39,7 @@ public class UrlConstraint extends AbstractConstraint {
      */
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
-        return type != null && (String.class.isAssignableFrom(type) || StringValue.class.isAssignableFrom(type));
+        return type != null && (String.class.isAssignableFrom(type));
     }
 
     /* (non-Javadoc)
@@ -79,10 +78,6 @@ public class UrlConstraint extends AbstractConstraint {
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
         if (!url) {
             return;
-        }
-
-        if (propertyValue instanceof StringValue) {
-            propertyValue = ((StringValue) propertyValue).stringValue();
         }
 
         if (null == propertyValue || !validator.isValid(propertyValue.toString())) {

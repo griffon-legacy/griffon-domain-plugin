@@ -16,13 +16,13 @@
 
 package org.codehaus.griffon.runtime.validation.constraints;
 
-import griffon.plugins.scaffolding.atoms.StringValue;
 import griffon.plugins.validation.Errors;
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.runtime.DefaultGroovyStaticMethods;
 
 import java.text.ParseException;
 import java.util.Date;
+
+import static griffon.util.GriffonNameUtils.isBlank;
 
 /**
  * Validates a Date based on a format.
@@ -37,12 +37,8 @@ public class DateConstraint extends AbstractConstraint {
 
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
-        if (propertyValue instanceof StringValue) {
-            propertyValue = ((StringValue) propertyValue).stringValue();
-        }
-
         String value = propertyValue.toString();
-        if (StringUtils.isBlank(value)) {
+        if (isBlank(value)) {
             return;
         }
 
