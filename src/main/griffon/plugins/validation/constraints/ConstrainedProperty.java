@@ -112,6 +112,13 @@ public class ConstrainedProperty {
     protected Map<String, Constraint> appliedConstraints = new LinkedHashMap<String, Constraint>();
     protected Class<?> owningClass;
 
+    // simple constraints
+    private boolean display = true; // whether the property should be displayed
+    private boolean editable = true; // whether the property is editable
+    private String format; // the format of the property (for example a date pattern)
+    private String widget; // the widget to use to render the property
+    private boolean password; // whether the property is a password
+
     private Map<String, Object> attributes = new LinkedHashMap<String, Object>(); // a map of attributes of property
     protected MessageSource messageSource;
     private Map<String, Object> metaConstraints = new HashMap<String, Object>();
@@ -889,22 +896,6 @@ public class ConstrainedProperty {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    /*
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append(owningClass)
-            .append(propertyName)
-            .append(propertyType)
-            .append(appliedConstraints)
-            .append(metaConstraints)
-            .toString();
-    }
-    */
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -936,5 +927,57 @@ public class ConstrainedProperty {
      */
     public Object getMetaConstraintValue(String name) {
         return metaConstraints.get(name);
+    }
+
+    /**
+     * @return Returns the display.
+     */
+    public boolean isDisplay() {
+        return display;
+    }
+
+    /**
+     * @param display The display to set.
+     */
+    public void setDisplay(boolean display) {
+        this.display = display;
+    }
+
+    /**
+     * @return Returns the editable.
+     */
+    public boolean isEditable() {
+        return editable;
+    }
+
+    /**
+     * @param editable The editable to set.
+     */
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public boolean isPassword() {
+        return password;
+    }
+
+    public void setPassword(boolean password) {
+        this.password = password;
+    }
+
+    public String getWidget() {
+        return widget;
+    }
+
+    public void setWidget(String widget) {
+        this.widget = widget;
     }
 }
