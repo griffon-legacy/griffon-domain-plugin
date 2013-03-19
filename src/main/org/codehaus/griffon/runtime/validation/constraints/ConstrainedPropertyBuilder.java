@@ -18,13 +18,14 @@ package org.codehaus.griffon.runtime.validation.constraints;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.plugins.validation.constraints.ConstraintDef;
 import griffon.util.ApplicationHolder;
-import griffon.util.GriffonUtil;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
 import groovy.lang.MissingPropertyException;
 import groovy.util.BuilderSupport;
 import org.codehaus.griffon.runtime.core.ClassPropertyFetcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -37,6 +38,7 @@ import java.util.Map;
  * @author Graeme Rocher (Grails)
  */
 public class ConstrainedPropertyBuilder extends BuilderSupport {
+    private final Logger LOG = LoggerFactory.getLogger(ConstrainedPropertyBuilder.class);
     private Map<String, ConstrainedProperty> constrainedProperties = new LinkedHashMap<String, ConstrainedProperty>();
     // private Map<String, String> sharedConstraints = new HashMap<String, String>();
     // private int order = 1;
@@ -96,34 +98,34 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
         // we do this so that missing property exception is thrown if it doesn't exist
 
         // try {
-            String property = (String) name;
-            ConstrainedProperty cp;
-            if (constrainedProperties.containsKey(property)) {
-                cp = constrainedProperties.get(property);
-            } else {
-                Class<?> propertyType = classPropertyFetcher.getPropertyType(property);
-                if (propertyType == null) {
-                    throw new MissingMethodException(property, targetClass, new Object[]{attributes}, true);
-                }
-                cp = new ConstrainedProperty(targetClass, property, propertyType);
-                cp.setMessageSource(ApplicationHolder.getApplication());
-                // cp.setOrder(order++);
-                constrainedProperties.put(property, cp);
+        String property = (String) name;
+        ConstrainedProperty cp;
+        if (constrainedProperties.containsKey(property)) {
+            cp = constrainedProperties.get(property);
+        } else {
+            Class<?> propertyType = classPropertyFetcher.getPropertyType(property);
+            if (propertyType == null) {
+                throw new MissingMethodException(property, targetClass, new Object[]{attributes}, true);
             }
+            cp = new ConstrainedProperty(targetClass, property, propertyType);
+            cp.setMessageSource(ApplicationHolder.getApplication());
+            // cp.setOrder(order++);
+            constrainedProperties.put(property, cp);
+        }
 
-            if (cp.getPropertyType() == null) {
+        if (cp.getPropertyType() == null) {
                 /*
                 if (!IMPORT_FROM_CONSTRAINT.equals(name)) {
                     GriffonUtil.warn("Property [" + cp.getPropertyName() + "] not found in domain class " +
                             targetClass.getName() + "; cannot apply constraints: " + attributes);
                 }
                 */
-                return cp;
-            }
+            return cp;
+        }
 
-            for (Object o : attributes.keySet()) {
-                String constraintName = (String) o;
-                final Object value = attributes.get(constraintName);
+        for (Object o : attributes.keySet()) {
+            String constraintName = (String) o;
+            final Object value = attributes.get(constraintName);
                 /*
                 if (SHARED_CONSTRAINT.equals(constraintName)) {
                     if (value != null) {
@@ -132,10 +134,10 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                     continue;
                 }
                 */
-                addConstraint(cp, constraintName, value);
-            }
+            addConstraint(cp, constraintName, value);
+        }
 
-            return cp;
+        return cp;
         // } catch (InvalidPropertyException ipe) {
         //     throw new MissingMethodException((String) name, targetClass, new Object[]{attributes});
         // }
@@ -147,10 +149,12 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
         } else {
             if (ConstrainedProperty.hasRegisteredConstraint(constraintName)) {
                 // constraint is registered but doesn't support this property's type
-                GriffonUtil.warn("Property [" + cp.getPropertyName() + "] of domain class " +
-                    targetClass.getName() + " has type [" + cp.getPropertyType().getName() +
-                    "] and doesn't support constraint [" + constraintName +
-                    "]. This constraint will not be checked during validation.");
+                if (LOG.isWarnEnabled()) {
+                    LOG.warn("Property [" + cp.getPropertyName() + "] of class " +
+                        targetClass.getName() + " has type [" + cp.getPropertyType().getName() +
+                        "] and doesn't support constraint [" + constraintName +
+                        "]. This constraint will not be checked during validation.");
+                }
             } else {
                 // in the case where the constraint is not supported we still retain meta data
                 // about the constraint in case its needed for other things

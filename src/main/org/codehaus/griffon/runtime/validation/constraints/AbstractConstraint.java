@@ -141,13 +141,13 @@ public abstract class AbstractConstraint implements Constraint {
                 final Class<?> constrainedClass = (Class<?>) args[1];
                 final String fullClassName = constrainedClass.getName();
 
-                String classNameCode = fullClassName + ".label";
+                String classNameCode = fullClassName + ".error.label";
                 String resolvedClassName = messageSource.getMessage(classNameCode, fullClassName, locale);
                 final String classAsPropertyName = GriffonNameUtils.getPropertyName(constrainedClass);
 
                 if (resolvedClassName.equals(fullClassName)) {
                     // try short version
-                    classNameCode = classAsPropertyName + ".label";
+                    classNameCode = classAsPropertyName + ".error.label";
                     resolvedClassName = messageSource.getMessage(classNameCode, fullClassName, locale);
                 }
 
@@ -161,10 +161,10 @@ public abstract class AbstractConstraint implements Constraint {
                 }
 
                 String propertyName = (String) args[0];
-                String propertyNameCode = fullClassName + '.' + propertyName + ".label";
+                String propertyNameCode = fullClassName + '.' + propertyName + ".error.label";
                 String resolvedPropertyName = messageSource.getMessage(propertyNameCode, propertyName, locale);
                 if (resolvedPropertyName.equals(propertyName)) {
-                    propertyNameCode = classAsPropertyName + '.' + propertyName + ".label";
+                    propertyNameCode = classAsPropertyName + '.' + propertyName + ".error.label";
                     resolvedPropertyName = messageSource.getMessage(propertyNameCode, propertyName, locale);
                 }
 

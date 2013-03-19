@@ -34,6 +34,8 @@ public interface Errors extends Observable {
 
     boolean hasFieldErrors();
 
+    boolean hasFieldErrors(String field);
+
     FieldObjectError getFieldError(String field);
 
     List<FieldObjectError> getFieldErrors(String field);

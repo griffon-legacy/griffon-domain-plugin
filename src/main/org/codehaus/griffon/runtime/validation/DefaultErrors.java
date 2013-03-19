@@ -63,6 +63,10 @@ public class DefaultErrors extends AbstractObservable implements Errors {
         return !fieldErrors.isEmpty();
     }
 
+    public boolean hasFieldErrors(String field) {
+        return getFieldErrorCount(field) > 0;
+    }
+
     public FieldObjectError getFieldError(String field) {
         List<FieldObjectError> errors = fieldErrors.get(field);
         return null != errors && errors.size() > 0 ? errors.get(0) : null;
