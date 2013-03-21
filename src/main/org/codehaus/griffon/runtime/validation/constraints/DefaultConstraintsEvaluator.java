@@ -14,6 +14,7 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
+import griffon.core.GriffonClass;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassProperty;
 import griffon.plugins.domain.GriffonDomainProperty;
@@ -21,14 +22,12 @@ import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.plugins.validation.constraints.ConstraintDef;
 import griffon.util.ApplicationHolder;
 import griffon.util.GriffonClassUtils;
-import groovy.lang.*;
-import org.codehaus.groovy.control.CompilationFailedException;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import groovy.lang.Closure;
+import groovy.lang.GroovyObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.beans.PropertyDescriptor;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -116,7 +115,7 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
                 ConstrainedProperty cp = constrainedProperties.get(propertyName);
                 if (cp == null) {
                     cp = new ConstrainedProperty(p.getDomainClass().getClazz(), propertyName, p.getType());
-                    // cp.setOrder(constrainedProperties.size() + 1);
+                    cp.setOrder(constrainedProperties.size() + 1);
                     cp.setMessageSource(ApplicationHolder.getApplication());
                     constrainedProperties.put(propertyName, cp);
                 }
@@ -129,15 +128,24 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
             }
         }
         if (properties == null || properties.length == 0) {
-            final Set<Entry<String, ConstrainedProperty>> entrySet = constrainedProperties
-                .entrySet();
-            for (Entry<String, ConstrainedProperty> entry : entrySet) {
-                final ConstrainedProperty constrainedProperty = entry
-                    .getValue();
-                if (!constrainedProperty
-                    .hasAppliedConstraint(NullableConstraint.VALIDATION_DSL_NAME)) {
-                    applyDefaultNullableConstraint(constrainedProperty);
-                }
+            // harvest all properties from class, excluding those we may already have
+            // marked as constrained or those that cannot be constrained
+            for (PropertyDescriptor pd : GriffonClassUtils.getPropertyDescriptors(theClass)) {
+                String propertyName = pd.getName();
+                if(constrainedProperties.containsKey(propertyName) || !isConstrainableProperty(propertyName)) continue;
+                ConstrainedProperty cp = new ConstrainedProperty(theClass, propertyName, pd.getPropertyType());
+                cp.setOrder(constrainedProperties.size() + 1);
+                cp.setMessageSource(ApplicationHolder.getApplication());
+                constrainedProperties.put(propertyName, cp);
+            }
+        }
+
+        Set<Entry<String, ConstrainedProperty>> entrySet = constrainedProperties.entrySet();
+        for (Entry<String, ConstrainedProperty> entry : entrySet) {
+            ConstrainedProperty constrainedProperty = entry.getValue();
+            if (!constrainedProperty
+                .hasAppliedConstraint(NullableConstraint.VALIDATION_DSL_NAME)) {
+                applyDefaultNullableConstraint(constrainedProperty);
             }
         }
 
@@ -184,40 +192,6 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
             clazz = clazz.getSuperclass();
         }
         return classChain;
-    }
-
-    protected Closure<?> getConstraintsFromScript(Class<?> theClass) {
-        // Fallback to xxxxConstraints.groovy script for Java domain classes
-        String className = theClass.getName();
-        String constraintsScript = className.replaceAll("\\.", "/") + CONSTRAINTS_GROOVY_SCRIPT;
-        InputStream stream = getClass().getClassLoader().getResourceAsStream(constraintsScript);
-
-        if (stream != null) {
-            GroovyClassLoader gcl = new GroovyClassLoader();
-            try {
-                Class<?> scriptClass = gcl.parseClass(DefaultGroovyMethods.getText(stream));
-                Script script = (Script) scriptClass.newInstance();
-                script.run();
-                Binding binding = script.getBinding();
-                if (binding.getVariables().containsKey(PROPERTY_NAME)) {
-                    return (Closure<?>) binding.getVariable(PROPERTY_NAME);
-                }
-                LOG.warn("Unable to evaluate constraints from [" + constraintsScript + "], constraints closure not found!");
-                return null;
-            } catch (CompilationFailedException e) {
-                LOG.error("Compilation error evaluating constraints for class [" + className + "]: " + e.getMessage(), e);
-                return null;
-            } catch (InstantiationException e) {
-                LOG.error("Instantiation error evaluating constraints for class [" + className + "]: " + e.getMessage(), e);
-                return null;
-            } catch (IllegalAccessException e) {
-                LOG.error("Illegal access error evaluating constraints for class [" + className + "]: " + e.getMessage(), e);
-                return null;
-            } catch (IOException e) {
-                LOG.error("IO error evaluating constraints for class [" + className + "]: " + e.getMessage(), e);
-            }
-        }
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -283,9 +257,17 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
     }
     */
 
+    protected boolean isConstrainableProperty(String propertyName) {
+        return !propertyName.equals("errors") &&
+            !GriffonClass.STANDARD_PROPERTIES.contains(propertyName) &&
+            !propertyName.equals(GriffonDomainProperty.DATE_CREATED) &&
+            !propertyName.equals(GriffonDomainProperty.LAST_UPDATED) &&
+            !GriffonDomainProperty.VERSION.equals(propertyName) &&
+            !GriffonDomainProperty.IDENTITY.equals(propertyName);
+    }
+
     protected boolean isConstrainableProperty(GriffonDomainProperty p, String propertyName) {
-        return !propertyName.equals(GriffonDomainProperty.DATE_CREATED) &&
-            !propertyName.equals(GriffonDomainProperty.LAST_UPDATED) /*&&
+        return isConstrainableProperty(propertyName) /*&&
                 !((p.isOneToOne() || p.isManyToOne()) && p.isCircular())*/;
     }
 

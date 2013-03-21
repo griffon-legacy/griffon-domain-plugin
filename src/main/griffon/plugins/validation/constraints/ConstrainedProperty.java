@@ -113,7 +113,9 @@ public class ConstrainedProperty {
     protected Class<?> owningClass;
 
     // simple constraints
+    private int order = -1;
     private boolean display = true; // whether the property should be displayed
+    private boolean enabled = true; // whether the property is enabled
     private boolean editable = true; // whether the property is editable
     private String format; // the format of the property (for example a date pattern)
     private String widget; // the widget to use to render the property
@@ -957,6 +959,20 @@ public class ConstrainedProperty {
         this.editable = editable;
     }
 
+    /**
+     * @return Returns the enabled.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled The enabled to set.
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public String getFormat() {
         return format;
     }
@@ -979,5 +995,13 @@ public class ConstrainedProperty {
 
     public void setWidget(String widget) {
         this.widget = widget;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

@@ -16,6 +16,7 @@
 package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.plugins.validation.constraints.Constraint;
 import griffon.plugins.validation.constraints.ConstraintDef;
 import griffon.util.ApplicationHolder;
 import groovy.lang.GroovySystem;
@@ -27,10 +28,8 @@ import org.codehaus.griffon.runtime.core.ClassPropertyFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.beans.PropertyDescriptor;
+import java.util.*;
 
 /**
  * Builder used as a delegate within the "constraints" closure of GrailsDomainClass instances .
@@ -41,11 +40,11 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     private final Logger LOG = LoggerFactory.getLogger(ConstrainedPropertyBuilder.class);
     private Map<String, ConstrainedProperty> constrainedProperties = new LinkedHashMap<String, ConstrainedProperty>();
     // private Map<String, String> sharedConstraints = new HashMap<String, String>();
-    // private int order = 1;
+    private int order = 1;
     private Class<?> targetClass;
     private ClassPropertyFetcher classPropertyFetcher;
     // private static final String SHARED_CONSTRAINT = "shared";
-    // private static final String IMPORT_FROM_CONSTRAINT = "importFrom";
+    private static final String IMPORT_FROM_CONSTRAINT = "importFrom";
     private MetaClass targetMetaClass;
 
     public ConstrainedPropertyBuilder(Object target) {
@@ -97,7 +96,6 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     protected Object createNode(Object name, Map attributes) {
         // we do this so that missing property exception is thrown if it doesn't exist
 
-        // try {
         String property = (String) name;
         ConstrainedProperty cp;
         if (constrainedProperties.containsKey(property)) {
@@ -109,17 +107,17 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
             }
             cp = new ConstrainedProperty(targetClass, property, propertyType);
             cp.setMessageSource(ApplicationHolder.getApplication());
-            // cp.setOrder(order++);
+            cp.setOrder(order++);
             constrainedProperties.put(property, cp);
         }
 
         if (cp.getPropertyType() == null) {
-                /*
-                if (!IMPORT_FROM_CONSTRAINT.equals(name)) {
-                    GriffonUtil.warn("Property [" + cp.getPropertyName() + "] not found in domain class " +
-                            targetClass.getName() + "; cannot apply constraints: " + attributes);
+            if (!IMPORT_FROM_CONSTRAINT.equals(name)) {
+                if (LOG.isWarnEnabled()) {
+                    LOG.warn("Property [" + cp.getPropertyName() + "] not found in domain class " +
+                        targetClass.getName() + "; cannot apply constraints: " + attributes);
                 }
-                */
+            }
             return cp;
         }
 
@@ -138,9 +136,6 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
         }
 
         return cp;
-        // } catch (InvalidPropertyException ipe) {
-        //     throw new MissingMethodException((String) name, targetClass, new Object[]{attributes});
-        // }
     }
 
     private void addConstraint(ConstrainedProperty cp, String constraintName, Object value) {
@@ -181,7 +176,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
             }
             cp = new ConstrainedProperty(targetClass, property, propertyType);
             cp.setMessageSource(ApplicationHolder.getApplication());
-            // cp.setOrder(order++);
+            cp.setOrder(order++);
             constrainedProperties.put(property, cp);
         }
 
@@ -199,15 +194,13 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     @SuppressWarnings("rawtypes")
     @Override
     protected Object createNode(Object name, Map attributes, Object value) {
-        /*
         if (IMPORT_FROM_CONSTRAINT.equals(name) && (value instanceof Class)) {
             return handleImportFrom(attributes, (Class) value);
         }
-        */
         throw new MissingMethodException((String) name, targetClass, new Object[]{attributes, value});
     }
 
-    /*
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Object handleImportFrom(Map attributes, Class importFromClazz) {
 
@@ -229,7 +222,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
             }
 
             if (toBeExcludedPropertyNamesParam != null
-                    && isListOfRegexpsContainsString(toBeExcludedPropertyNamesParam, targetPropertyName)) {
+                && isListOfRegexpsContainsString(toBeExcludedPropertyNamesParam, targetPropertyName)) {
                 resultingPropertyNames.remove(targetPropertyName);
             }
         }
@@ -239,7 +232,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
 
         for (String targetPropertyName : resultingPropertyNames) {
             ConstrainedProperty importFromConstrainedProperty =
-                    (ConstrainedProperty) importFromConstrainedProperties.get(targetPropertyName);
+                (ConstrainedProperty) importFromConstrainedProperties.get(targetPropertyName);
 
             if (importFromConstrainedProperty != null) {
                 // Map importFromConstrainedPropertyAttributes = importFromConstrainedProperty.getAttributes();
@@ -249,7 +242,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                     String importFromAppliedConstraintName = importFromAppliedConstraint.getName();
                     Object importFromAppliedConstraintParameter = importFromAppliedConstraint.getParameter();
                     importFromConstrainedPropertyAttributes.put(
-                            importFromAppliedConstraintName, importFromAppliedConstraintParameter);
+                        importFromAppliedConstraintName, importFromAppliedConstraintParameter);
                 }
 
                 createNode(targetPropertyName, importFromConstrainedPropertyAttributes);
@@ -258,7 +251,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
 
         return null;
     }
-    */
+
 
     private boolean isListOfRegexpsContainsString(List<String> listOfStrings, String stringToMatch) {
         boolean result = false;
