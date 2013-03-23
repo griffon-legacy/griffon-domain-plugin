@@ -1,7 +1,7 @@
 DESCRIPTION
         create-domain-class
 
-    Creates a new domain class class.
+    Creates a new domain class.
 
 SYNTAX
         create-domain-class [options] [name]

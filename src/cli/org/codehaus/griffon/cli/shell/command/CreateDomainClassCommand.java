@@ -11,7 +11,7 @@ import org.codehaus.griffon.cli.shell.Option;
 public class CreateDomainClassCommand extends AbstractGriffonCommand {
     @Argument(index = 0,
             name = "name",
-            description = "The name of the domain ckass to be created.",
+            description = "The name of the domain class to be created.",
             required = false)
     private String name;
 
