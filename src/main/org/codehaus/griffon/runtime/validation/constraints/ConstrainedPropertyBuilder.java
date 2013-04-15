@@ -190,13 +190,6 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                     sharedConstraints.put(property, value.toString());
                 }
                 continue;
-            } else if (IMPORT_FROM_CONSTRAINT.equals(constraintName) && (value instanceof Class)) {
-                handleImportFrom(Collections.emptyMap(), (Class) value);
-                continue;
-            } else if (IMPORT_FROM_CONSTRAINT.equals(constraintName) && (value instanceof Map)) {
-                Map<String, Object> attrs = (Map<String, Object>) value;
-                handleImportFrom(attrs, (Class) attrs.remove("source"));
-                continue;
             }
             addConstraint(cp, constraintName, value);
         }

@@ -142,12 +142,4 @@ public final class Constraints {
     public static ConstraintDef shared(String value) {
         return new ConstraintDef("shared", value);
     }
-
-    public static ConstraintDef importFrom(Class value) {
-        return new ConstraintDef("importFrom", value);
-    }
-
-    public static ConstraintDef importFrom(Map<String, Object> value) {
-        return new ConstraintDef("importFrom", value);
-    }
 }
