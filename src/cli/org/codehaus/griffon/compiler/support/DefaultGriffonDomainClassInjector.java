@@ -34,7 +34,6 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 import static griffon.util.GriffonNameUtils.*;
-import static org.codehaus.griffon.ast.AbstractASTTransformation.makeClassSafe;
 import static org.codehaus.griffon.ast.GriffonASTUtils.*;
 import static org.codehaus.groovy.ast.ClassHelper.MAP_TYPE;
 

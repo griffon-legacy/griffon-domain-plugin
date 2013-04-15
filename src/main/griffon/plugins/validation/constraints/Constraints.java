@@ -21,6 +21,7 @@ import groovy.lang.IntRange;
 import org.codehaus.griffon.runtime.validation.constraints.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Andres Almiray
@@ -136,5 +137,17 @@ public final class Constraints {
 
     public static ConstraintDef postalCode(PostalCountry value) {
         return new ConstraintDef(PostalCodeConstraint.VALIDATION_DSL_NAME, value);
+    }
+
+    public static ConstraintDef shared(String value) {
+        return new ConstraintDef("shared", value);
+    }
+
+    public static ConstraintDef importFrom(Class value) {
+        return new ConstraintDef("importFrom", value);
+    }
+
+    public static ConstraintDef importFrom(Map<String, Object> value) {
+        return new ConstraintDef("importFrom", value);
     }
 }

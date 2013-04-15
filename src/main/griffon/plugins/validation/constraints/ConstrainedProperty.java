@@ -720,6 +720,10 @@ public class ConstrainedProperty {
         nc.setParameter(Boolean.valueOf(nullable));
     }
 
+    public Class<?> getOwningClass() {
+        return owningClass;
+    }
+
     /**
      * @return Returns the propertyName.
      */

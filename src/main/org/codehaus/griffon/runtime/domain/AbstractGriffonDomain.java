@@ -18,7 +18,7 @@ package org.codehaus.griffon.runtime.domain;
 
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
-import griffon.plugins.validation.ConstraintsValidator;
+import griffon.plugins.validation.constraints.ConstraintsValidator;
 import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
 import org.codehaus.griffon.runtime.core.AbstractGriffonArtifact;

@@ -17,9 +17,9 @@ package org.codehaus.griffon.runtime.domain;
 
 import griffon.core.GriffonApplication;
 import griffon.plugins.domain.GriffonDomainClassProperty;
+import griffon.plugins.validation.constraints.ConstraintUtils;
+import griffon.plugins.validation.constraints.ConstraintsEvaluator;
 import griffon.util.GriffonClassUtils;
-import org.codehaus.griffon.runtime.validation.constraints.ConstraintsEvaluator;
-import org.codehaus.griffon.runtime.validation.constraints.DefaultConstraintsEvaluator;
 
 import java.beans.PropertyDescriptor;
 
@@ -60,7 +60,7 @@ public class DefaultGriffonDomainClass extends AbstractGriffonDomainClass {
             }
         }
 
-        ConstraintsEvaluator constraintEvaluator = new DefaultConstraintsEvaluator();
+        ConstraintsEvaluator constraintEvaluator = ConstraintUtils.getConstraintsEvaluator(getApp());
         constrainedProperties.putAll(constraintEvaluator.evaluate(this));
     }
 

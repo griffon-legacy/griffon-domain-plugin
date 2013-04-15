@@ -16,13 +16,12 @@
 
 package org.codehaus.griffon.ast;
 
-import griffon.plugins.validation.ConstraintsValidator;
 import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.Validateable;
-import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.plugins.validation.constraints.ConstraintUtils;
+import griffon.plugins.validation.constraints.ConstraintsEvaluator;
+import griffon.plugins.validation.constraints.ConstraintsValidator;
 import org.codehaus.griffon.runtime.validation.DefaultErrors;
-import org.codehaus.griffon.runtime.validation.constraints.ConstraintsEvaluator;
-import org.codehaus.griffon.runtime.validation.constraints.DefaultConstraintsEvaluator;
 import org.codehaus.groovy.ast.*;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
@@ -52,7 +51,7 @@ public class ValidateableASTTransformation extends AbstractASTTransformation {
     private static final ClassNode DEFAULT_ERRORS_TYPE = makeClassSafe(DefaultErrors.class);
     private static final ClassNode CONSTRAINTS_VALIDATOR_TYPE = makeClassSafe(ConstraintsValidator.class);
     private static final ClassNode CONSTRAINTS_EVALUATOR_TYPE = makeClassSafe(ConstraintsEvaluator.class);
-    private static final ClassNode DEFAULT_CONSTRAINTS_EVALUATOR_TYPE = makeClassSafe(DefaultConstraintsEvaluator.class);
+    private static final ClassNode CONSTRAINT_UTILS_TYPE = makeClassSafe(ConstraintUtils.class);
 
     private static final String VALIDATE = "validate";
     private static final String GET_ERRORS = "getErrors";
@@ -208,10 +207,10 @@ public class ValidateableASTTransformation extends AbstractASTTransformation {
             returns(field(constrainedPropertiesField))
         ));
 
-        //ConstraintsEvaluator constraintsEvaluator = new DefaultConstraintsEvaluator();
+        //ConstraintsEvaluator constraintsEvaluator = ConstraintUtils.getConstraintsEvaluator(ApplicationHolder.getApplication());
         declaringClass.addObjectInitializerStatements(decls(
             var("constraintsEvaluator", CONSTRAINTS_EVALUATOR_TYPE),
-            ctor(DEFAULT_CONSTRAINTS_EVALUATOR_TYPE, NO_ARGS)
+            call(CONSTRAINT_UTILS_TYPE, "getConstraintsEvaluator", args(applicationInstance()))
         ));
         //constrainedProperties.putAll(constraintsEvaluator.evaluate(getClass()));
         declaringClass.addObjectInitializerStatements(stmnt(

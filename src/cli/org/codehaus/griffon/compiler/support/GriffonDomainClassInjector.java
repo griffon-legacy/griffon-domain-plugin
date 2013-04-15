@@ -29,7 +29,6 @@ import org.codehaus.groovy.ast.stmt.Statement;
 
 import java.lang.reflect.Modifier;
 
-import static org.codehaus.griffon.ast.AbstractASTTransformation.makeClassSafe;
 import static org.codehaus.griffon.ast.GriffonASTUtils.*;
 
 /**
@@ -45,6 +44,9 @@ public abstract class GriffonDomainClassInjector extends AbstractASTInjector {
     private final ClassNode GRIFFON_DOMAIN_HANDLER_CLASS = makeClassSafe(GriffonDomainHandler.class);
     private final ClassNode METHOD_MISSING_INTERCEPTOR_CLASS = makeClassSafe(MethodMissingInterceptor.class);
     protected static final String DOMAIN_HANDLER_METHOD_NAME = "domainHandler";
+
+    private static final String METHOD_NAME = "methodName";
+    private static final String ARGUMENTS = "arguments";
 
     public void inject(ClassNode classNode, String artifactType) {
         injectDomainHandler(classNode);
@@ -71,12 +73,12 @@ public abstract class GriffonDomainClassInjector extends AbstractASTInjector {
         String returnTypeClassName = methodSignature.getReturnType().getName();
         ClassNode returnType = GRIFFON_DOMAIN_CLASSNAME.equals(returnTypeClassName) ? makeClassSafe(classNode) : makeClassSafe(methodSignature.getReturnType());
         classNode.addMethod(new MethodNode(
-                methodSignature.getMethodName(),
-                modifiers,
-                returnType,
-                parameters,
-                ClassNode.EMPTY_ARRAY,
-                makeMethodBody(classNode, methodSignature, parameters)
+            methodSignature.getMethodName(),
+            modifiers,
+            returnType,
+            parameters,
+            ClassNode.EMPTY_ARRAY,
+            makeMethodBody(classNode, methodSignature, parameters)
         ));
     }
 
@@ -100,44 +102,44 @@ public abstract class GriffonDomainClassInjector extends AbstractASTInjector {
         }
 
         return returns(call(
-                domainHandlerInstance(classNode),
-                invokeMethod,
-                args(args)));
+            domainHandlerInstance(classNode),
+            invokeMethod,
+            args(args)));
     }
 
     protected void injectDomainHandler(ClassNode classNode) {
         classNode.addMethod(new MethodNode(
-                DOMAIN_HANDLER_METHOD_NAME,
-                Modifier.PUBLIC | Modifier.STATIC,
-                GRIFFON_DOMAIN_HANDLER_CLASS,
-                Parameter.EMPTY_ARRAY,
-                ClassNode.EMPTY_ARRAY,
-                returns(domainHandlerInstance(classNode))
+            DOMAIN_HANDLER_METHOD_NAME,
+            Modifier.PUBLIC | Modifier.STATIC,
+            GRIFFON_DOMAIN_HANDLER_CLASS,
+            Parameter.EMPTY_ARRAY,
+            ClassNode.EMPTY_ARRAY,
+            returns(domainHandlerInstance(classNode))
         ));
     }
 
     protected void injectMethodMissing(ClassNode classNode) {
         FieldNode methodMissingInterceptor = classNode.addField(
-                "this$methodMissingInterceptor",
-                Modifier.FINAL | Modifier.STATIC | Modifier.PRIVATE | ACC_SYNTHETIC,
-                METHOD_MISSING_INTERCEPTOR_CLASS,
-                ctor(METHOD_MISSING_INTERCEPTOR_CLASS,
-                        args(classx(classNode))));
+            "this$methodMissingInterceptor",
+            Modifier.FINAL | Modifier.STATIC | Modifier.PRIVATE | ACC_SYNTHETIC,
+            METHOD_MISSING_INTERCEPTOR_CLASS,
+            ctor(METHOD_MISSING_INTERCEPTOR_CLASS,
+                args(classx(classNode))));
 
         classNode.addMethod(new MethodNode(
-                "$static_methodMissing",
-                Modifier.PUBLIC | Modifier.STATIC,
-                ClassHelper.OBJECT_TYPE,
-                params(
-                        param(ClassHelper.STRING_TYPE, "methodName"),
-                        param(makeClassSafe(Object[].class), "arguments")
-                ),
-                ClassNode.EMPTY_ARRAY,
-                returns(
-                        call(field(methodMissingInterceptor),
-                                "handleMethodMissing",
-                                args(var("methodName"), var("arguments")))
-                )
+            "$static_methodMissing",
+            Modifier.PUBLIC | Modifier.STATIC,
+            ClassHelper.OBJECT_TYPE,
+            params(
+                param(ClassHelper.STRING_TYPE, METHOD_NAME),
+                param(makeClassSafe(Object[].class), ARGUMENTS)
+            ),
+            ClassNode.EMPTY_ARRAY,
+            returns(
+                call(field(methodMissingInterceptor),
+                    "handleMethodMissing",
+                    args(var(METHOD_NAME), var(ARGUMENTS)))
+            )
         ));
     }
 
@@ -147,9 +149,9 @@ public abstract class GriffonDomainClassInjector extends AbstractASTInjector {
 
     protected Expression grabGriffonClass(ClassNode classNode) {
         return call(
-                artifactManagerInstance(),
-                "findGriffonClass",
-                args(classx(classNode)));
+            artifactManagerInstance(),
+            "findGriffonClass",
+            args(classx(classNode)));
     }
 
     public static Expression applicationInstance() {

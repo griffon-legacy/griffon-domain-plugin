@@ -18,7 +18,6 @@ package org.codehaus.griffon.runtime.validation.constraints;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.plugins.validation.constraints.Constraint;
 import griffon.plugins.validation.constraints.ConstraintDef;
-import griffon.util.ApplicationHolder;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
 import groovy.lang.MissingMethodException;
@@ -31,6 +30,9 @@ import org.slf4j.LoggerFactory;
 import java.beans.PropertyDescriptor;
 import java.util.*;
 
+import static griffon.plugins.validation.constraints.ConstraintUtils.getConstraintsEvaluator;
+import static griffon.util.ApplicationHolder.getApplication;
+
 /**
  * Builder used as a delegate within the "constraints" closure of GrailsDomainClass instances .
  *
@@ -39,11 +41,11 @@ import java.util.*;
 public class ConstrainedPropertyBuilder extends BuilderSupport {
     private final Logger LOG = LoggerFactory.getLogger(ConstrainedPropertyBuilder.class);
     private Map<String, ConstrainedProperty> constrainedProperties = new LinkedHashMap<String, ConstrainedProperty>();
-    // private Map<String, String> sharedConstraints = new HashMap<String, String>();
+    private Map<String, String> sharedConstraints = new HashMap<String, String>();
     private int order = 1;
     private Class<?> targetClass;
     private ClassPropertyFetcher classPropertyFetcher;
-    // private static final String SHARED_CONSTRAINT = "shared";
+    private static final String SHARED_CONSTRAINT = "shared";
     private static final String IMPORT_FROM_CONSTRAINT = "importFrom";
     private MetaClass targetMetaClass;
 
@@ -57,11 +59,9 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
         this.targetMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(targetClass);
     }
 
-    /*
     public String getSharedConstraint(String propertyName) {
         return sharedConstraints.get(propertyName);
     }
-    */
 
     @Override
     protected Object doInvokeMethod(String methodName, Object name, Object args) {
@@ -106,7 +106,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                 throw new MissingMethodException(property, targetClass, new Object[]{attributes}, true);
             }
             cp = new ConstrainedProperty(targetClass, property, propertyType);
-            cp.setMessageSource(ApplicationHolder.getApplication());
+            cp.setMessageSource(getApplication());
             cp.setOrder(order++);
             constrainedProperties.put(property, cp);
         }
@@ -124,14 +124,12 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
         for (Object o : attributes.keySet()) {
             String constraintName = (String) o;
             final Object value = attributes.get(constraintName);
-                /*
-                if (SHARED_CONSTRAINT.equals(constraintName)) {
-                    if (value != null) {
-                        sharedConstraints.put(property, value.toString());
-                    }
-                    continue;
+            if (SHARED_CONSTRAINT.equals(constraintName)) {
+                if (value != null) {
+                    sharedConstraints.put(property, value.toString());
                 }
-                */
+                continue;
+            }
             addConstraint(cp, constraintName, value);
         }
 
@@ -175,7 +173,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                 throw new MissingPropertyException(property, targetClass);
             }
             cp = new ConstrainedProperty(targetClass, property, propertyType);
-            cp.setMessageSource(ApplicationHolder.getApplication());
+            cp.setMessageSource(getApplication());
             cp.setOrder(order++);
             constrainedProperties.put(property, cp);
         }
@@ -187,6 +185,19 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
         for (ConstraintDef constraintDef : constraints) {
             String constraintName = constraintDef.getName();
             Object value = constraintDef.getValue();
+            if (SHARED_CONSTRAINT.equals(constraintName)) {
+                if (value != null) {
+                    sharedConstraints.put(property, value.toString());
+                }
+                continue;
+            } else if (IMPORT_FROM_CONSTRAINT.equals(constraintName) && (value instanceof Class)) {
+                handleImportFrom(Collections.emptyMap(), (Class) value);
+                continue;
+            } else if (IMPORT_FROM_CONSTRAINT.equals(constraintName) && (value instanceof Map)) {
+                Map<String, Object> attrs = (Map<String, Object>) value;
+                handleImportFrom(attrs, (Class) attrs.remove("source"));
+                continue;
+            }
             addConstraint(cp, constraintName, value);
         }
     }
@@ -203,8 +214,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Object handleImportFrom(Map attributes, Class importFromClazz) {
-
-        Map importFromConstrainedProperties = new DefaultConstraintsEvaluator().evaluate(importFromClazz);
+        Map importFromConstrainedProperties = getConstraintsEvaluator(getApplication()).evaluate(importFromClazz);
 
         PropertyDescriptor[] targetPropertyDescriptorArray = classPropertyFetcher.getPropertyDescriptors();
 

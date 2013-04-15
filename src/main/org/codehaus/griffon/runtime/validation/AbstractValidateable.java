@@ -15,16 +15,18 @@
  */
 package org.codehaus.griffon.runtime.validation;
 
-import griffon.plugins.validation.ConstraintsValidator;
 import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.Validateable;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
-import org.codehaus.griffon.runtime.validation.constraints.ConstraintsEvaluator;
-import org.codehaus.griffon.runtime.validation.constraints.DefaultConstraintsEvaluator;
+import griffon.plugins.validation.constraints.ConstraintsEvaluator;
+import griffon.plugins.validation.constraints.ConstraintsValidator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static griffon.plugins.validation.constraints.ConstraintUtils.getConstraintsEvaluator;
+import static griffon.util.ApplicationHolder.getApplication;
 
 /**
  * @author Andres Almiray
@@ -35,7 +37,7 @@ public abstract class AbstractValidateable implements Validateable {
 
     public AbstractValidateable() {
         this.errors = new DefaultErrors(getClass());
-        ConstraintsEvaluator constraintsEvaluator = new DefaultConstraintsEvaluator();
+        ConstraintsEvaluator constraintsEvaluator = getConstraintsEvaluator(getApplication());
         constrainedProperties.putAll(constraintsEvaluator.evaluate(getClass()));
     }
 

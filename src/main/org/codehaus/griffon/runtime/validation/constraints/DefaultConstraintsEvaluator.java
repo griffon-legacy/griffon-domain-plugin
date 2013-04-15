@@ -15,11 +15,14 @@
 package org.codehaus.griffon.runtime.validation.constraints;
 
 import griffon.core.GriffonClass;
+import griffon.exceptions.GriffonException;
 import griffon.plugins.domain.GriffonDomainClass;
 import griffon.plugins.domain.GriffonDomainClassProperty;
 import griffon.plugins.domain.GriffonDomainProperty;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
 import griffon.plugins.validation.constraints.ConstraintDef;
+import griffon.plugins.validation.constraints.ConstraintUtils;
+import griffon.plugins.validation.constraints.ConstraintsEvaluator;
 import griffon.util.ApplicationHolder;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.Closure;
@@ -32,30 +35,17 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * Default implementation of the {@link ConstraintsEvaluator} interface.
+ * Default implementation of the {@link griffon.plugins.validation.constraints.ConstraintsEvaluator} interface.
  * <p/>
  *
  * @author Graeme Rocher (Grails 2.0)
  */
 public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultConstraintsEvaluator.class);
-    // private Map<String, Object> defaultConstraints;
-
-    /*
-    public DefaultConstraintsEvaluator(Map<String, Object> defaultConstraints) {
-        this.defaultConstraints = defaultConstraints;
-    }
-    */
 
     public DefaultConstraintsEvaluator() {
         // default
     }
-
-    /*
-    public Map<String, Object> getDefaultConstraints() {
-        return defaultConstraints;
-    }
-    */
 
     public Map<String, ConstrainedProperty> evaluate(@SuppressWarnings("rawtypes") Class cls) {
         return evaluateConstraints(cls, null);
@@ -75,6 +65,9 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
     protected Map<String, ConstrainedProperty> evaluateConstraints(
         final Class<?> theClass,
         GriffonDomainClassProperty[] properties) {
+
+        Map<String, Object> defaultConstraints = ConstraintUtils.getDefaultConstraints(null);
+        System.out.println(defaultConstraints);
 
         // boolean javaEntity = theClass.isAnnotationPresent(Domain.class);
         LinkedList<?> classChain = getSuperClassChain(theClass);
@@ -122,7 +115,7 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
                 // Make sure all fields are required by default, unless
                 // specified otherwise by the constraints
                 // If the field is a Java entity annotated with @Entity skip this
-                applyDefaultConstraints(propertyName, p, cp);
+                applyDefaultConstraints(propertyName, p, cp, defaultConstraints);
                 //}
                 // }
             }
@@ -132,7 +125,8 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
             // marked as constrained or those that cannot be constrained
             for (PropertyDescriptor pd : GriffonClassUtils.getPropertyDescriptors(theClass)) {
                 String propertyName = pd.getName();
-                if(constrainedProperties.containsKey(propertyName) || !isConstrainableProperty(propertyName)) continue;
+                if (constrainedProperties.containsKey(propertyName) || !isConstrainableProperty(propertyName))
+                    continue;
                 ConstrainedProperty cp = new ConstrainedProperty(theClass, propertyName, pd.getPropertyType());
                 cp.setOrder(constrainedProperties.size() + 1);
                 cp.setMessageSource(ApplicationHolder.getApplication());
@@ -149,15 +143,14 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
             }
         }
 
-        // applySharedConstraints(delegate, constrainedProperties);
+        applySharedConstraints(delegate, constrainedProperties, defaultConstraints);
 
         return constrainedProperties;
     }
 
-    /*
     protected void applySharedConstraints(
-            ConstrainedPropertyBuilder constrainedPropertyBuilder,
-            Map<String, ConstrainedProperty> constrainedProperties) {
+        ConstrainedPropertyBuilder constrainedPropertyBuilder,
+        Map<String, ConstrainedProperty> constrainedProperties, Map<String, Object> defaultConstraints) {
         for (Map.Entry<String, ConstrainedProperty> entry : constrainedProperties.entrySet()) {
             String propertyName = entry.getKey();
             ConstrainedProperty constrainedProperty = entry.getValue();
@@ -171,12 +164,11 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
                         constrainedProperty.applyConstraint(e.getKey(), e.getValue());
                     }
                 } else {
-                    throw new GriffonConfigurationException("Property [" + constrainedProperty.owningClass.getName() + '.' + propertyName + "] references shared constraint [" + sharedConstraintReference + ":" + o + "], which doesn't exist!");
+                    throw new GriffonException("Property [" + constrainedProperty.getOwningClass().getName() + '.' + propertyName + "] references shared constraint [" + sharedConstraintReference + ":" + o + "], which doesn't exist!");
                 }
             }
         }
     }
-    */
 
     /*
     protected boolean canPropertyBeConstrained(@SuppressWarnings("unused") GriffonDomainClassProperty property) {
@@ -196,8 +188,8 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
 
     @SuppressWarnings("unchecked")
     protected void applyDefaultConstraints(String propertyName, GriffonDomainClassProperty p,
-                                           ConstrainedProperty cp/*, @SuppressWarnings("hiding") Map<String, Object> defaultConstraints*/) {
-        /*
+                                           ConstrainedProperty cp,/*, @SuppressWarnings("hiding") Map<String, Object> defaultConstraints*/Map<String, Object> defaultConstraints) {
+
         if (defaultConstraints != null && !defaultConstraints.isEmpty()) {
             if (defaultConstraints.containsKey("*")) {
                 final Object o = defaultConstraints.get("*");
@@ -207,7 +199,6 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
                 }
             }
         }
-        */
 
         if (canApplyNullableConstraint(propertyName, p, cp)) {
             applyDefaultNullableConstraint(p, cp);
@@ -239,13 +230,12 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
             isConstrainableProperty(property, propertyName) && !isIdentity && !isVersion /*&& !property.isDerived()*/;
     }
 
-    /*
     protected void applyMapOfConstraints(Map<String, Object> constraints, String propertyName, GriffonDomainClassProperty p, ConstrainedProperty cp) {
         for (Map.Entry<String, Object> entry : constraints.entrySet()) {
             String constraintName = entry.getKey();
             Object constrainingValue = entry.getValue();
             if (!cp.hasAppliedConstraint(constraintName) && cp.supportsContraint(constraintName)) {
-                if (ConstrainedProperty.NULLABLE_CONSTRAINT.equals(constraintName)) {
+                if (NullableConstraint.VALIDATION_DSL_NAME.equals(constraintName)) {
                     if (isConstrainableProperty(p, propertyName)) {
                         cp.applyConstraint(constraintName, constrainingValue);
                     }
@@ -255,7 +245,6 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
             }
         }
     }
-    */
 
     protected boolean isConstrainableProperty(String propertyName) {
         return !propertyName.equals("errors") &&
