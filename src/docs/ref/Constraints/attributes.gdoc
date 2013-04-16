@@ -1,0 +1,21 @@
+h1. attributes
+
+h2. Purpose
+
+Adds custom attributes used by widget nodes.
+
+h2. Examples
+
+{code:java}
+birthDate attributes: [preferredSize: [200, 40]]
+{code}
+
+h2. Description
+
+Adds extra attributes to the widget node used to display the edit field for the specified domain class property. For example, the rendered node in scaffolding for the @birthDate@ property above would look like:
+
+{code:xml}
+textField(id: 'birthDate', preferredSize: [200, 40], ... )
+{code}
+
+Error Code: This constraint only impacts the scaffolding and does not create errors.

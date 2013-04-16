@@ -1,0 +1,17 @@
+h1. widget
+
+h2. Purpose
+
+Changes the widget node used in scaffolding the associated domain class property.
+
+h2. Examples
+
+{code:java}
+description widget: 'textarea'
+{code}
+
+h2. Description
+
+Changes the View widget node used for editing values of the corresponding domain class property in the scaffolding. For example, the above would cause the scaffolding to use @textArea(id: 'description', ...)@ for 'description' edit fields.
+
+Error Code: This constraint only impacts look and does not create errors.

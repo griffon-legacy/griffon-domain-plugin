@@ -1,0 +1,7 @@
+validation:
+  title: Validation
+  constraints: Declaring Constraints
+  validatingConstraints: Validating Constraints
+  sharingConstraints: Sharing Constraints Between Classes
+  validationAndInternationalization: Validation and Internationalization
+  validationNonDomainAndCommandObjectClasses: Applying Validation to Other Classes

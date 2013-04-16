@@ -36,27 +36,30 @@ class DomainGriffonPlugin {
     // linux, linux64, windows, windows64, macosx, macosx64, solaris
     List platforms = []
     // URL where documentation can be found
-    String documentation = ''
+    String documentation = 'http://griffon.github.io/griffon-domain-plugin/manual/index.html'
     // URL where source can be found
     String source = 'https://github.com/griffon/griffon-domain-plugin'
 
     List authors = [
-            [
-                    name: 'Andres Almiray',
-                    email: 'aalmiray@yahoo.com'
-            ]
+        [
+            name: 'Andres Almiray',
+            email: 'aalmiray@yahoo.com'
+        ]
     ]
 
     String title = 'Domain class and validation support'
     // accepts Markdown syntax. See http://daringfireball.net/projects/markdown/ for details
     String description = '''
+The domain plugin enables the usage of Domain Classes (inspired by Grails' GORM)
+and validation. Full documentation on all features can be found [here][1].
 
-Usage
-----
+Scripts
+-------
+
+ * **create-domain-class** - creates a new domain class based on a template; places
+   the file in `griffon-app/domain`.
 
 
-Configuration
--------------
-
+[1]: http://griffon.github.io/griffon-domain-plugin/manual/index.html
 '''
 }

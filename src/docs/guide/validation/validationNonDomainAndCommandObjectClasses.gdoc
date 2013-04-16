@@ -1,0 +1,24 @@
+[Domain classes|domainClasses] and Command Objects support validation by default.  Other classes may be made validateable by defining the static @constraints@ property in the class (as described above) and then telling the framework about them. It is important that the application register the validateable classes with the framework. Simply defining the @constraints@ property is not sufficient.
+
+h4. The Validateable Annotation
+
+Classes which define the static @constraints@ property and are annotated with @Validateable can be made validateable by the framework. Consider this example:
+
+{code:java}
+// src/groovy/com/mycompany/myapp/User.groovy
+package com.mycompany.myapp
+
+import griffon.transform.Validateable
+
+@Validateable
+class User {
+    ...
+
+    static constraints = {
+        login size: 5..15, blank: false, unique: true
+        password size: 5..15, blank: false
+        email email: true, blank: false
+        age min: 18
+    }
+}
+{code}

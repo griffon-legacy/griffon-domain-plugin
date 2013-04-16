@@ -1,0 +1,45 @@
+h1. \@BelongsTo
+
+h2. Purpose
+
+Defines a "belongs to" relationship where the class specified by @\@BelongsTo@ assumes ownership of the relationship. This has the effect of controlling how saves and deletes cascade. The exact behaviour depends on the type of relationship:
+
+* Many-to-one/one-to-one: saves and deletes cascade from the owner to the dependant (the class with the @\@BelongsTo@).
+* One-to-many: saves always cascade from the one side to the many side, but if the many side has @\@BelongsTo@, then deletes also cascade in that direction.
+* Many-to-many: only saves cascade from the "owner" to the "dependant", not deletes.
+
+h2. Examples
+
+{code:java}
+@griffon.transform.Domain
+class Book {
+   String title
+
+   \@BelongsTo Author author
+}
+{code}
+
+In this example the @Book@ class specifies that it belongs to the @Author@ class, hence when an @Author@ instance is deleted so are all its associated @Book@ instances.
+
+h2. Description
+
+The @\@BelongsTo@ property abstracts the nature of the cascading behaviour. If you want one class to belong to another but not have a back reference, then you can specify a class or a list of classes as the value:
+
+{code}
+@griffon.transform.Domain
+class Book {
+    \@BelongsTo Author author
+}
+{code}
+
+or:
+
+{code}
+@griffon.transform.Domain
+class Book {
+    \@BelongsTo Author author
+
+    \@BelongsTo Library library
+}
+{code}
+

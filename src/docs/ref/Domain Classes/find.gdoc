@@ -1,0 +1,35 @@
+h1. find
+
+h2. Purpose
+
+Finds the first matching result for the given query or @null@ if no instance is found
+
+h2. Examples
+
+{code:java}
+// query by properties
+Book.find(title: "The Shinning")
+
+// query by example
+def example = new Book(author: "Dan Brown")
+Book.find(example)
+
+// Using criteria
+Person p = Person.find { title("The Shinning") }
+
+// Using where criteria
+Person p = Person.find { title == "The Shinning" }
+{code}
+
+h2. Description
+
+The @find@ method allows querying by properties and querying by example. The basic syntax is:
+
+{code:java}
+Book.find(Book example)
+Book.find(Closure whereCriteria)
+{code}
+
+Parameters:
+
+* @example@ - An instance of the domain class for query by example

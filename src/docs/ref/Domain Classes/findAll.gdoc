@@ -1,0 +1,80 @@
+h1. findAll
+
+h2. Purpose
+
+Finds all of domain class instances matching the specified query
+
+h2. Examples
+
+{code:java}
+// everything
+Book.findAll()
+
+// with a positional parameter
+Book.findAll("from Book as b where b.author=?", ['Dan Brown'])
+
+// 10 books from Dan Brown staring from 5th book ordered by release date
+Book.findAll("from Book as b where b.author=? order by b.releaseDate",
+             ['Dan Brown'], [max: 10, offset: 5])
+
+// examples with max/offset usage
+def query = "from Book as b where b.author='Dan Brown' order by b.releaseDate"
+
+// first 10 books
+Book.findAll(query, [max: 10])
+
+// 10 books starting from 5th
+Book.findAll(query, [max: 10, offset: 5])
+
+// examples with named parameters
+Book.findAll("from Book as b where b.author=:author",
+             [author: 'Dan Brown'])
+Book.findAll("from Book as b where b.author=:author",
+             [author: 'Dan Brown'], [max: 10, offset: 5])
+Book.findAll("from Book as b where b.author in (:authors)",
+             [authors: ['Dan Brown', 'Jack London']])
+
+// examples with tables join
+Book.findAll("from Book as b where not exists " +
+                "(from Borrow as br where br.book = b)")
+
+// query by example
+def example = new Book(author: "Dan Brown")
+Book.findAll(example)
+
+// Use where criteria (since Griffon 2.0)
+def results = Person.findAll {
+     lastName == "Simpson"
+}
+def results = Person.findAll(sort:"firstName") {
+     lastName == "Simpson"
+}
+
+
+{code}
+
+h2. Description
+
+The @findAll@ method allows querying by properties and querying by example, returning all matching instances. Pagination can be controlled using the @max@ and @offset@ parameters:
+
+{code:java}
+Book.findAll("from Book as b where b.author=:author",
+             [author: 'Dan Brown'], [max: 10, offset: 5])
+{code}
+
+The basic syntax for the method is:
+
+{code:java}
+Book.findAll()
+Book.findAll(Map properties)
+Book.findAll(Map properties, Map queryParams)
+Book.findAll(Book example)
+Book.findAll(Book example, Map queryParams)
+Book.findAll(Closure whereCriteria)
+Book.findAll(Map queryParams, Closure whereCriteria)
+{code}
+
+Parameters:
+
+* @queryParams@ - A @Map@ containing parameters 'max', and/or 'offset' and/or 'cache'
+* @example@ - An instance of the domain class for query by example

@@ -1,0 +1,31 @@
+h4. Validation Basics
+
+Call the [validate|domainClasses] method to validate a domain class instance:
+
+{code:java}
+def user = new User(params)
+
+if (user.validate()) {
+    // do something with user
+}
+else {
+    user.errors.allErrors.each {
+        println it
+    }
+}
+{code}
+
+The @errors@ property on domain classes is an instance of the [Errors|api:griffon.plugins.validation.Errors] interface. The @Errors@ interface provides methods to navigate the validation errors and also retrieve the original values.
+
+Validation happens when you call [validate|domainClasses] or [save|domainClasses]. Griffon will validate the bound values against the [constraints|domainClasses] you defined. For example, by default the [save|domainClasses] method calls @validate@ before executing, allowing you to write code like:
+
+{code:java}
+if (user.save()) {
+    return user
+}
+else {
+    user.errors.allErrors.each {
+        println it
+    }
+}
+{code}
