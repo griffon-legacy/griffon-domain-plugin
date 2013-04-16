@@ -26,7 +26,7 @@ public interface FindOrSaveWhereMethod extends StaticMethodInvocation {
     String METHOD_NAME = "findOrSaveWhere";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class, Map.class)
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class, Map.class)
     };
 }

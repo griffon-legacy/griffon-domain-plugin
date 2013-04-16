@@ -22,6 +22,6 @@ public interface CountMethod extends StaticMethodInvocation {
     String METHOD_NAME = "count";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Integer.TYPE, METHOD_NAME)
+        new MethodSignature(true, Integer.TYPE, METHOD_NAME)
     };
 }

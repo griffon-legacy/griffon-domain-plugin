@@ -30,7 +30,7 @@ public interface FindByMethod extends StaticDynamicMethodInvocation {
     String METHOD_NAME = "findBy";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, Object[].class),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, List.class)
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, Object[].class),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class, List.class)
     };
 }

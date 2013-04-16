@@ -41,7 +41,7 @@ public class CriteriaVisitor extends CodeVisitorSupport {
             ClassNode classNode = closure.getMetaClass().getClassNode();
             if (classNode == null) {
                 throw new CriteriaVisitException(
-                        "Could not find the ClassNode for MetaClass: " + closure.getMetaClass());
+                    "Could not find the ClassNode for MetaClass: " + closure.getMetaClass());
             }
             List methods = classNode.getDeclaredMethods("doCall");
             if (!methods.isEmpty()) {
@@ -70,8 +70,8 @@ public class CriteriaVisitor extends CodeVisitorSupport {
         Expression left = expression.getLeftExpression();
         Expression right = expression.getRightExpression();
         boolean leaf = (right instanceof ConstantExpression) ||
-                (right instanceof PropertyExpression) ||
-                (right instanceof VariableExpression);
+            (right instanceof PropertyExpression) ||
+            (right instanceof VariableExpression);
 
         Token token = expression.getOperation();
         Operator op = parseOperator(token.getText());
@@ -83,7 +83,7 @@ public class CriteriaVisitor extends CodeVisitorSupport {
         if (lhs instanceof Criterion) {
             if (!isAndOr(op)) {
                 throw new CriteriaVisitException(
-                        "Invalid expression " + lhs + " " + op + " " + rhs);
+                    "Invalid expression " + lhs + " " + op + " " + rhs);
             }
             if (rhs instanceof Criterion) {
                 current = new CompositeCriterion(op, (Criterion) lhs, (Criterion) rhs);
@@ -94,7 +94,7 @@ public class CriteriaVisitor extends CodeVisitorSupport {
                 return;
             } else {
                 throw new CriteriaVisitException(
-                        "Invalid expression " + lhs + " " + op + " " + rhs);
+                    "Invalid expression " + lhs + " " + op + " " + rhs);
             }
         } else if (lhs instanceof Property) {
             Property p = (Property) lhs;
@@ -115,7 +115,7 @@ public class CriteriaVisitor extends CodeVisitorSupport {
                 return;
             } else {
                 throw new CriteriaVisitException(
-                        "Invalid expression " + lhs + " " + op + " " + rhs);
+                    "Invalid expression " + lhs + " " + op + " " + rhs);
             }
         } else if (lhs instanceof Value) {
             Value v = (Value) lhs;
@@ -131,7 +131,7 @@ public class CriteriaVisitor extends CodeVisitorSupport {
                 return;
             } else if (rhs instanceof Value) {
                 throw new CriteriaVisitException(
-                        "Invalid expression " + lhs + " " + op + " " + rhs);
+                    "Invalid expression " + lhs + " " + op + " " + rhs);
             }
         }
     }
@@ -163,7 +163,7 @@ public class CriteriaVisitor extends CodeVisitorSupport {
         else if ("||".equals(text)) return Operator.OR;
         else if ("==~".equals(text)) return Operator.LIKE;
         throw new CriteriaVisitException(
-                "Invalid operator '" + text + "'. Valid operators are ==, !=, >, >=, <, <=, &&, ||, ==~");
+            "Invalid operator '" + text + "'. Valid operators are ==, !=, >, >=, <, <=, &&, ||, ==~");
     }
 
     private static boolean isAndOr(Operator op) {

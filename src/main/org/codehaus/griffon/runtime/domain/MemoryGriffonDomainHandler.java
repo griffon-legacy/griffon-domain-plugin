@@ -55,27 +55,27 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
 
     protected Map<String, StaticMethodInvocation> getStaticMethods() {
         Map<String, StaticMethodInvocation> staticMethods = new LinkedHashMap<String, StaticMethodInvocation>();
-        staticMethods.put(CreateMethod.METHOD_NAME, new CreateMethod(this));
-        staticMethods.put(ListMethod.METHOD_NAME, new ListMethod(this));
-        staticMethods.put(GetMethod.METHOD_NAME, new GetMethod(this));
-        staticMethods.put(ExistsMethod.METHOD_NAME, new ExistsMethod(this));
-        staticMethods.put(GetAllMethod.METHOD_NAME, new GetAllMethod(this));
-        staticMethods.put(CountMethod.METHOD_NAME, new CountMethod(this));
         staticMethods.put(CountByMethod.METHOD_NAME, new CountByMethod(this));
-        staticMethods.put(FirstMethod.METHOD_NAME, new FirstMethod(this));
-        staticMethods.put(LastMethod.METHOD_NAME, new LastMethod(this));
-        staticMethods.put(FindMethod.METHOD_NAME, new FindMethod(this));
-        staticMethods.put(FindWhereMethod.METHOD_NAME, new FindWhereMethod(this));
-        staticMethods.put(FindByMethod.METHOD_NAME, new FindByMethod(this));
-        staticMethods.put(FindAllMethod.METHOD_NAME, new FindAllMethod(this));
+        staticMethods.put(CountMethod.METHOD_NAME, new CountMethod(this));
+        staticMethods.put(CreateMethod.METHOD_NAME, new CreateMethod(this));
+        staticMethods.put(ExistsMethod.METHOD_NAME, new ExistsMethod(this));
         staticMethods.put(FindAllByMethod.METHOD_NAME, new FindAllByMethod(this));
+        staticMethods.put(FindAllMethod.METHOD_NAME, new FindAllMethod(this));
         staticMethods.put(FindAllWhereMethod.METHOD_NAME, new FindAllWhereMethod(this));
-        staticMethods.put(WithCriteriaMethod.METHOD_NAME, new WithCriteriaMethod(this));
+        staticMethods.put(FindByMethod.METHOD_NAME, new FindByMethod(this));
+        staticMethods.put(FindMethod.METHOD_NAME, new FindMethod(this));
         staticMethods.put(FindOrCreateByMethod.METHOD_NAME, new FindOrCreateByMethod(this));
         staticMethods.put(FindOrCreateWhereMethod.METHOD_NAME, new FindOrCreateWhereMethod(this));
         staticMethods.put(FindOrSaveByMethod.METHOD_NAME, new FindOrSaveByMethod(this));
         staticMethods.put(FindOrSaveWhereMethod.METHOD_NAME, new FindOrSaveWhereMethod(this));
+        staticMethods.put(FindWhereMethod.METHOD_NAME, new FindWhereMethod(this));
+        staticMethods.put(FirstMethod.METHOD_NAME, new FirstMethod(this));
+        staticMethods.put(GetAllMethod.METHOD_NAME, new GetAllMethod(this));
+        staticMethods.put(GetMethod.METHOD_NAME, new GetMethod(this));
+        staticMethods.put(LastMethod.METHOD_NAME, new LastMethod(this));
+        staticMethods.put(ListMethod.METHOD_NAME, new ListMethod(this));
         staticMethods.put(ListOrderByMethod.METHOD_NAME, new ListOrderByMethod(this));
+        staticMethods.put(WithCriteriaMethod.METHOD_NAME, new WithCriteriaMethod(this));
         return staticMethods;
     }
 
@@ -338,9 +338,9 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         @Override
         protected Object firstByPropertyName(GriffonDomainClass domainClass, String propertyName) {
             Map<String, Object> options = CollectionUtils.<String, Object>map()
-                    .e(ConcurrentHashMapDatastore.Dataset.KEY_SORT, propertyName);
+                .e(ConcurrentHashMapDatastore.Dataset.KEY_SORT, propertyName);
             List<GriffonDomain> objects = datasetOf(domainClass).list(options);
-            return objects.size() > 0 ? objects.get(0): null;
+            return objects.size() > 0 ? objects.get(0) : null;
         }
     }
 
@@ -352,16 +352,23 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         @Override
         protected Object lastByPropertyName(GriffonDomainClass domainClass, String propertyName) {
             Map<String, Object> options = CollectionUtils.<String, Object>map()
-                    .e(ConcurrentHashMapDatastore.Dataset.KEY_SORT, propertyName)
-                    .e(ConcurrentHashMapDatastore.Dataset.KEY_ORDER, "desc");
+                .e(ConcurrentHashMapDatastore.Dataset.KEY_SORT, propertyName)
+                .e(ConcurrentHashMapDatastore.Dataset.KEY_ORDER, "desc");
             List<GriffonDomain> objects = datasetOf(domainClass).list(options);
-            return objects.size() > 0 ? objects.get(0): null;
+            return objects.size() > 0 ? objects.get(0) : null;
         }
     }
 
     private class FindAllMethod extends AbstractFindAllPersistentMethod {
         public FindAllMethod(GriffonDomainHandler griffonDomainHandler) {
             super(griffonDomainHandler);
+        }
+
+        @Override
+        protected Collection<GriffonDomain> findByProperties(GriffonDomainClass domainClass, Map<String, Object> properties, Map<String, Object> options) {
+            List<GriffonDomain> entities = datasetOf(domainClass).query(properties, options);
+            Collections.sort(entities, IDENTITY_COMPARATOR);
+            return entities;
         }
 
         @Override

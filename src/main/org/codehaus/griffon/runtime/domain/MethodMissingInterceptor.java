@@ -48,14 +48,14 @@ public class MethodMissingInterceptor {
         this.clazz = clazz;
 
         List<String> methodNames = asList(
-                FindByMethod.METHOD_NAME,
-                FindAllByMethod.METHOD_NAME,
-                CountByMethod.METHOD_NAME,
-                ListOrderByMethod.METHOD_NAME,
-                FindOrCreateByMethod.METHOD_NAME,
-                FindOrSaveByMethod.METHOD_NAME,
-                FindOrCreateWhereMethod.METHOD_NAME,
-                FindOrSaveWhereMethod.METHOD_NAME);
+            FindByMethod.METHOD_NAME,
+            FindAllByMethod.METHOD_NAME,
+            CountByMethod.METHOD_NAME,
+            ListOrderByMethod.METHOD_NAME,
+            FindOrCreateByMethod.METHOD_NAME,
+            FindOrSaveByMethod.METHOD_NAME,
+            FindOrCreateWhereMethod.METHOD_NAME,
+            FindOrSaveWhereMethod.METHOD_NAME);
         for (String methodName : methodNames) {
             supportedDynamicMethods.add(methodName);
         }

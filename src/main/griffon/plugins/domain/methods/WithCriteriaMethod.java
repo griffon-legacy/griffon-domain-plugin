@@ -28,9 +28,9 @@ public interface WithCriteriaMethod extends StaticMethodInvocation {
     String METHOD_NAME = "withCriteria";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Closure.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class, Map.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Map.class, Closure.class)
+        new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Closure.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class, Map.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Map.class, Closure.class)
     };
 }

@@ -43,10 +43,10 @@ public class DefaultGriffonDomainClassProperty extends AbstractGriffonDomainClas
     @Override
     public String toString() {
         return "GriffonDomainClassProperty{" +
-                "name=" + getName() +
-                ", type=" + getType() +
-                ", domainClass=" + getDomainClass() +
-                ", persistent=" + persistent +
-                '}';
+            "name=" + getName() +
+            ", type=" + getType() +
+            ", domainClass=" + getDomainClass() +
+            ", persistent=" + persistent +
+            '}';
     }
 }

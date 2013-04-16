@@ -135,9 +135,9 @@ public class DefaultObjectError implements ObjectError {
     @Override
     public String toString() {
         return "ObjectError{" +
-                "codes=" + asList(getCodes()) +
-                ", arguments=" + asList(getArguments()) +
-                ", defaultMessage='" + defaultMessage + '\'' +
-                '}';
+            "codes=" + asList(getCodes()) +
+            ", arguments=" + asList(getArguments()) +
+            ", defaultMessage='" + defaultMessage + '\'' +
+            '}';
     }
 }

@@ -40,8 +40,8 @@ public class DomainClassArtifactHandler extends ArtifactHandlerAdapter {
     @SuppressWarnings("unchecked")
     public static boolean isDomainClass(Class clazz) {
         return clazz != null &&
-                !Closure.class.isAssignableFrom(clazz) &&
-                !Enum.class.isAssignableFrom(clazz) &&
-                GriffonDomain.class.isAssignableFrom(clazz);
+            !Closure.class.isAssignableFrom(clazz) &&
+            !Enum.class.isAssignableFrom(clazz) &&
+            GriffonDomain.class.isAssignableFrom(clazz);
     }
 }

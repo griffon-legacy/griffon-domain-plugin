@@ -30,9 +30,9 @@ public interface FindAllByMethod extends StaticDynamicMethodInvocation {
     String METHOD_NAME = "findAllBy";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Object[].class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, List.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Object[].class, Map.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, List.class, Map.class)
+        new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Object[].class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, String.class, List.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Object[].class, Map.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, String.class, List.class, Map.class)
     };
 }

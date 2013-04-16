@@ -24,6 +24,6 @@ public interface GetMethod extends StaticMethodInvocation {
     String METHOD_NAME = "get";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Object.class)
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Object.class)
     };
 }

@@ -80,7 +80,9 @@ public abstract class AbstractSavePersistentMethod extends AbstractPersistentIns
 
         boolean validate = getConfigValueAsBoolean(params, VALIDATE, true);
         boolean failOnError = getConfigValueAsBoolean(getApplication().getConfig(), FAIL_ON_ERROR_CONFIG_KEY, false);
-        if (params.containsKey(FAIL_ON_ERROR)) failOnError = getConfigValueAsBoolean(params, FAIL_ON_ERROR);
+        if (params.containsKey(FAIL_ON_ERROR)) {
+            failOnError = getConfigValueAsBoolean(params, FAIL_ON_ERROR);
+        }
         params.put(VALIDATE, validate);
         params.put(FAIL_ON_ERROR, failOnError);
 

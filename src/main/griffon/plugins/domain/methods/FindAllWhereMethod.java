@@ -25,7 +25,7 @@ public interface FindAllWhereMethod extends StaticMethodInvocation {
     String METHOD_NAME = "findAllWhere";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Collection.class, METHOD_NAME, Map.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Map.class, Map.class)
+        new MethodSignature(true, Collection.class, METHOD_NAME, Map.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Map.class, Map.class)
     };
 }

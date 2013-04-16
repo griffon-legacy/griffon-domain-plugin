@@ -18,7 +18,7 @@ class SampleTests extends GriffonUnitTestCase {
     }
 
     void testDynamicMethodInjection() {
-        Sample one = Sample.create(name: 'Andres', lastName: 'Almiray', num: 30).save()
+        Sample one = Sample.create(name: 'Andres', lastName: 'Almiray', num: 30).save(failOnError: true)
         assert Sample.findBy('Name', ['Andres']).lastName == 'Almiray'
         assert Sample.findBy('NameAndLastName', ['Andres', 'Almiray']).lastName == 'Almiray'
         assert !Sample.findBy('NameAndLastName', 'Dierk', 'Koenig')

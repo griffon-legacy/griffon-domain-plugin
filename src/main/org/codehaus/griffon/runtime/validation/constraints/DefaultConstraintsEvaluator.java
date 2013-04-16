@@ -67,7 +67,6 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
         GriffonDomainClassProperty[] properties) {
 
         Map<String, Object> defaultConstraints = ConstraintUtils.getDefaultConstraints(null);
-        System.out.println(defaultConstraints);
 
         // boolean javaEntity = theClass.isAnnotationPresent(Domain.class);
         LinkedList<?> classChain = getSuperClassChain(theClass);
@@ -138,7 +137,8 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
         for (Entry<String, ConstrainedProperty> entry : entrySet) {
             ConstrainedProperty constrainedProperty = entry.getValue();
             if (!constrainedProperty
-                .hasAppliedConstraint(NullableConstraint.VALIDATION_DSL_NAME)) {
+                .hasAppliedConstraint(NullableConstraint.VALIDATION_DSL_NAME) &&
+                isConstrainableProperty(entry.getKey())) {
                 applyDefaultNullableConstraint(constrainedProperty);
             }
         }
@@ -211,23 +211,25 @@ public class DefaultConstraintsEvaluator implements ConstraintsEvaluator {
     }
 
     protected void applyDefaultNullableConstraint(ConstrainedProperty cp) {
+        if(!cp.hasAppliedConstraint(NullableConstraint.VALIDATION_DSL_NAME) &&
+            isConstrainableProperty(cp.getPropertyName())) {
+            return;
+        }
         boolean isCollection = Collection.class.isAssignableFrom(cp.getPropertyType()) || Map.class.isAssignableFrom(cp.getPropertyType());
         cp.applyConstraint(NullableConstraint.VALIDATION_DSL_NAME, isCollection);
     }
-
 
     protected boolean canApplyNullableConstraint(String propertyName, GriffonDomainClassProperty property, ConstrainedProperty constrainedProperty) {
         if (property == null || property.getType() == null) return false;
 
         final GriffonDomainClass domainClass = property.getDomainClass();
         // only apply default nullable to Groovy entities not legacy Java ones
-        if (!GroovyObject.class.isAssignableFrom(domainClass.getClazz()))
+        if (!GroovyObject.class.isAssignableFrom(domainClass.getClazz())) {
             return false;
+        }
 
-        final boolean isVersion = GriffonDomainProperty.VERSION.equals(property.getName());
-        final boolean isIdentity = GriffonDomainProperty.IDENTITY.equals(property.getName());
         return !constrainedProperty.hasAppliedConstraint(NullableConstraint.VALIDATION_DSL_NAME) &&
-            isConstrainableProperty(property, propertyName) && !isIdentity && !isVersion /*&& !property.isDerived()*/;
+            isConstrainableProperty(propertyName);
     }
 
     protected void applyMapOfConstraints(Map<String, Object> constraints, String propertyName, GriffonDomainClassProperty p, ConstrainedProperty cp) {

@@ -25,8 +25,8 @@ public interface GetAllMethod extends StaticMethodInvocation {
     String METHOD_NAME = "getAll";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Collection.class, METHOD_NAME),
-            new MethodSignature(true, Collection.class, METHOD_NAME, List.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Object[].class)
+        new MethodSignature(true, Collection.class, METHOD_NAME),
+        new MethodSignature(true, Collection.class, METHOD_NAME, List.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Object[].class)
     };
 }

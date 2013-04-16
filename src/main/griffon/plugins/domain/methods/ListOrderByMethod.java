@@ -31,7 +31,7 @@ public interface ListOrderByMethod extends StaticDynamicMethodInvocation {
     String DESC = "desc";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Collection.class, METHOD_NAME, String.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Map.class)
+        new MethodSignature(true, Collection.class, METHOD_NAME, String.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, String.class, Map.class)
     };
 }

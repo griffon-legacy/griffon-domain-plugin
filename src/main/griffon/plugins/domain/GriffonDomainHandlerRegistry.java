@@ -44,9 +44,9 @@ public final class GriffonDomainHandlerRegistry {
     public static GriffonDomainHandler domainHandlerFor(String mapping) {
         if (isBlank(mapping)) {
             mapping = getConfigValueAsString(
-                    getApplication().getConfig(),
-                    KEY_DOMAIN_DEFAULT_MAPPING,
-                    DEFAULT_DOMAIN_HANDLER_MAPPING);
+                getApplication().getConfig(),
+                KEY_DOMAIN_DEFAULT_MAPPING,
+                DEFAULT_DOMAIN_HANDLER_MAPPING);
         }
 
         cacheDomainHandlers();
@@ -85,7 +85,7 @@ public final class GriffonDomainHandlerRegistry {
                         } catch (Exception e) {
                             // can't instantiate domainHandler, bail out immediately
                             throw new IllegalArgumentException("Can't instantiate GriffonDomainHandler for " + key +
-                                    " with class '" + className + "'. " + e);
+                                " with class '" + className + "'. " + e);
                         }
                     }
                 } catch (IOException ioe) {

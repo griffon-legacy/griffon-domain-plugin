@@ -28,11 +28,13 @@ public interface FindAllMethod extends StaticMethodInvocation {
     String METHOD_NAME = "findAll";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Collection.class, METHOD_NAME, Object.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Object.class, Map.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class, Map.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Closure.class),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Map.class, Closure.class)
+        new MethodSignature(true, Collection.class, METHOD_NAME, Object.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Object.class, Map.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Map.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Map.class, Map.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Criterion.class, Map.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Closure.class),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Map.class, Closure.class)
     };
 }

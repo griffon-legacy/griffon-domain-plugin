@@ -25,8 +25,8 @@ import griffon.plugins.domain.methods.PersistentMethodInvocation;
  * @author Andres Almiray
  */
 public abstract class AbstractPersistentStaticMethodInvocation
-        extends AbstractStaticMethodInvocation
-        implements PersistentMethodInvocation {
+    extends AbstractStaticMethodInvocation
+    implements PersistentMethodInvocation {
     private final GriffonDomainHandler griffonDomainHandler;
 
     public AbstractPersistentStaticMethodInvocation(GriffonDomainHandler griffonDomainHandler) {
@@ -39,7 +39,9 @@ public abstract class AbstractPersistentStaticMethodInvocation
 
     public GriffonDomainClass getDomainClassFor(Class<GriffonDomain> clazz) {
         GriffonClass griffonClass = griffonDomainHandler.getApp().getArtifactManager().findGriffonClass(clazz);
-        if (griffonClass instanceof GriffonDomainClass) return (GriffonDomainClass) griffonClass;
+        if (griffonClass instanceof GriffonDomainClass) {
+            return (GriffonDomainClass) griffonClass;
+        }
         throw new RuntimeException("Class " + clazz.getName() + " is not a domain class.");
     }
 

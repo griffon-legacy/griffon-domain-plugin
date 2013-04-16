@@ -27,8 +27,8 @@ import java.util.regex.Pattern;
  * @author Andres Almiray
  */
 public abstract class AbstractPersistentStaticDynamicMethodInvocation
-        extends AbstractStaticDynamicMethodInvocation
-        implements PersistentMethodInvocation {
+    extends AbstractStaticDynamicMethodInvocation
+    implements PersistentMethodInvocation {
     private final GriffonDomainHandler griffonDomainHandler;
 
     public AbstractPersistentStaticDynamicMethodInvocation(GriffonDomainHandler griffonDomainHandler, Pattern pattern) {
@@ -42,7 +42,9 @@ public abstract class AbstractPersistentStaticDynamicMethodInvocation
 
     public GriffonDomainClass getDomainClassFor(Class<GriffonDomain> clazz) {
         GriffonClass griffonClass = griffonDomainHandler.getApp().getArtifactManager().findGriffonClass(clazz);
-        if (griffonClass instanceof GriffonDomainClass) return (GriffonDomainClass) griffonClass;
+        if (griffonClass instanceof GriffonDomainClass) {
+            return (GriffonDomainClass) griffonClass;
+        }
         throw new RuntimeException("Class " + clazz.getName() + " is not a domain class.");
     }
 

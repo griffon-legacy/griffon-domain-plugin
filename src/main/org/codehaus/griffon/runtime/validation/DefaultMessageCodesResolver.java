@@ -107,8 +107,8 @@ public class DefaultMessageCodesResolver implements MessageCodesResolver, Serial
 
     public String[] resolveMessageCodes(String errorCode, String objectName) {
         return new String[]{
-                postProcessMessageCode(errorCode + CODE_SEPARATOR + objectName),
-                postProcessMessageCode(errorCode)};
+            postProcessMessageCode(errorCode + CODE_SEPARATOR + objectName),
+            postProcessMessageCode(errorCode)};
     }
 
     /**

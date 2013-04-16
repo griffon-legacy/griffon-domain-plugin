@@ -46,6 +46,8 @@ public abstract class AbstractFindAllPersistentMethod extends AbstractPersistent
                 return findByCriterion(domainClass, (Criterion) arg1, options);
             } else if (arg1 instanceof Closure) {
                 return findByCriterion(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arg1), options);
+            } else if (arg1 instanceof Map) {
+                return findByProperties(domainClass, (Map) arg1, options);
             } else if (domainClass.getClazz().isAssignableFrom(arg1.getClass())) {
                 return findByExample(domainClass, arg1, options);
             }
@@ -55,6 +57,8 @@ public abstract class AbstractFindAllPersistentMethod extends AbstractPersistent
 
             if (arg1 instanceof Map && arg2 instanceof Closure) {
                 return findByCriterion(domainClass, GriffonDomainClassUtils.getInstance().buildCriterion((Closure) arg2), (Map) arg1);
+            } else if (arg1 instanceof Map && arg2 instanceof Map) {
+                return findByProperties(domainClass, (Map) arg1, (Map) arg2);
             } else if (arg2 instanceof Map) {
                 if (arg1 instanceof Criterion) {
                     return findByCriterion(domainClass, (Criterion) arg1, (Map) arg2);
@@ -65,6 +69,10 @@ public abstract class AbstractFindAllPersistentMethod extends AbstractPersistent
         }
 
         throw new MissingMethodException(methodName, domainClass.getClazz(), arguments);
+    }
+
+    protected Collection<GriffonDomain> findByProperties(GriffonDomainClass domainClass, Map<String, Object> properties, Map<String, Object> options) {
+        throw new UnsupportedDomainMethodException();
     }
 
     protected Collection<GriffonDomain> findByExample(GriffonDomainClass domainClass, Object example, Map<String, Object> options) {

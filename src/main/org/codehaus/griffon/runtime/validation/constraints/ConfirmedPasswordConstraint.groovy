@@ -17,6 +17,7 @@
 package org.codehaus.griffon.runtime.validation.constraints
 
 import griffon.plugins.validation.Errors
+
 // import groovy.transform.CompileStatic
 
 /**

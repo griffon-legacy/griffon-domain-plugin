@@ -21,6 +21,6 @@ import griffon.plugins.domain.methods.StaticMethodInvocation;
  * @author Andres Almiray
  */
 public abstract class AbstractStaticMethodInvocation
-        extends AbstractMethodInvocation
-        implements StaticMethodInvocation {
+    extends AbstractMethodInvocation
+    implements StaticMethodInvocation {
 }

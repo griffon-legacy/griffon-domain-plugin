@@ -26,7 +26,7 @@ public interface SaveMethod extends InstanceMethodInvocation {
     String METHOD_NAME = "save";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(GriffonDomain.class, METHOD_NAME),
-            new MethodSignature(GriffonDomain.class, METHOD_NAME, Map.class)
+        new MethodSignature(GriffonDomain.class, METHOD_NAME),
+        new MethodSignature(GriffonDomain.class, METHOD_NAME, Map.class)
     };
 }

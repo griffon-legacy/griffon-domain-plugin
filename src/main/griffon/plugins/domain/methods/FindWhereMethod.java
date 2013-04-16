@@ -26,6 +26,6 @@ public interface FindWhereMethod extends StaticMethodInvocation {
     String METHOD_NAME = "findWhere";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class)
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class)
     };
 }

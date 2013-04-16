@@ -136,11 +136,11 @@ public class DefaultFieldObjectError extends DefaultObjectError implements Field
     @Override
     public String toString() {
         return "FieldObjectError{" +
-                "fieldName='" + fieldName + '\'' +
-                ", rejectedValue=" + rejectedValue +
-                ", codes=" + asList(getCodes()) +
-                ", arguments=" + asList(getArguments()) +
-                ", defaultMessage='" + getDefaultMessage() + '\'' +
-                '}';
+            "fieldName='" + fieldName + '\'' +
+            ", rejectedValue=" + rejectedValue +
+            ", codes=" + asList(getCodes()) +
+            ", arguments=" + asList(getArguments()) +
+            ", defaultMessage='" + getDefaultMessage() + '\'' +
+            '}';
     }
 }

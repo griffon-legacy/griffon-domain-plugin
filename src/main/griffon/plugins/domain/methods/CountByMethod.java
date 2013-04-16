@@ -28,7 +28,7 @@ public interface CountByMethod extends StaticDynamicMethodInvocation {
     String METHOD_NAME = "countBy";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Integer.TYPE, METHOD_NAME, String.class, Object[].class),
-            new MethodSignature(true, Integer.TYPE, METHOD_NAME, String.class, List.class)
+        new MethodSignature(true, Integer.TYPE, METHOD_NAME, String.class, Object[].class),
+        new MethodSignature(true, Integer.TYPE, METHOD_NAME, String.class, List.class)
     };
 }

@@ -28,10 +28,11 @@ public interface FindMethod extends StaticMethodInvocation {
     String METHOD_NAME = "find";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Object.class),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Criterion.class),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Criterion.class, Map.class),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Closure.class),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class, Closure.class)
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Object.class),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Criterion.class),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Criterion.class, Map.class),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Closure.class),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class, Closure.class)
     };
 }

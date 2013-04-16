@@ -79,12 +79,16 @@ public final class GriffonDomainClassUtils {
     }
 
     public void addTo(GriffonDomain owner, Map<String, Object> params, String relationshipName) {
-        if (owner == null || params == null || params.isEmpty() || isBlank(relationshipName)) return;
+        if (owner == null || params == null || params.isEmpty() || isBlank(relationshipName)) {
+            return;
+        }
         GriffonDomainClass ownerDomainClass = (GriffonDomainClass) owner.getGriffonClass();
     }
 
     public void addTo(GriffonDomain owner, GriffonDomain target, String relationshipName) {
-        if (owner == null || target == null || isBlank(relationshipName)) return;
+        if (owner == null || target == null || isBlank(relationshipName)) {
+            return;
+        }
         GriffonDomainClass ownerDomainClass = (GriffonDomainClass) owner.getGriffonClass();
         GriffonDomainProperty relationship = ownerDomainClass.getPropertyByName(relationshipName);
         Collection collection = (Collection) relationship.getValue(owner);

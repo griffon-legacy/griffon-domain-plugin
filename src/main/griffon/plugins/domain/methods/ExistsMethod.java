@@ -22,6 +22,6 @@ public interface ExistsMethod extends StaticMethodInvocation {
     String METHOD_NAME = "exists";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Boolean.TYPE, METHOD_NAME, Object.class)
+        new MethodSignature(true, Boolean.TYPE, METHOD_NAME, Object.class)
     };
 }

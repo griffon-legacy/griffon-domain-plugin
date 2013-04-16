@@ -209,6 +209,20 @@ public class ConcurrentHashMapDatastore {
             return query(params);
         }
 
+
+        public List<T> query(Object example, Map<String, Object> options) {
+            Map<String, Object> params = new LinkedHashMap<String, Object>();
+            if (example != null && domainClass.getClazz().isAssignableFrom(example.getClass())) {
+                for (GriffonDomainProperty property : domainClassOf((GriffonDomain) example).getPersistentProperties()) {
+                    Object value = property.getValue((GriffonDomain) example);
+                    if (value != null) {
+                        params.put(property.getName(), value);
+                    }
+                }
+            }
+            return query(params, options);
+        }
+
         public List<T> query(Map<String, Object> params) {
             List<T> entities = new ArrayList<T>();
             if (params == null || params.isEmpty()) {
@@ -237,6 +251,45 @@ public class ConcurrentHashMapDatastore {
                     }
                 }
             }
+
+            return entities;
+        }
+
+        public List<T> query(Map<String, Object> params, Map<String, Object> options) {
+            List<T> entities = new ArrayList<T>();
+            if (params == null || params.isEmpty()) {
+                return entities;
+            }
+
+            List<GriffonDomainClassProperty> properties = new ArrayList<GriffonDomainClassProperty>();
+            for (String propertyName : params.keySet()) {
+                GriffonDomainClassProperty property = domainClass.getPropertyByName(propertyName);
+                if (property == null) {
+                    throw new IllegalArgumentException("Property " + propertyName + " is not a persistent property of " + domainClass.getClazz());
+                }
+                properties.add(property);
+            }
+
+            int max = determineMax(options);
+            String sort = determineSort(options);
+            GriffonDomain.Comparator.Order order = determineOrder(options);
+
+            int count = 0;
+            synchronized (ROWS) {
+                for (T entity : ROWS.values()) {
+                    boolean allMatch = true;
+                    for (GriffonDomainClassProperty property : properties) {
+                        Object exampleValue = params.get(property.getName());
+                        Object propertyValue = property.getValue(entity);
+                        allMatch &= DefaultTypeTransformation.compareEqual(exampleValue, propertyValue);
+                    }
+                    if (allMatch) {
+                        entities.add(entity);
+                        if (++count >= max) break;
+                    }
+                }
+            }
+            Collections.sort(entities, new GriffonDomain.Comparator(sort, order));
 
             return entities;
         }

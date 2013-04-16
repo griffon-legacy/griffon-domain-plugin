@@ -74,7 +74,7 @@ public final class CriteriaBuilder extends FactoryBuilderSupport {
         }
 
         public Object newInstance(FactoryBuilderSupport builder, Object name, Object value, Map properties)
-                throws InstantiationException, IllegalAccessException {
+            throws InstantiationException, IllegalAccessException {
             FactoryBuilderSupport.checkValueIsNull(value, name);
 
             Object propertyName = properties.remove(PROPERTY_NAME);
@@ -102,7 +102,7 @@ public final class CriteriaBuilder extends FactoryBuilderSupport {
         }
 
         public Object newInstance(FactoryBuilderSupport builder, Object name, Object value, Map properties)
-                throws InstantiationException, IllegalAccessException {
+            throws InstantiationException, IllegalAccessException {
             if (value != null) {
                 throw new IllegalArgumentException("Can't set a value on '" + operator.op().toLowerCase() + "' node.");
             }
@@ -134,7 +134,7 @@ public final class CriteriaBuilder extends FactoryBuilderSupport {
         private static final String OP = "op";
 
         public Object newInstance(FactoryBuilderSupport builder, Object name, Object value, Map properties)
-                throws InstantiationException, IllegalAccessException {
+            throws InstantiationException, IllegalAccessException {
             Operator operator = (Operator) properties.remove(OPERATOR);
             if (operator == null) operator = (Operator) properties.remove(OP);
             if (operator == null) operator = Operator.EQUAL;

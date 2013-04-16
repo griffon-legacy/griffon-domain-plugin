@@ -26,8 +26,8 @@ public interface LastMethod extends StaticMethodInvocation {
     String METHOD_NAME = "last";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class),
-            new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class)
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, String.class),
+        new MethodSignature(true, GriffonDomain.class, METHOD_NAME, Map.class)
     };
 }

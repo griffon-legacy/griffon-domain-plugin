@@ -44,7 +44,8 @@ public abstract class AbstractLastPersistentMethod extends AbstractPersistentSta
             } else if (arg instanceof Map) {
                 Map map = (Map) arg;
                 Object propertyName = map.get("sort");
-                if (propertyName == null) propertyName = GriffonDomainProperty.IDENTITY;
+                if (propertyName == null)
+                    propertyName = GriffonDomainProperty.IDENTITY;
                 return lastByPropertyName(domainClass, (String.valueOf(propertyName)));
             }
         }

@@ -21,6 +21,6 @@ import griffon.plugins.domain.methods.InstanceMethodInvocation;
  * @author Andres Almiray
  */
 public abstract class AbstractInstanceMethodInvocation
-        extends AbstractMethodInvocation
-        implements InstanceMethodInvocation {
+    extends AbstractMethodInvocation
+    implements InstanceMethodInvocation {
 }

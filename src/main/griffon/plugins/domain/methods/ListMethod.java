@@ -25,7 +25,7 @@ public interface ListMethod extends StaticMethodInvocation {
     String METHOD_NAME = "list";
 
     MethodSignature[] METHOD_SIGNATURES = new MethodSignature[]{
-            new MethodSignature(true, Collection.class, METHOD_NAME),
-            new MethodSignature(true, Collection.class, METHOD_NAME, Map.class)
+        new MethodSignature(true, Collection.class, METHOD_NAME),
+        new MethodSignature(true, Collection.class, METHOD_NAME, Map.class)
     };
 }
