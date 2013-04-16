@@ -7,7 +7,7 @@ Check if a domain class instance has validation errors following a call to [vali
 h2. Examples
 
 {code:java}
-def b = new Book(title: "The Shining")
+def b = Book.create(title: "The Shining")
 b.validate()
 if (b.hasErrors()) {
     b.errors.each {

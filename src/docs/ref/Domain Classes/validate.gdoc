@@ -13,7 +13,7 @@ The @validate@ method accepts an optional @List@ argument which contains the nam
 h2. Examples
 
 {code:java}
-def b = new Book(title: "The Shining")
+def b = Book.create(title: "The Shining")
 if (!b.validate()) {
     b.errors.each {
         println it
@@ -22,7 +22,7 @@ if (!b.validate()) {
 {code}
 
 {code:java}
-def a = new Album(artist: "Genesis", title: "Nursery Cryme", releaseDate: 1971)
+def a = Album.create(artist: "Genesis", title: "Nursery Cryme", releaseDate: 1971)
 
 // only validate title and releaseDate
 if (!a.validate(["title", "releaseDate"])) {

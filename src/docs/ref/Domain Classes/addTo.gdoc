@@ -7,9 +7,9 @@ Adds a domain class relationship for one-to-many or many-to-many relationship, w
 h2. Examples
 
 {code:java}
-def fictBook = new Book(title: "IT")
-def nonFictBook = new Book(title: "On Writing: A Memoir of the Craft")
-def a = new Author(name: "Stephen King")
+def fictBook = Book.create(title: "IT")
+def nonFictBook = Book.create(title: "On Writing: A Memoir of the Craft")
+def a = Author.create(name: "Stephen King")
              .addToFiction(fictBook)
              .addToNonFiction(nonFictBook)
              .save()
@@ -54,7 +54,7 @@ In addition, calling addTo* initializes the associated collections, and sets the
 There's also a more compact version of the method that accepts a @Map@ instead of a domain class instance:
 
 {code:java}
-def a = new Author(name: "Stephen King")
+def a = Author.create(name: "Stephen King")
              .addToFiction(title: "IT")
              .addToNonFiction(title: "On Writing: A Memoir of the Craft")
              .save()

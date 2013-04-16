@@ -18,14 +18,16 @@ package org.codehaus.griffon.runtime.domain;
 
 import griffon.plugins.domain.GriffonDomain;
 import griffon.plugins.domain.GriffonDomainClass;
-import griffon.plugins.validation.constraints.ConstraintsValidator;
 import griffon.plugins.validation.Errors;
 import griffon.plugins.validation.constraints.ConstrainedProperty;
+import griffon.plugins.validation.constraints.ConstraintsValidator;
 import org.codehaus.griffon.runtime.core.AbstractGriffonArtifact;
 import org.codehaus.griffon.runtime.validation.DefaultErrors;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.codehaus.groovy.runtime.DefaultGroovyMethods.toList;
 
 /**
  * Base implementation of the GriffonDomain interface.
@@ -40,10 +42,16 @@ public abstract class AbstractGriffonDomain extends AbstractGriffonArtifact impl
     }
 
     public boolean validate(String... properties) {
+        if (properties == null || properties.length == 0) {
+            beforeValidate();
+        } else {
+            beforeValidate(toList(properties));
+        }
         return ConstraintsValidator.evaluate(this, properties);
     }
 
     public boolean validate(List<String> properties) {
+        beforeValidate(properties);
         return ConstraintsValidator.evaluate(this, properties);
     }
 
@@ -87,5 +95,11 @@ public abstract class AbstractGriffonDomain extends AbstractGriffonArtifact impl
     }
 
     public void afterDelete() {
+    }
+
+    public void beforeValidate() {
+    }
+
+    public void beforeValidate(List<String> propertyNames) {
     }
 }

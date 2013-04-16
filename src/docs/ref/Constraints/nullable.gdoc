@@ -14,7 +14,7 @@ h2. Description
 
 Set to @true@ if the property allows @null@ values.
 
-This constraint influences [schema generation|guide:gormConstraints].
+This constraint influences [schema generation|guide:grormConstraints].
 
 Error Code: @className.propertyName.nullable@
 

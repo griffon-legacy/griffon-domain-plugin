@@ -39,7 +39,7 @@ Book.findAll("from Book as b where not exists " +
                 "(from Borrow as br where br.book = b)")
 
 // query by example
-def example = new Book(author: "Dan Brown")
+def example = Book.create(author: "Dan Brown")
 Book.findAll(example)
 
 // Use where criteria (since Griffon 2.0)

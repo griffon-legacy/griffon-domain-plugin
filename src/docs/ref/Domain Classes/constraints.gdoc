@@ -25,7 +25,7 @@ h2. Description
 Constraints are defined using the declarative constraints DSL as described in the [Validation|guide:validation] section of the user guide. Once evaluated, validation can be applied through the use of the [validate|domainClasses] method:
 
 {code:java}
-def b = new Book()
+def b = Book.create()
 assert !b.validate()
 {code}
 

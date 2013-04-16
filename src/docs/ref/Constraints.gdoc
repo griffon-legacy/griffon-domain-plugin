@@ -23,7 +23,7 @@ h2. Global Constraints
 You can apply constraints globally inside @griffon-app/conf/Config.groovy@ as follows:
 
 {code}
-griffon.orm.default.constraints = {
+griffon.grorm.default.constraints = {
     '*'(nullable: true, size: 1..20)
 }
 {code}
@@ -31,7 +31,7 @@ griffon.orm.default.constraints = {
 The wildcard signifies that the constraints apply to all properties. You can also define shared constraints:
 
 {code}
-griffon.orm.default.constraints = {
+griffon.grorm.default.constraints = {
     myShared(nullable: true, size: 1..20)
 }
 {code}

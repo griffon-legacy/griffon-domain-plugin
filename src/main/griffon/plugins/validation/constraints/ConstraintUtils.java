@@ -39,7 +39,7 @@ public class ConstraintUtils {
     private static final Logger LOG = LoggerFactory.getLogger(ConstraintUtils.class);
     private static final String KEY_CONSTRAINTS_EVALUATOR_FACTORY = "app.constraintsEvaluator.factory";
     private static final String DEFAULT_CONSTRAINTS_EVALUATOR_FACTORY = "org.codehaus.griffon.runtime.validation.constraints.DefaultConstraintsEvaluatorFactory";
-    private static final String KEY_DEFAULT_CONSTRAINTS = "griffon.orm.default.constraints";
+    private static final String KEY_DEFAULT_CONSTRAINTS = "griffon.grorm.default.constraints";
 
     private static ConstraintsEvaluator constraintsEvaluator;
     private static volatile boolean constraintsEvaluatorInitialized;

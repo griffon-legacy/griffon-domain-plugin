@@ -75,6 +75,7 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         staticMethods.put(LastMethod.METHOD_NAME, new LastMethod(this));
         staticMethods.put(ListMethod.METHOD_NAME, new ListMethod(this));
         staticMethods.put(ListOrderByMethod.METHOD_NAME, new ListOrderByMethod(this));
+        // staticMethods.put(WhereMethod.METHOD_NAME, new WhereMethod(this));
         staticMethods.put(WithCriteriaMethod.METHOD_NAME, new WithCriteriaMethod(this));
         return staticMethods;
     }
@@ -381,6 +382,19 @@ public class MemoryGriffonDomainHandler extends AbstractGriffonDomainHandler {
         @Override
         protected Collection<GriffonDomain> findByCriterion(GriffonDomainClass domainClass, Criterion criterion, Map<String, Object> options) {
             return datasetOf(domainClass).query(criterion, options);
+        }
+    }
+
+    private class WhereMethod extends AbstractWherePersistentMethod {
+        public WhereMethod(GriffonDomainHandler griffonDomainHandler) {
+            super(griffonDomainHandler);
+        }
+
+        @Override
+        protected Collection<GriffonDomain> withCriteria(GriffonDomainClass domainClass, Criterion criterion, Map<String, Object> options) {
+            List<GriffonDomain> entities = datasetOf(domainClass).query(criterion);
+            Collections.sort(entities, IDENTITY_COMPARATOR);
+            return entities;
         }
     }
 

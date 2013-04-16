@@ -24,7 +24,7 @@ import java.util.List;
  * @author Graeme Rocher (Grails 1.2)
  */
 public enum Event {
-    onLoad, onSave, beforeLoad, beforeInsert, beforeUpdate, beforeDelete, afterLoad, afterInsert, afterUpdate, afterDelete;
+    onLoad, onSave, beforeLoad, beforeInsert, beforeUpdate, beforeDelete, afterLoad, afterInsert, afterUpdate, afterDelete, beforeValidate;
 
     private static final String[] allEvents;
 

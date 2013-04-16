@@ -1,6 +1,6 @@
-@artifact.package@import griffon.transform.Domain
+@artifact.package
 
-@Domain
+@griffon.transform.Domain
 class @artifact.name@ {
 
     static constraints = {

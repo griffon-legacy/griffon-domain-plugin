@@ -19,6 +19,8 @@ import griffon.core.GriffonArtifact;
 import griffon.plugins.validation.Validateable;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 
+import java.util.List;
+
 /**
  * @author Andres Almiray
  */
@@ -42,6 +44,10 @@ public interface GriffonDomain extends GriffonArtifact, Validateable {
     void afterUpdate();
 
     void afterDelete();
+
+    void beforeValidate();
+
+    void beforeValidate(List<String> propertyNames);
 
     public class Comparator implements java.util.Comparator<GriffonDomain> {
         public enum Order {ASC, DESC}

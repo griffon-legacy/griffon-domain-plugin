@@ -14,6 +14,6 @@ h2. Description
 
 Sets the minimum size of a collection or number property.
 
-This constraint influences [schema generation|guide:gormConstraints].
+This constraint influences [schema generation|guide:grormConstraints].
 
 Error Code: @className.propertyName.minSize.notmet@

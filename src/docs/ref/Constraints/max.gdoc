@@ -30,6 +30,6 @@ class User {
 }
 {code}
 
-This constraint influences [schema generation|guide:gormConstraints].
+This constraint influences [schema generation|guide:grormConstraints].
 
 Error Code: @className.propertyName.max.exceeded@

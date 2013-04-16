@@ -7,7 +7,7 @@ An instance of the [Errors|api:griffon.plugins.validation.Errors] interface cont
 h2. Examples
 
 {code:java}
-def user = new User(params)
+def user = User.create(params)
 
 if (user.validate()) {
     // do something with user

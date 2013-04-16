@@ -12,6 +12,6 @@ children maxSize: 25
 
 h2. Description
 
-This constraint influences [schema generation|guide:gormConstraints].
+This constraint influences [schema generation|guide:grormConstraints].
 
 Error Code: @className.propertyName.maxSize.exceeded@

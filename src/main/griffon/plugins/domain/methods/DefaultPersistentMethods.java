@@ -42,6 +42,7 @@ public enum DefaultPersistentMethods {
     FIND_OR_CREATE_WHERE(FindOrCreateWhereMethod.METHOD_NAME, FindOrCreateWhereMethod.METHOD_SIGNATURES),
     FIND_OR_SAVE_BY(FindOrSaveByMethod.METHOD_NAME, FindOrSaveByMethod.METHOD_SIGNATURES),
     FIND_OR_SAVE_WHERE(FindOrSaveWhereMethod.METHOD_NAME, FindOrSaveWhereMethod.METHOD_SIGNATURES),
+    // WHERE(WhereMethod.METHOD_NAME, WhereMethod.METHOD_SIGNATURES),
     WITH_CRITERIA(WithCriteriaMethod.METHOD_NAME, WithCriteriaMethod.METHOD_SIGNATURES);
 
     private final String methodName;

@@ -5,7 +5,7 @@ h3. Global Constraints
 In addition to defining constraints in domain classes, command objects and [other validateable classes|guide:validationNonDomainAndCommandObjectClasses], you can also define them in @griffon-app/conf/Config.groovy@:
 
 {code}
-griffon.orm.default.constraints = {
+griffon.grorm.default.constraints = {
     '*'(nullable: true, size: 1..20)
     myShared(nullable: false, blank: false)
 }
@@ -24,7 +24,7 @@ class User {
 }
 {code}
 
-Note the use of the @shared@ argument, whose value is the name of one of the constraints defined in @griffon.orm.default.constraints@. Despite the name of the configuration setting, you can reference these shared constraints from any validateable class, such as command objects.
+Note the use of the @shared@ argument, whose value is the name of one of the constraints defined in @griffon.grorm.default.constraints@. Despite the name of the configuration setting, you can reference these shared constraints from any validateable class, such as command objects.
 
 The '*' constraint is a special case: it means that the associated constraints ('nullable' and 'size' in the above example) will be applied to all properties in all validateable classes. These defaults can be overridden by the constraints declared in a validateable class.
 

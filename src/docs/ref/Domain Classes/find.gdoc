@@ -11,7 +11,7 @@ h2. Examples
 Book.find(title: "The Shinning")
 
 // query by example
-def example = new Book(author: "Dan Brown")
+def example = Book.create(author: "Dan Brown")
 Book.find(example)
 
 // Using criteria

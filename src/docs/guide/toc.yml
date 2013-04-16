@@ -1,3 +1,47 @@
+GRORM:
+  title: Object Relational Mapping (GRORM)
+  quickStartGuide:
+    title: Quick Start Guide
+    basicCRUD: Basic CRUD
+  domainClasses:
+    title: Domain Modelling in GRORM
+    grormAssociation:
+      title: Association in GRORM
+      manyToOneAndOneToOne: Many-to-one and one-to-one
+      oneToMany: One-to-many
+      manyToMany: Many-to-many
+      basicCollectionTypes: Basic Collection Types
+    inheritanceInGRORM: Inheritance in GRORM
+    setsListsAndMaps: Sets, Lists and Maps
+  persistenceBasics:
+    title: Persistence Basics
+    savingAndUpdating: Saving and Updating
+    deletingObjects: Deleting Objects
+    cascades: Understanding Cascading Updates and Deletes
+    fetching: Eager and Lazy Fetching
+  querying:
+    title: Querying with GRORM
+    finders: Dynamic Finders
+    criteria: Criteria
+  advancedGRORMFeatures:
+    title: Advanced GRORM Features
+    eventsAutoTimestamping: Events and Auto Timestamping
+    ormdsl:
+      title: Custom ORM Mapping
+      tableAndColumnNames: Table and Column Names
+      caching: Caching Strategy
+      inheritanceStrategies: Inheritance Strategies
+      identity: Custom Database Identity
+      compositePrimaryKeys: Composite Primary Keys
+      databaseIndices: Database Indices
+      optimisticLockingAndVersioning: Optimistic Locking and Versioning
+      fetchingDSL: Eager and Lazy Fetching
+      customCascadeBehaviour: Custom Cascade Behaviour
+      customHibernateTypes: Custom Hibernate Types
+      derivedProperties: Derived Properties
+      customNamingStrategy: Custom Naming Strategy
+    defaultSortOrder: Default Sort Order
+  grormConstraints: GRORM and Constraints
 validation:
   title: Validation
   constraints: Declaring Constraints

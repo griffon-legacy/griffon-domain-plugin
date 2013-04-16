@@ -31,7 +31,7 @@ import org.codehaus.groovy.transform.GroovyASTTransformation;
 
 import java.lang.reflect.Modifier;
 
-import static org.codehaus.griffon.ast.GriffonASTUtils.addMethod;
+import static org.codehaus.griffon.ast.GriffonASTUtils.*;
 
 /**
  * Handles generation of code for Griffon domain classes.
@@ -90,6 +90,14 @@ public class GriffonDomainASTTransformation extends GriffonArtifactASTTransforma
                 new EmptyStatement()
             ));
         }
+        addMethod(classNode, new MethodNode(
+            "beforeValidate",
+            Modifier.PUBLIC,
+            ClassHelper.VOID_TYPE,
+            params(param(makeClassSafe(ClassHelper.LIST_TYPE), "propertyNames")),
+            ClassNode.EMPTY_ARRAY,
+            new EmptyStatement()
+        ));
     }
 
     protected String getArtifactType() {

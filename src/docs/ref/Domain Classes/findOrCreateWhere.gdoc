@@ -2,7 +2,7 @@ h1. findOrCreateWhere
 
 h2. Purpose
 
-Uses named arguments that match the property names of the domain class to produce a query that returns the first result.  This method behaves just like [findWhere|domainClasses] except that it will never return @null@.  If a matching instance cannot be found then a new instance will be created, populated with values from the query parameters and returned.  The difference between this method and [findOrSaveWhere|domainClasses] is that this method will not save a newly created instance where [findOrSaveWhere|domainClasses] does.
+Uses named arguments that match the property names of the domain class to produce a query that returns the first result. This method behaves just like [findWhere|domainClasses] except that it will never return @null@.  If a matching instance cannot be found then a new instance will be created, populated with values from the query parameters and returned.  The difference between this method and [findOrSaveWhere|domainClasses] is that this method will not save a newly created instance where [findOrSaveWhere|domainClasses] does.
 
 h2. Examples
 

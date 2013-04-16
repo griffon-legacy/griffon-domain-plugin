@@ -30,7 +30,7 @@ def b = Book.findOrSaveByTitleAndAuthor("The Sum of All Fears", "Tom Clancy")
 {code:java}
 def b = Book.findByTitleAndAuthor("The Sum of All Fears", "Tom Clancy")
 if (!b) {
-    b = new Book(title: "The Sum of All Fears", author: "Tom Clancy")
+    b = Book.create(title: "The Sum of All Fears", author: "Tom Clancy")
     b.save()
 }
 {code}
