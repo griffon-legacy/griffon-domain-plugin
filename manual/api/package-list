@@ -1,0 +1,16 @@
+griffon.persistence
+griffon.plugins.domain
+griffon.plugins.domain.exceptions
+griffon.plugins.domain.methods
+griffon.plugins.domain.orm
+griffon.plugins.validation
+griffon.plugins.validation.constraints
+griffon.plugins.validation.exceptions
+griffon.plugins.validation.factories
+griffon.transform
+griffon.util
+org.codehaus.griffon.runtime.domain
+org.codehaus.griffon.runtime.domain.methods
+org.codehaus.griffon.runtime.util
+org.codehaus.griffon.runtime.validation
+org.codehaus.griffon.runtime.validation.constraints
