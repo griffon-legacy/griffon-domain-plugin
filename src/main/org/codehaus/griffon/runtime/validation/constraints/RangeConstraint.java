@@ -14,9 +14,12 @@
  */
 package org.codehaus.griffon.runtime.validation.constraints;
 
+import griffon.core.resources.editors.PropertyEditorResolver;
 import griffon.plugins.validation.Errors;
 import griffon.util.GriffonClassUtils;
 import groovy.lang.Range;
+
+import java.beans.PropertyEditor;
 
 /**
  * Validates a range.
@@ -86,9 +89,7 @@ public class RangeConstraint extends AbstractConstraint {
         if (to instanceof Number) {
             to = ((Number) to).longValue();
         }
-        if (propertyValue instanceof Number) {
-            propertyValue = ((Number) propertyValue).longValue();
-        }
+        propertyValue = convertValue(propertyValue);
 
         if (null == propertyValue || from.compareTo(propertyValue) > 0) {
             rejectValue(target, errors, DEFAULT_INVALID_RANGE_MESSAGE_CODE,
@@ -97,5 +98,24 @@ public class RangeConstraint extends AbstractConstraint {
             rejectValue(target, errors, DEFAULT_INVALID_RANGE_MESSAGE_CODE,
                 VALIDATION_DSL_NAME + TOOBIG_SUFFIX, args);
         }
+    }
+
+    private long convertValue(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+
+        PropertyEditor longPropertyEditor = PropertyEditorResolver.findEditor(Long.TYPE);
+        PropertyEditor valuePropertyEditor = PropertyEditorResolver.findEditor(value.getClass());
+
+        if (valuePropertyEditor == null) {
+            throw new IllegalArgumentException("Cannot convert value [" +
+                value + "] of type [" +
+                value.getClass().getName() + "] to long");
+        }
+
+        valuePropertyEditor.setValue(value);
+        longPropertyEditor.setAsText(valuePropertyEditor.getAsText());
+        return (Long) longPropertyEditor.getValue();
     }
 }
